@@ -415,7 +415,7 @@
                   <label class="custom-checkbox-container">
                     <input type="checkbox" id="termsCheck" checked>
                     <span class="checkmark"></span>
-                    <span class="terms-text">Li e concordo com os <a href="#">Termos de Uso</a> e a <a href="#">Política de Privacidade</a>.</span>
+                    <span class="terms-text">Li e concordo com os <a href="#" id="termsLink">Termos de Uso</a> e a <a href="#" id="privacyLink">Política de Privacidade</a>.</span>
                   </label>
                 </div>
 
@@ -615,7 +615,7 @@
 
                 <div class="featured-pros-carousel">
                   <!-- Main Card: Juliana Silva -->
-                  <div class="pro-featured-card clean-pro-card" data-pro-id="juliana-silva" data-nav="screen-5">
+                  <div class="pro-featured-card clean-pro-card" data-pro-id="juliana-silva" onclick="app.selectPro('juliana-silva'); app.navigateTo('screen-5');">
                     <div class="pro-card-avatar">
                       <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&auto=format&fit=crop&q=80" alt="Juliana Silva">
                       <span class="pro-badge-dot"></span>
@@ -639,7 +639,7 @@
                     </div>
                     <div class="pro-card-cta">
                       <span class="price-pill-tag">R$ 90+</span>
-                      <button class="pro-quick-btn" title="Agendar com Juliana Silva">
+                      <button class="pro-quick-btn" title="Agendar com Juliana Silva" onclick="event.stopPropagation(); app.selectPro('juliana-silva'); app.navigateTo('screen-5');">
                         <span>Agendar</span>
                         <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5">
                           <polyline points="9 18 15 12 9 6"></polyline>
@@ -649,7 +649,7 @@
                   </div>
 
                   <!-- Second Card: Dr Rafael Mendes -->
-                  <div class="pro-featured-card clean-pro-card" data-pro-id="rafael-mendes" data-nav="screen-5">
+                  <div class="pro-featured-card clean-pro-card" data-pro-id="rafael-mendes" onclick="app.selectPro('rafael-mendes'); app.navigateTo('screen-5');">
                     <div class="pro-card-avatar">
                       <img src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=200&auto=format&fit=crop&q=80" alt="Dr. Rafael Mendes">
                       <span class="pro-badge-dot"></span>
@@ -673,7 +673,7 @@
                     </div>
                     <div class="pro-card-cta">
                       <span class="price-pill-tag">R$ 250</span>
-                      <button class="pro-quick-btn" title="Agendar com Dr. Rafael">
+                      <button class="pro-quick-btn" title="Agendar com Dr. Rafael" onclick="event.stopPropagation(); app.selectPro('rafael-mendes'); app.navigateTo('screen-5');">
                         <span>Agendar</span>
                         <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5">
                           <polyline points="9 18 15 12 9 6"></polyline>
@@ -1833,6 +1833,158 @@
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
               </button>
             </div>
+          </div>
+        </div>
+
+        <!-- NOTIFICATIONS SHEET MODAL -->
+        <div class="profile-sheet-overlay" id="notificationsSheet">
+          <div class="profile-sheet-card notif-sheet-card">
+            <div class="sheet-handle"></div>
+            <div class="notif-sheet-header">
+              <div class="notif-title-row">
+                <h3>Notificações</h3>
+                <span class="badge-notif-count" id="notifBadgeCount">3 novas</span>
+              </div>
+              <button class="sheet-close-btn" id="closeNotifSheetBtn">&times;</button>
+            </div>
+
+            <div class="notif-items-list" id="notifItemsList">
+              <div class="notif-item unread" id="notifItem1" onclick="app.openNotifBooking()">
+                <div class="notif-item-icon">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                  </svg>
+                </div>
+                <div class="notif-item-body">
+                  <strong>Lembrete de agendamento</strong>
+                  <p>Você tem atendimento marcado para amanhã às 09:00 com Juliana Silva.</p>
+                  <small>há 20 minutos • Toque para ver</small>
+                </div>
+              </div>
+
+              <div class="notif-item unread" id="notifItem2">
+                <div class="notif-item-icon">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                  </svg>
+                </div>
+                <div class="notif-item-body">
+                  <strong>Consulta confirmada</strong>
+                  <p>Dr. Rafael Mendes confirmou sua consulta para 25 de abril.</p>
+                  <small>há 2 horas</small>
+                </div>
+              </div>
+
+              <div class="notif-item" id="notifItem3">
+                <div class="notif-item-icon">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                  </svg>
+                </div>
+                <div class="notif-item-body">
+                  <strong>Avalie seu atendimento</strong>
+                  <p>Como foi seu procedimento recente com Bruna Nunes?</p>
+                  <small>ontem</small>
+                </div>
+              </div>
+            </div>
+
+            <div class="notif-sheet-footer">
+              <button class="btn btn-outline-primary btn-block" id="markAllNotifsReadBtn">Marcar todas como lidas</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- RATING MODAL -->
+        <div class="profile-sheet-overlay" id="ratingModal">
+          <div class="profile-sheet-card rating-sheet-card">
+            <div class="sheet-handle"></div>
+            <div class="rating-modal-header">
+              <div>
+                <h3 id="ratingModalTitle">Avaliar atendimento</h3>
+                <p id="ratingModalSubtitle">Como foi sua experiência com o serviço?</p>
+              </div>
+              <button class="sheet-close-btn" id="closeRatingModalBtn">&times;</button>
+            </div>
+
+            <div class="rating-stars-interactive" id="ratingStarsGroup">
+              <button type="button" class="star-btn active" data-star="1" title="1 estrela">
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="#F59E0B" stroke="#F59E0B" stroke-width="1.5">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+              </button>
+              <button type="button" class="star-btn active" data-star="2" title="2 estrelas">
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="#F59E0B" stroke="#F59E0B" stroke-width="1.5">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+              </button>
+              <button type="button" class="star-btn active" data-star="3" title="3 estrelas">
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="#F59E0B" stroke="#F59E0B" stroke-width="1.5">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+              </button>
+              <button type="button" class="star-btn active" data-star="4" title="4 estrelas">
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="#F59E0B" stroke="#F59E0B" stroke-width="1.5">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+              </button>
+              <button type="button" class="star-btn active" data-star="5" title="5 estrelas">
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="#F59E0B" stroke="#F59E0B" stroke-width="1.5">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+              </button>
+            </div>
+
+            <div class="rating-comment-box">
+              <textarea id="ratingCommentInput" rows="3" class="form-input" placeholder="Escreva um comentário opcional... (Ex: Atendimento maravilhoso, pontual e muito cuidadosa!)"></textarea>
+            </div>
+
+            <button type="button" class="btn btn-primary btn-block" id="submitRatingBtn" onclick="app.submitRating()">
+              Enviar avaliação
+            </button>
+          </div>
+        </div>
+
+        <!-- BOOKING DETAILS MODAL -->
+        <div class="profile-sheet-overlay" id="bookingDetailsModal">
+          <div class="profile-sheet-card details-sheet-card">
+            <div class="sheet-handle"></div>
+            <div class="details-modal-header">
+              <h3>Detalhes do Agendamento</h3>
+              <button class="sheet-close-btn" id="closeBookingDetailsBtn">&times;</button>
+            </div>
+            <div class="details-modal-body" id="bookingDetailsBody">
+              <!-- populated dynamically -->
+            </div>
+            <div class="details-modal-actions">
+              <button class="btn btn-whatsapp btn-block" id="detailsWhatsappBtn" onclick="app.openProWhatsapp()">Falar com o Profissional</button>
+              <button class="btn btn-outline-primary btn-block" id="detailsCalendarBtn" onclick="app.downloadCalendarFile()">Adicionar à Agenda</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TERMS & PRIVACY MODAL -->
+        <div class="profile-sheet-overlay" id="termsModal">
+          <div class="profile-sheet-card terms-sheet-card">
+            <div class="sheet-handle"></div>
+            <div class="terms-modal-header">
+              <h3 id="termsModalTitle">Termos de Uso</h3>
+              <button class="sheet-close-btn" id="closeTermsModalBtn">&times;</button>
+            </div>
+            <div class="terms-modal-body" id="termsModalBody">
+              <p>Bem-vindo ao <strong>AgendaFácil</strong>. Ao utilizar nossa plataforma para agendar ou gerenciar atendimentos, você concorda com as diretrizes de cancelamento prévio, pontualidade e sigilo dos dados cadastrais em conformidade com a LGPD (Lei Geral de Proteção de Dados).</p>
+              <h4>Compromisso de Presença</h4>
+              <p>Cancelamentos com menos de 2 horas de antecedência podem estar sujeitos a confirmação direta conforme a política de cada profissional parceiro.</p>
+              <h4>Segurança dos Seus Dados</h4>
+              <p>Seus dados de contato são utilizados estritamente para confirmações e lembretes de serviços via WhatsApp e notificações no aplicativo.</p>
+            </div>
+            <button class="btn btn-primary btn-block" style="margin-top: 14px;" id="acceptTermsBtn">
+              Entendi e concordo
+            </button>
           </div>
         </div>
 
