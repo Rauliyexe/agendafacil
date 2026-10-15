@@ -516,11 +516,11 @@ class AgendaFacilApp {
     const catTag = document.getElementById('activeCategoryTag');
 
     // Categorias da Home que filtram a busca
-    document.querySelectorAll('.category-item').forEach(catBtn => {
+    document.querySelectorAll('.category-item, .category-chip').forEach(catBtn => {
       catBtn.addEventListener('click', () => {
         const catName = catBtn.getAttribute('data-category');
         state.activeCategory = catName;
-        if (searchInput) searchInput.value = catName;
+        if (searchInput) searchInput.value = catName === 'Todos' ? '' : catName;
         if (catTag) catTag.textContent = catName;
         this.filterProsList();
       });

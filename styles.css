@@ -1037,7 +1037,7 @@ body.fullscreen-mode .phone-screen {
    SCREEN 3: HOME CLIENTE STYLES
    ======================================================== */
 .home-screen {
-  padding: 46px 18px 80px;
+  padding: 48px 20px 84px;
   background: #FAFBFD;
 }
 
@@ -1169,63 +1169,57 @@ body.fullscreen-mode .phone-screen {
   background: #FFFFFF;
 }
 
-/* Categories 8-Grid */
-.home-categories-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px 8px;
-  margin-bottom: 22px;
+/* ========================================================
+   SLEEK HORIZONTAL CATEGORY CHIPS (MINIMALIST)
+   ======================================================== */
+.home-categories-chips {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 4px 0 16px;
+  margin-bottom: 4px;
+  scrollbar-width: none;
 }
 
-.category-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: none;
-  border: none;
+.home-categories-chips::-webkit-scrollbar {
+  display: none;
+}
+
+.category-chip {
+  flex: 0 0 auto;
+  padding: 7px 14px;
+  border-radius: var(--border-radius-pill);
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
   cursor: pointer;
-  outline: none;
-  transition: transform 0.2s ease;
-}
-
-.category-item:hover {
-  transform: translateY(-2px);
-}
-
-.category-icon-circle {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
+  white-space: nowrap;
   display: flex;
   align-items: center;
-  justify-content: center;
-  margin-bottom: 6px;
+  gap: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
   transition: var(--transition-smooth);
 }
 
-.cat-beleza { background: #EEF2FF; color: #3461FD; }
-.cat-saude { background: #FEE2E2; color: #EF4444; }
-.cat-estetica { background: #F3E8FF; color: #A855F7; }
-.cat-educacao { background: #E0E7FF; color: #4338CA; }
-.cat-bemestar { background: #CCFBF1; color: #0D9488; }
-.cat-pet { background: #E0F2FE; color: #0284C7; }
-.cat-servicos { background: #FEF3C7; color: #D97706; }
-.cat-outros { background: #F1F5F9; color: #64748B; }
-
-.category-item:hover .category-icon-circle {
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
-  transform: scale(1.05);
+.category-chip:hover {
+  color: var(--text-heading);
+  border-color: #CBD5E1;
+  background: #F8FAFC;
 }
 
-.category-label {
-  font-size: 0.74rem;
-  font-weight: 600;
-  color: var(--text-heading);
+.category-chip.active {
+  background: var(--primary);
+  color: #FFFFFF;
+  border-color: var(--primary);
+  box-shadow: 0 4px 12px var(--primary-glow);
 }
 
 /* Home Section Layout */
 .home-section {
-  margin-bottom: 20px;
+  margin-bottom: 22px;
 }
 
 .section-header {
@@ -1236,13 +1230,14 @@ body.fullscreen-mode .phone-screen {
 }
 
 .section-header h3 {
-  font-size: 1.02rem;
+  font-size: 0.98rem;
   font-weight: 800;
+  letter-spacing: -0.2px;
   color: var(--text-heading);
 }
 
 .section-link {
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   font-weight: 700;
   color: var(--primary);
   text-decoration: none;
@@ -1253,7 +1248,7 @@ body.fullscreen-mode .phone-screen {
   display: flex;
   gap: 12px;
   overflow-x: auto;
-  padding-bottom: 4px;
+  padding-bottom: 6px;
   scrollbar-width: none;
 }
 
@@ -1261,73 +1256,145 @@ body.fullscreen-mode .phone-screen {
   display: none;
 }
 
-.pro-featured-card {
-  flex: 0 0 240px;
+/* Clean Professional Card */
+.pro-featured-card.clean-pro-card {
+  flex: 0 0 285px;
   background: #FFFFFF;
   border: 1px solid var(--border-light);
-  border-radius: var(--border-radius-card);
-  padding: 12px;
+  border-radius: 18px;
+  padding: 12px 14px;
   display: flex;
   align-items: center;
   gap: 12px;
   cursor: pointer;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
   transition: var(--transition-smooth);
 }
 
-.pro-featured-card:hover {
+.pro-featured-card.clean-pro-card:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-  border-color: #D3DEFD;
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.1);
+  border-color: rgba(99, 102, 241, 0.25);
 }
 
-.pro-card-avatar {
-  width: 58px;
-  height: 58px;
-  border-radius: 16px;
-  overflow: hidden;
+.clean-pro-card .pro-card-avatar {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
   flex-shrink: 0;
 }
 
-.pro-card-avatar img {
+.clean-pro-card .pro-card-avatar img {
   width: 100%;
   height: 100%;
+  border-radius: 14px;
   object-fit: cover;
 }
 
-.pro-card-info h4 {
-  font-size: 0.92rem;
+.pro-badge-dot {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--success);
+  border: 2px solid #FFFFFF;
+}
+
+.clean-pro-card .pro-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.pro-name-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pro-name-header h4 {
+  font-size: 0.88rem;
   font-weight: 700;
   color: var(--text-heading);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.pro-spec {
-  font-size: 0.78rem;
+.verified-icon {
+  font-size: 0.62rem;
+  background: var(--primary);
+  color: #FFFFFF;
+  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.clean-pro-card .pro-spec {
+  font-size: 0.74rem;
   color: var(--text-muted);
   margin-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.pro-meta-row {
+.clean-pro-card .pro-meta-row {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-top: 6px;
-  font-size: 0.74rem;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: 0.72rem;
 }
 
-.meta-rating {
+.meta-dot-sep {
+  color: #CBD5E1;
+  font-size: 0.7rem;
+}
+
+.pro-card-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+.clean-pro-card .price-pill-tag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #4338CA;
+  background: rgba(99, 102, 241, 0.08);
+  padding: 2px 7px;
+  border-radius: var(--border-radius-pill);
+}
+
+.pro-quick-btn {
+  background: transparent;
+  color: var(--primary);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  padding: 4px 8px;
+  border-radius: var(--border-radius-pill);
+  font-size: 0.7rem;
+  font-weight: 700;
   display: flex;
   align-items: center;
   gap: 3px;
-  color: var(--text-heading);
+  cursor: pointer;
+  transition: var(--transition-smooth);
 }
 
-.meta-distance {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  color: var(--text-muted);
+.clean-pro-card:hover .pro-quick-btn {
+  background: var(--primary);
+  color: #FFFFFF;
+  border-color: var(--primary);
 }
 
 /* Upcoming Appointment Card */
@@ -3753,14 +3820,42 @@ body.dark-mode .widget-arrow-action {
   color: #A5B4FC;
 }
 
-body.dark-mode .pro-featured-card {
+body.dark-mode .category-chip {
   background: #151A26;
   border-color: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
+  color: #94A3B8;
 }
 
-body.dark-mode .portfolio-thumb {
-  border-color: rgba(255, 255, 255, 0.1);
+body.dark-mode .category-chip:hover {
+  background: #1C2333;
+  color: #F8FAFC;
+}
+
+body.dark-mode .category-chip.active {
+  background: var(--primary);
+  color: #FFFFFF;
+  border-color: var(--primary);
+}
+
+body.dark-mode .clean-pro-card {
+  background: #151A26;
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+body.dark-mode .clean-pro-card .price-pill-tag {
+  background: rgba(99, 102, 241, 0.2);
+  color: #A5B4FC;
+}
+
+body.dark-mode .pro-quick-btn {
+  border-color: rgba(99, 102, 241, 0.35);
+  color: #A5B4FC;
+}
+
+body.dark-mode .clean-pro-card:hover .pro-quick-btn {
+  background: var(--primary);
+  color: #FFFFFF;
 }
 
 body.dark-mode .cal-day-chip {
