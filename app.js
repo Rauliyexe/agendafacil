@@ -356,6 +356,9 @@ class AgendaFacilApp {
 
     // 13. Configurar modal do perfil do cliente e navegação inferior unificada
     this.setupProfileSheet();
+
+    // 14. Configurar simulador mobile nativo
+    this.setupMobileSimulator();
   }
 
   // ========================================================
@@ -460,16 +463,14 @@ class AgendaFacilApp {
       // Atualiza barra de navegação inferior permanente
       this.updateBottomNavState(screenId);
 
-      // Ajusta cor do status bar
-      const statusBar = document.getElementById('statusBar');
-      if (statusBar) {
-        const isDark = document.body.classList.contains('dark-mode');
-        if (isDark || screenId === 'screen-1-splash' || screenId === 'screen-5') {
-          statusBar.style.color = '#FFFFFF';
-        } else {
-          statusBar.style.color = '#0F172A';
-        }
+      // Sincroniza seletor de tela mobile se existir
+      const mobileSelect = document.getElementById('mobileScreenSelect');
+      if (mobileSelect && mobileSelect.value !== screenId) {
+        mobileSelect.value = screenId;
       }
+
+      // Ajusta cor do status bar e meta theme-color do navegador
+      this.updateSystemThemeColor(screenId);
     }
   }
 
@@ -905,12 +906,16 @@ class AgendaFacilApp {
       state.role = 'pro';
       this.roleLabel.innerHTML = 'Modo: <strong>Profissional</strong>';
       this.toggleRoleBtn.classList.add('active');
+      const mobileRole = document.getElementById('mobileRoleLabel');
+      if (mobileRole) mobileRole.innerHTML = 'Modo: <strong>Profissional</strong>';
       this.showToast('Alternado para a visão de Juliana Silva (Cabeleireira)');
       this.navigateTo('screen-9');
     } else {
       state.role = 'client';
       this.roleLabel.innerHTML = 'Modo: <strong>Cliente</strong>';
       this.toggleRoleBtn.classList.remove('active');
+      const mobileRole = document.getElementById('mobileRoleLabel');
+      if (mobileRole) mobileRole.innerHTML = 'Modo: <strong>Cliente</strong>';
       this.showToast('Alternado para a visão de Maria Vitória (Cliente)');
       this.navigateTo('screen-3');
     }
@@ -935,14 +940,8 @@ class AgendaFacilApp {
     const isDark = document.body.classList.toggle('dark-mode');
     localStorage.setItem('agendafacil_theme', isDark ? 'dark' : 'light');
     this.updateThemeIcons(isDark);
-    const statusBar = document.getElementById('statusBar');
-    if (statusBar) {
-      if (isDark || state.activeScreen === 'screen-1-splash' || state.activeScreen === 'screen-5') {
-        statusBar.style.color = '#FFFFFF';
-      } else {
-        statusBar.style.color = '#0F172A';
-      }
-    }
+    this.updateSystemThemeColor();
+    this.updateMobileThemeLabels(isDark);
     this.showToast(isDark ? 'Modo Escuro ativado' : 'Modo Claro ativado');
   }
 
@@ -951,13 +950,43 @@ class AgendaFacilApp {
     const isDark = saved === 'dark';
     document.body.classList.toggle('dark-mode', isDark);
     this.updateThemeIcons(isDark);
+    this.updateSystemThemeColor();
+    this.updateMobileThemeLabels(isDark);
+  }
+
+  updateSystemThemeColor(screenId = state.activeScreen) {
+    const isDark = document.body.classList.contains('dark-mode');
     const statusBar = document.getElementById('statusBar');
     if (statusBar) {
-      if (isDark || state.activeScreen === 'screen-1-splash' || state.activeScreen === 'screen-5') {
+      if (isDark || screenId === 'screen-1-splash' || screenId === 'screen-5') {
         statusBar.style.color = '#FFFFFF';
       } else {
         statusBar.style.color = '#0F172A';
       }
+    }
+
+    const metaTheme = document.getElementById('metaThemeColor');
+    if (metaTheme) {
+      if (isDark) {
+        metaTheme.setAttribute('content', '#0D111A');
+      } else if (screenId === 'screen-1-splash') {
+        metaTheme.setAttribute('content', '#4F46E5');
+      } else if (screenId === 'screen-5') {
+        metaTheme.setAttribute('content', '#0D111A');
+      } else {
+        metaTheme.setAttribute('content', '#FFFFFF');
+      }
+    }
+  }
+
+  updateMobileThemeLabels(isDark) {
+    const mobileTheme = document.getElementById('mobileThemeLabel');
+    if (mobileTheme) {
+      mobileTheme.textContent = isDark ? 'Modo Claro' : 'Modo Escuro';
+    }
+    const sheetTheme = document.getElementById('sheetThemeText');
+    if (sheetTheme) {
+      sheetTheme.textContent = isDark ? 'Ativar Modo Claro' : 'Ativar Modo Escuro';
     }
   }
 
@@ -967,6 +996,77 @@ class AgendaFacilApp {
     if (sun && moon) {
       sun.style.display = isDark ? 'inline-block' : 'none';
       moon.style.display = isDark ? 'none' : 'inline-block';
+    }
+  }
+
+  // Controlador do Simulador Mobile (Drawer e FAB)
+  setupMobileSimulator() {
+    const fab = document.getElementById('mobileProtoFab');
+    const drawer = document.getElementById('mobileProtoDrawer');
+    const closeBtn = document.getElementById('closeMobileProtoBtn');
+    const select = document.getElementById('mobileScreenSelect');
+    const roleBtn = document.getElementById('mobileToggleRoleBtn');
+    const themeBtn = document.getElementById('mobileToggleThemeBtn');
+    const hideFabBtn = document.getElementById('mobileHideFabBtn');
+    const sheetThemeBtn = document.getElementById('sheetThemeToggleBtn');
+    const sheetSimBtn = document.getElementById('sheetOpenSimulatorBtn');
+
+    const openDrawer = () => {
+      if (select) select.value = state.activeScreen;
+      if (drawer) drawer.classList.add('active');
+    };
+
+    const closeDrawer = () => {
+      if (drawer) drawer.classList.remove('active');
+    };
+
+    if (fab) fab.addEventListener('click', openDrawer);
+    if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
+    if (drawer) {
+      drawer.addEventListener('click', (e) => {
+        if (e.target === drawer) closeDrawer();
+      });
+    }
+
+    if (select) {
+      select.addEventListener('change', (e) => {
+        this.navigateTo(e.target.value);
+        closeDrawer();
+      });
+    }
+
+    if (roleBtn) {
+      roleBtn.addEventListener('click', () => {
+        this.toggleUserRole();
+      });
+    }
+
+    if (themeBtn) {
+      themeBtn.addEventListener('click', () => {
+        this.toggleTheme();
+      });
+    }
+
+    if (hideFabBtn) {
+      hideFabBtn.addEventListener('click', () => {
+        if (fab) fab.classList.add('hidden');
+        closeDrawer();
+        this.showToast('Botão flutuante ocultado. Acesse pelo menu do Perfil.');
+      });
+    }
+
+    if (sheetThemeBtn) {
+      sheetThemeBtn.addEventListener('click', () => {
+        this.toggleTheme();
+        this.closeProfileSheet();
+      });
+    }
+
+    if (sheetSimBtn) {
+      sheetSimBtn.addEventListener('click', () => {
+        this.closeProfileSheet();
+        setTimeout(openDrawer, 150);
+      });
     }
   }
 
