@@ -1,0 +1,1875 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>AgendaFácil - Seus compromissos, mais simples</title>
+  <meta name="description" content="Protótipo do aplicativo AgendaFácil: agende serviços, encontre profissionais e gerencie seus horários com rapidez, praticidade e segurança.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body class="light-mode device-mode">
+
+  <!-- TOP PROTOTYPE TOOLBAR (Para o usuário navegar e testar todas as 9 telas com facilidade) -->
+  <header class="proto-topbar" id="protoTopbar">
+    <div class="proto-topbar-inner">
+      <div class="proto-brand">
+        <div class="proto-logo-badge">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="4" ry="4"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+            <path d="m9 16 2 2 4-4"></path>
+          </svg>
+        </div>
+        <div class="proto-title-group">
+          <span class="proto-app-name">Agenda<strong>Fácil</strong></span>
+          <span class="proto-tag">Protótipo Interativo</span>
+        </div>
+      </div>
+
+      <!-- Quick Screen Switcher -->
+      <div class="proto-nav-selector">
+        <label for="screenSelect" class="proto-select-label">Tela ativa:</label>
+        <select id="screenSelect" class="proto-select">
+          <option value="screen-1">1. Tela Inicial (Onboarding)</option>
+          <option value="screen-1-splash">1. Tela Inicial (Splash Azul)</option>
+          <option value="screen-2">2. Cadastro (Crie sua conta)</option>
+          <option value="screen-3" selected>3. Tela Inicial (Home Cliente)</option>
+          <option value="screen-4">4. Busca de Profissionais</option>
+          <option value="screen-5">5. Perfil do Profissional</option>
+          <option value="screen-6">6. Escolha de Horário</option>
+          <option value="screen-7">7. Confirmação do Agendamento</option>
+          <option value="screen-8">8. Meus Agendamentos</option>
+          <option value="screen-9">9. Dashboard do Profissional</option>
+        </select>
+      </div>
+
+      <!-- Action Toggles -->
+      <div class="proto-actions">
+        <!-- Role toggle -->
+        <button id="toggleRoleBtn" class="proto-btn proto-btn-role" title="Alternar perfil de usuário">
+          <span class="role-icon">👤</span>
+          <span id="roleLabel">Modo: <strong>Cliente</strong></span>
+        </button>
+
+        <!-- Device view toggle -->
+        <button id="toggleDeviceBtn" class="proto-btn proto-btn-secondary" title="Alternar entre moldura de iPhone e tela cheia">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="5" y="2" width="14" height="20" rx="3" ry="3"></rect>
+            <line x1="12" y1="18" x2="12.01" y2="18"></line>
+          </svg>
+          <span id="deviceModeLabel">Moldura iPhone</span>
+        </button>
+
+        <!-- Reset demo data -->
+        <button id="resetDataBtn" class="proto-btn proto-btn-icon" title="Restaurar dados de teste">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+            <path d="M3 3v5h5"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN WRAPPER / DEVICE STAGE -->
+  <main class="device-stage">
+    
+    <!-- IPHONE 15 PRO FRAME -->
+    <div class="phone-frame" id="phoneFrame">
+      
+      <!-- Phone Hardware Details -->
+      <div class="phone-speaker"></div>
+      
+      <!-- Screen Window -->
+      <div class="phone-screen" id="phoneScreen">
+        
+        <!-- STATUS BAR -->
+        <div class="ios-status-bar" id="statusBar">
+          <div class="status-time">9:41</div>
+          
+          <!-- DYNAMIC ISLAND -->
+          <div class="dynamic-island">
+            <div class="island-camera"></div>
+            <div class="island-sensor"></div>
+          </div>
+          
+          <div class="status-icons">
+            <!-- Cellular -->
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+              <rect x="2" y="16" width="3" height="5" rx="1"></rect>
+              <rect x="7" y="12" width="3" height="9" rx="1"></rect>
+              <rect x="12" y="8" width="3" height="13" rx="1"></rect>
+              <rect x="17" y="4" width="3" height="17" rx="1"></rect>
+            </svg>
+            <!-- Wifi -->
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+              <path d="M12 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-6.36-4.36 1.41 1.41a7 7 0 0 1 9.9 0l1.41-1.41a9 9 0 0 0-12.72 0zm-2.83-2.83 1.41 1.41a11 11 0 0 1 15.56 0l1.41-1.41a13 13 0 0 0-18.38 0z"></path>
+            </svg>
+            <!-- Battery -->
+            <div class="battery-icon">
+              <div class="battery-level"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SCREEN CONTAINER (All 9 screens live here) -->
+        <!-- ========================================== -->
+        <div class="screens-viewport" id="screensViewport">
+
+          <!-- ---------------------------------------- -->
+          <!-- SCREEN 1: ONBOARDING / TELA INICIAL      -->
+          <!-- ---------------------------------------- -->
+          <section class="app-screen" id="screen-1" data-title="1. Tela Inicial">
+            <div class="screen-content onboarding-screen">
+              <div class="bg-shape-top"></div>
+              
+              <!-- Brand Center -->
+              <div class="onboarding-brand">
+                <div class="brand-logo-large">
+                  <div class="logo-box">
+                    <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3" y="4" width="18" height="18" rx="4" ry="4"></rect>
+                      <line x1="16" y1="2" x2="16" y2="6"></line>
+                      <line x1="8" y1="2" x2="8" y2="6"></line>
+                      <line x1="3" y1="10" x2="21" y2="10"></line>
+                      <path d="m9 16 2 2 4-4"></path>
+                    </svg>
+                  </div>
+                  <div class="spark-rays">
+                    <span class="spark s1"></span>
+                    <span class="spark s2"></span>
+                    <span class="spark s3"></span>
+                  </div>
+                </div>
+                <h1 class="brand-title">Agenda<span class="brand-accent">Fácil</span></h1>
+                <p class="brand-headline">Agende, organize, viva melhor.</p>
+                <p class="brand-subtext">Todos os seus compromissos, em um só lugar. De forma rápida, prática e segura.</p>
+              </div>
+
+              <!-- Feature Pillars (2x2 Grid) -->
+              <div class="feature-pillars-grid">
+                <div class="pillar-card">
+                  <div class="pillar-icon">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3" y="4" width="18" height="18" rx="4"></rect>
+                      <line x1="16" y1="2" x2="16" y2="6"></line>
+                      <line x1="8" y1="2" x2="8" y2="6"></line>
+                      <line x1="3" y1="10" x2="21" y2="10"></line>
+                      <path d="m9 16 2 2 4-4"></path>
+                    </svg>
+                  </div>
+                  <span class="pillar-label">Agende serviços</span>
+                </div>
+
+                <div class="pillar-card">
+                  <div class="pillar-icon">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                      <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                  </div>
+                  <span class="pillar-label">Escolha profissionais</span>
+                </div>
+
+                <div class="pillar-card">
+                  <div class="pillar-icon">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                  </div>
+                  <span class="pillar-label">Escolha horários</span>
+                </div>
+
+                <div class="pillar-card">
+                  <div class="pillar-icon">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                      <polyline points="9 12 11 14 15 10"></polyline>
+                    </svg>
+                  </div>
+                  <span class="pillar-label">Com segurança e praticidade</span>
+                </div>
+              </div>
+
+              <!-- Decorative Card Graphic -->
+              <div class="onboarding-card-graphic">
+                <div class="mini-app-preview">
+                  <div class="mini-header">
+                    <div class="mini-greeting">
+                      <strong>Olá, Maria!</strong>
+                      <span>Que bom te ver por aqui!</span>
+                    </div>
+                    <div class="mini-bell">🔔</div>
+                  </div>
+                  <div class="mini-search">🔍 Buscar serviços, profissionais...</div>
+                  <div class="mini-bubble">Mais tempo para o que importa! ♡</div>
+                </div>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="onboarding-actions">
+                <button class="btn btn-primary btn-block" data-nav="screen-2">
+                  <span>Criar conta</span>
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                  </svg>
+                </button>
+
+                <button class="btn btn-secondary btn-block" data-nav="screen-3">
+                  Entrar
+                </button>
+
+                <div class="onboarding-footer-text">
+                  Já tem uma conta? <a href="#" data-nav="screen-3" class="link-primary">Entrar</a>
+                </div>
+              </div>
+            </div>
+          </section>
+
+
+          <!-- ---------------------------------------- -->
+          <!-- SCREEN 1-SPLASH: SPLASH BLUE VARIANT    -->
+          <!-- ---------------------------------------- -->
+          <section class="app-screen" id="screen-1-splash" data-title="1. Splash Azul">
+            <div class="screen-content splash-blue-screen">
+              <div class="splash-inner">
+                <div class="splash-logo-box">
+                  <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="4"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                    <path d="m9 16 2 2 4-4"></path>
+                  </svg>
+                </div>
+                <h1 class="splash-title">Agenda<strong>Fácil</strong></h1>
+                <p class="splash-sub">Seus compromissos, mais simples.</p>
+              </div>
+
+              <div class="splash-actions">
+                <button class="btn btn-white btn-block" data-nav="screen-2">Criar conta</button>
+                <button class="btn btn-outline-white btn-block" data-nav="screen-3">Entrar</button>
+                <div class="splash-switch-link">
+                  <a href="#" data-nav="screen-1">Ver versão com apresentação ›</a>
+                </div>
+              </div>
+            </div>
+          </section>
+
+
+          <!-- ---------------------------------------- -->
+          <!-- SCREEN 2: CADASTRO (CRIE SUA CONTA)     -->
+          <!-- ---------------------------------------- -->
+          <section class="app-screen" id="screen-2" data-title="2. Cadastro">
+            <div class="screen-content register-screen">
+              
+              <!-- Screen Header -->
+              <div class="screen-top-nav">
+                <button class="nav-back-btn" data-nav="screen-1" title="Voltar">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                  </svg>
+                </button>
+                <div class="nav-header-brand">
+                  <div class="mini-logo-box">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2">
+                      <rect x="3" y="4" width="18" height="18" rx="4"></rect>
+                      <path d="m9 16 2 2 4-4"></path>
+                    </svg>
+                  </div>
+                  <span>Agenda<strong>Fácil</strong></span>
+                </div>
+                <div style="width: 36px;"></div>
+              </div>
+
+              <div class="register-header-text">
+                <h2>Crie sua conta</h2>
+                <p>É rápido, seguro e gratuito. Assim você já pode agendar seus serviços favoritos.</p>
+              </div>
+
+              <!-- Segmented Switcher (Cliente x Profissional) -->
+              <div class="segmented-control" id="registerRoleSegment">
+                <button class="seg-btn active" data-role="client">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                  <span>Cliente</span>
+                </button>
+                <button class="seg-btn" data-role="pro">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                  </svg>
+                  <span>Profissional</span>
+                </button>
+              </div>
+
+              <!-- Form -->
+              <form class="auth-form" id="registerForm" onsubmit="return false;">
+                
+                <div class="input-group">
+                  <div class="input-icon">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                      <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                  </div>
+                  <input type="text" id="regName" class="form-input" placeholder="Nome completo" value="Maria Vitória" required>
+                </div>
+
+                <div class="input-group">
+                  <div class="input-icon">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                      <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                  </div>
+                  <input type="email" id="regEmail" class="form-input" placeholder="E-mail" value="maria.vitoria@email.com" required>
+                </div>
+
+                <div class="input-group">
+                  <div class="input-icon">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                    </svg>
+                  </div>
+                  <input type="tel" id="regPhone" class="form-input" placeholder="Celular (com DDD)" value="(11) 98765-4321" required>
+                </div>
+
+                <div class="input-group">
+                  <div class="input-icon">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                  </div>
+                  <input type="password" id="regPass" class="form-input" placeholder="Senha" value="senhasegura123" required>
+                  <button type="button" class="input-action-btn toggle-password" data-target="regPass">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                      <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                  </button>
+                </div>
+
+                <div class="input-group">
+                  <div class="input-icon">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                  </div>
+                  <input type="password" id="regPassConfirm" class="form-input" placeholder="Confirmar senha" value="senhasegura123" required>
+                  <button type="button" class="input-action-btn toggle-password" data-target="regPassConfirm">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                      <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                  </button>
+                </div>
+
+                <div class="terms-agreement">
+                  <label class="custom-checkbox-container">
+                    <input type="checkbox" id="termsCheck" checked>
+                    <span class="checkmark"></span>
+                    <span class="terms-text">Li e concordo com os <a href="#">Termos de Uso</a> e a <a href="#">Política de Privacidade</a>.</span>
+                  </label>
+                </div>
+
+                <button type="submit" id="submitRegisterBtn" class="btn btn-primary btn-block">
+                  <span>Criar conta</span>
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                  </svg>
+                </button>
+              </form>
+
+              <div class="auth-divider">
+                <span>ou</span>
+              </div>
+
+              <!-- Google Auth -->
+              <button class="btn btn-google btn-block" id="googleAuthBtn">
+                <svg viewBox="0 0 24 24" width="18" height="18">
+                  <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.65v3h3.86c2.26-2.09 3.685-5.17 3.685-9.09z"/>
+                  <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.86-3c-1.08.72-2.45 1.16-4.07 1.16-3.13 0-5.78-2.11-6.73-4.96H1.29v3.09C3.26 21.3 7.37 24 12 24z"/>
+                  <path fill="#FBBC05" d="M5.27 14.29c-.25-.72-.38-1.49-.38-2.29s.13-1.57.38-2.29V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.98-3.09z"/>
+                  <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.37 0 3.26 2.7 1.29 6.62l3.98 3.09c.95-2.85 3.6-4.96 6.73-4.96z"/>
+                </svg>
+                <span>Cadastrar com Google</span>
+              </button>
+
+              <div class="register-footer">
+                Já tem uma conta? <a href="#" data-nav="screen-3" class="link-primary">Entrar</a>
+              </div>
+            </div>
+          </section>
+
+
+          <!-- ---------------------------------------- -->
+          <!-- SCREEN 3: HOME CLIENTE (TELA INICIAL)   -->
+          <!-- ---------------------------------------- -->
+          <section class="app-screen" id="screen-3" data-title="3. Tela Inicial (Home)">
+            <div class="screen-content home-screen">
+              
+              <!-- Top App Bar -->
+              <div class="home-topbar">
+                <div class="home-brand">
+                  <div class="mini-logo-box">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2">
+                      <rect x="3" y="4" width="18" height="18" rx="4"></rect>
+                      <path d="m9 16 2 2 4-4"></path>
+                    </svg>
+                  </div>
+                  <span class="home-brand-name">Agenda<strong>Fácil</strong></span>
+                </div>
+
+                <div class="home-user-actions">
+                  <button class="icon-round-btn notification-bell-btn" id="notifBellBtn" title="Notificações">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                      <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    <span class="notification-badge"></span>
+                  </button>
+
+                  <div class="user-avatar-mini" id="homeUserAvatar" title="Perfil de Maria Vitória">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80" alt="Maria Vitória" onerror="this.src='https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&auto=format&fit=crop&q=80'">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Greeting Banner -->
+              <div class="home-greeting">
+                <h2>Olá, Maria Vitória! <span class="wave-emoji">👋</span></h2>
+                <p>O que você precisa hoje?</p>
+              </div>
+
+              <!-- Search Bar Trigger -->
+              <div class="home-search-trigger" id="homeSearchTrigger" data-nav="screen-4">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <span>Buscar serviços, profissionais...</span>
+              </div>
+
+              <!-- INSPIRATION STORIES / TRABALHOS RECENTES -->
+              <div class="home-stories-container">
+                <div class="stories-scroll">
+                  <!-- Story 1: Juliana Silva -->
+                  <div class="story-ring-item" onclick="app.openStory('juliana')">
+                    <div class="story-avatar-ring unread">
+                      <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=120&auto=format&fit=crop&q=80" alt="Juliana">
+                      <span class="story-live-dot"></span>
+                    </div>
+                    <span class="story-label">Juliana</span>
+                  </div>
+
+                  <!-- Story 2: Bruna Nunes -->
+                  <div class="story-ring-item" onclick="app.openStory('bruna')">
+                    <div class="story-avatar-ring unread">
+                      <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=120&auto=format&fit=crop&q=80" alt="Bruna">
+                      <span class="story-live-dot"></span>
+                    </div>
+                    <span class="story-label">Bruna</span>
+                  </div>
+
+                  <!-- Story 3: Studio Bem Estar -->
+                  <div class="story-ring-item" onclick="app.openStory('spa')">
+                    <div class="story-avatar-ring unread">
+                      <img src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=120&auto=format&fit=crop&q=80" alt="Spa">
+                    </div>
+                    <span class="story-label">Bem Estar</span>
+                  </div>
+
+                  <!-- Story 4: Dr. Rafael -->
+                  <div class="story-ring-item" onclick="app.openStory('rafael')">
+                    <div class="story-avatar-ring">
+                      <img src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=120&auto=format&fit=crop&q=80" alt="Dr. Rafael">
+                    </div>
+                    <span class="story-label">Dr. Rafael</span>
+                  </div>
+
+                  <!-- Story 5: Amanda Lopes -->
+                  <div class="story-ring-item" onclick="app.openStory('amanda')">
+                    <div class="story-avatar-ring">
+                      <img src="https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?w=120&auto=format&fit=crop&q=80" alt="Amanda">
+                    </div>
+                    <span class="story-label">Amanda</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Categories 8-Grid -->
+              <div class="home-categories-grid">
+                
+                <button class="category-item" data-category="Beleza" data-nav="screen-4">
+                  <div class="category-icon-circle cat-beleza">
+                    <!-- Flower / Lotus -->
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M12 3a6 6 0 0 0 0 12 6 6 0 0 0 0-12z"></path>
+                      <path d="M12 15c-3 0-6 2-6 5h12c0-3-3-5-6-5z"></path>
+                      <path d="M6.5 8.5C4 10 3 13 4 16"></path>
+                      <path d="M17.5 8.5C20 10 21 13 20 16"></path>
+                    </svg>
+                  </div>
+                  <span class="category-label">Beleza</span>
+                </button>
+
+                <button class="category-item" data-category="Saúde" data-nav="screen-4">
+                  <div class="category-icon-circle cat-saude">
+                    <!-- Heartbeat / Pulse -->
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                      <path d="M3.5 12h3l2-3 3 6 2-3h3"></path>
+                    </svg>
+                  </div>
+                  <span class="category-label">Saúde</span>
+                </button>
+
+                <button class="category-item" data-category="Estética" data-nav="screen-4">
+                  <div class="category-icon-circle cat-estetica">
+                    <!-- Face profile / Sparkle -->
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="9"></circle>
+                      <path d="M9 10h.01"></path>
+                      <path d="M15 10h.01"></path>
+                      <path d="M9.5 15a3.5 3.5 0 0 0 5 0"></path>
+                    </svg>
+                  </div>
+                  <span class="category-label">Estética</span>
+                </button>
+
+                <button class="category-item" data-category="Educação" data-nav="screen-4">
+                  <div class="category-icon-circle cat-educacao">
+                    <!-- Graduation Cap -->
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                      <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                    </svg>
+                  </div>
+                  <span class="category-label">Educação</span>
+                </button>
+
+                <button class="category-item" data-category="Bem-estar" data-nav="screen-4">
+                  <div class="category-icon-circle cat-bemestar">
+                    <!-- Yoga / Meditation -->
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="5" r="2"></circle>
+                      <path d="M4 17l4-2 4 4 4-4 4 2"></path>
+                      <path d="M12 9v6"></path>
+                    </svg>
+                  </div>
+                  <span class="category-label">Bem-estar</span>
+                </button>
+
+                <button class="category-item" data-category="Pet" data-nav="screen-4">
+                  <div class="category-icon-circle cat-pet">
+                    <!-- Paw Print -->
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="16" r="3"></circle>
+                      <circle cx="6" cy="11" r="2"></circle>
+                      <circle cx="18" cy="11" r="2"></circle>
+                      <circle cx="9" cy="6" r="2"></circle>
+                      <circle cx="15" cy="6" r="2"></circle>
+                    </svg>
+                  </div>
+                  <span class="category-label">Pet</span>
+                </button>
+
+                <button class="category-item" data-category="Serviços" data-nav="screen-4">
+                  <div class="category-icon-circle cat-servicos">
+                    <!-- Wrench Tool -->
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                    </svg>
+                  </div>
+                  <span class="category-label">Serviços</span>
+                </button>
+
+                <button class="category-item" data-category="Outros" data-nav="screen-4">
+                  <div class="category-icon-circle cat-outros">
+                    <!-- 4 Apps squares -->
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+                      <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+                      <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+                      <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+                    </svg>
+                  </div>
+                  <span class="category-label">Outros</span>
+                </button>
+              </div>
+
+              <!-- Section: Profissionais em destaque -->
+              <div class="home-section">
+                <div class="section-header">
+                  <h3>Profissionais em destaque</h3>
+                  <a href="#" class="section-link" data-nav="screen-4">Ver todos →</a>
+                </div>
+
+                <div class="featured-pros-carousel">
+                  <!-- Main Card: Juliana Silva -->
+                  <div class="pro-featured-card rich-pro-card" data-pro-id="juliana-silva" data-nav="screen-5">
+                    <div class="rich-card-header">
+                      <div class="pro-card-avatar">
+                        <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&auto=format&fit=crop&q=80" alt="Juliana Silva">
+                      </div>
+                      <div class="pro-card-info">
+                        <h4>Juliana Silva</h4>
+                        <p class="pro-spec">Cabeleireira & Colorista</p>
+                        <div class="pro-meta-row">
+                          <span class="meta-rating">
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="#F59E0B">
+                              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                            </svg>
+                            <strong>4.9</strong> (1124)
+                          </span>
+                          <span class="meta-distance">📍 2,3 km</span>
+                        </div>
+                      </div>
+                      <span class="price-pill-tag">A partir R$ 90</span>
+                    </div>
+
+                    <!-- Mini Portfolio Thumbnails Preview -->
+                    <div class="portfolio-mini-row">
+                      <div class="portfolio-thumb">
+                        <img src="https://images.unsplash.com/photo-1560869713-7d0a29430803?w=100&auto=format&fit=crop&q=80" alt="Corte">
+                      </div>
+                      <div class="portfolio-thumb">
+                        <img src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=100&auto=format&fit=crop&q=80" alt="Coloração">
+                      </div>
+                      <div class="portfolio-thumb">
+                        <img src="https://images.unsplash.com/photo-1582095133179-bfd08e2fc6b3?w=100&auto=format&fit=crop&q=80" alt="Tratamento">
+                      </div>
+                      <div class="portfolio-more-tag">+18 fotos</div>
+                    </div>
+                  </div>
+
+                  <!-- Second Card: Dr Rafael Mendes -->
+                  <div class="pro-featured-card rich-pro-card" data-pro-id="rafael-mendes" data-nav="screen-5">
+                    <div class="rich-card-header">
+                      <div class="pro-card-avatar">
+                        <img src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=200&auto=format&fit=crop&q=80" alt="Dr. Rafael Mendes">
+                      </div>
+                      <div class="pro-card-info">
+                        <h4>Dr. Rafael Mendes</h4>
+                        <p class="pro-spec">Clínico Geral</p>
+                        <div class="pro-meta-row">
+                          <span class="meta-rating">
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="#F59E0B">
+                              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                            </svg>
+                            <strong>5.0</strong> (890)
+                          </span>
+                          <span class="meta-distance">📍 1,8 km</span>
+                        </div>
+                      </div>
+                      <span class="price-pill-tag">Consulta R$ 250</span>
+                    </div>
+
+                    <div class="portfolio-mini-row">
+                      <div class="portfolio-thumb">
+                        <img src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=100&auto=format&fit=crop&q=80" alt="Consultório">
+                      </div>
+                      <div class="portfolio-thumb">
+                        <img src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=100&auto=format&fit=crop&q=80" alt="Clínica">
+                      </div>
+                      <div class="portfolio-more-tag">Check-up</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Section: Próximos agendamentos -->
+              <div class="home-section">
+                <div class="section-header">
+                  <h3>Próximos agendamentos</h3>
+                  <a href="#" class="section-link" data-nav="screen-8">Ver todos →</a>
+                </div>
+
+                <div class="upcoming-appointment-card" id="homeUpcomingCard" data-nav="screen-8">
+                  <div class="appointment-card-top">
+                    <div class="appointment-datetime">
+                      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                      </svg>
+                      <span id="homeNextDate">22 de abril de 2025 • 09:00</span>
+                    </div>
+                    <span class="badge-status-confirmed">Confirmado</span>
+                  </div>
+
+                  <div class="appointment-card-body">
+                    <div class="appointment-avatar">
+                      <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=160&auto=format&fit=crop&q=80" alt="Juliana Silva">
+                    </div>
+                    <div class="appointment-details">
+                      <h4>Juliana Silva</h4>
+                      <p class="appointment-spec">Cabeleireira</p>
+                      <p class="appointment-location">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                          <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                        Rua das Flores, 123 - Centro
+                      </p>
+                    </div>
+                    <div class="appointment-arrow">
+                      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Banner Callout -->
+              <div class="promo-banner-card" data-nav="screen-4">
+                <div class="promo-icon">
+                  <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="3"></rect>
+                    <path d="m9 16 2 2 4-4"></path>
+                  </svg>
+                </div>
+                <div class="promo-content">
+                  <h4>Agende em poucos cliques</h4>
+                  <p>É rápido, seguro e prático!</p>
+                </div>
+                <div class="promo-arrow">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                </div>
+              </div>
+
+              <!-- Bottom spacing for fixed navigation -->
+              <div style="height: 16px;"></div>
+            </div>
+          </section>
+
+
+          <!-- ---------------------------------------- -->
+          <!-- SCREEN 4: BUSCA DE PROFISSIONAIS         -->
+          <!-- ---------------------------------------- -->
+          <section class="app-screen" id="screen-4" data-title="4. Busca de profissionais">
+            <div class="screen-content search-screen">
+              
+              <!-- Search Bar Header with Clear button -->
+              <div class="search-topbar">
+                <button class="nav-back-btn" data-nav="screen-3" title="Voltar à Home">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                  </svg>
+                </button>
+
+                <div class="search-input-wrapper">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                  <input type="text" id="proSearchInput" class="search-text-input" placeholder="Buscar serviços ou nomes..." value="Cabeleireiro">
+                  <button type="button" id="clearSearchBtn" class="clear-input-btn" title="Limpar busca">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Filter Chips (Todos | Mais bem avaliados | Mais perto | etc) -->
+              <div class="filter-chips-row" id="filterChipsRow">
+                <button class="filter-chip active" data-filter="todos">Todos</button>
+                <button class="filter-chip" data-filter="avaliados">Mais bem avaliados</button>
+                <button class="filter-chip" data-filter="perto">Mais perto</button>
+                <button class="filter-chip" data-filter="favoritos">Favoritos ♡</button>
+              </div>
+
+              <!-- Search Results Count -->
+              <div class="search-results-meta">
+                <span id="resultsCountLabel">Exibindo 4 profissionais</span>
+                <span class="active-category-tag" id="activeCategoryTag">Cabeleireiros</span>
+              </div>
+
+              <!-- Professionals List -->
+              <div class="pros-list-container" id="prosListContainer">
+                
+                <!-- 1. Juliana Silva -->
+                <div class="pro-list-item" data-id="juliana-silva" data-rating="4.9" data-distance="2.3">
+                  <div class="item-avatar-col" data-nav="screen-5">
+                    <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=160&auto=format&fit=crop&q=80" alt="Juliana Silva">
+                  </div>
+                  <div class="item-info-col" data-nav="screen-5">
+                    <h4 class="item-name">Juliana Silva</h4>
+                    <span class="item-spec">Cabeleireira</span>
+                    <div class="item-meta">
+                      <span class="meta-rating">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="#F59E0B">
+                          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                        <strong>4.9</strong> (1124)
+                      </span>
+                      <span class="meta-distance">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                          <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                        2,3 km
+                      </span>
+                    </div>
+                  </div>
+                  <button class="favorite-heart-btn active" data-fav-id="juliana-silva" title="Favoritar">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" stroke="currentColor" stroke-width="2">
+                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                  </button>
+                </div>
+
+                <!-- 2. Bruna Nunes -->
+                <div class="pro-list-item" data-id="bruna-nunes" data-rating="4.8" data-distance="3.1">
+                  <div class="item-avatar-col" data-nav="screen-5">
+                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=160&auto=format&fit=crop&q=80" alt="Bruna Nunes">
+                  </div>
+                  <div class="item-info-col" data-nav="screen-5">
+                    <h4 class="item-name">Bruna Nunes</h4>
+                    <span class="item-spec">Cabeleireira</span>
+                    <div class="item-meta">
+                      <span class="meta-rating">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="#F59E0B">
+                          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                        <strong>4.8</strong> (916)
+                      </span>
+                      <span class="meta-distance">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                          <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                        3,1 km
+                      </span>
+                    </div>
+                  </div>
+                  <button class="favorite-heart-btn" data-fav-id="bruna-nunes" title="Favoritar">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                  </button>
+                </div>
+
+                <!-- 3. Fernanda Costa -->
+                <div class="pro-list-item" data-id="fernanda-costa" data-rating="4.7" data-distance="4.2">
+                  <div class="item-avatar-col" data-nav="screen-5">
+                    <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=160&auto=format&fit=crop&q=80" alt="Fernanda Costa">
+                  </div>
+                  <div class="item-info-col" data-nav="screen-5">
+                    <h4 class="item-name">Fernanda Costa</h4>
+                    <span class="item-spec">Cabeleireira</span>
+                    <div class="item-meta">
+                      <span class="meta-rating">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="#F59E0B">
+                          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                        <strong>4.7</strong> (761)
+                      </span>
+                      <span class="meta-distance">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                          <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                        4,2 km
+                      </span>
+                    </div>
+                  </div>
+                  <button class="favorite-heart-btn" data-fav-id="fernanda-costa" title="Favoritar">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                  </button>
+                </div>
+
+                <!-- 4. Amanda Lopes -->
+                <div class="pro-list-item" data-id="amanda-lopes" data-rating="4.6" data-distance="5.0">
+                  <div class="item-avatar-col" data-nav="screen-5">
+                    <img src="https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?w=160&auto=format&fit=crop&q=80" alt="Amanda Lopes">
+                  </div>
+                  <div class="item-info-col" data-nav="screen-5">
+                    <h4 class="item-name">Amanda Lopes</h4>
+                    <span class="item-spec">Cabeleireira</span>
+                    <div class="item-meta">
+                      <span class="meta-rating">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="#F59E0B">
+                          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                        <strong>4.6</strong> (633)
+                      </span>
+                      <span class="meta-distance">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                          <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                        5,0 km
+                      </span>
+                    </div>
+                  </div>
+                  <button class="favorite-heart-btn" data-fav-id="amanda-lopes" title="Favoritar">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                  </button>
+                </div>
+
+              </div>
+
+              <!-- Spacing for fixed nav -->
+              <div style="height: 16px;"></div>
+            </div>
+          </section>
+
+
+          <!-- ---------------------------------------- -->
+          <!-- SCREEN 5: PERFIL DO PROFISSIONAL         -->
+          <!-- ---------------------------------------- -->
+          <section class="app-screen" id="screen-5" data-title="5. Perfil do profissional">
+            <div class="screen-content pro-profile-screen">
+              
+              <!-- Floating Top Action Bar over Header Image -->
+              <div class="profile-header-actions">
+                <button class="icon-round-blur-btn" data-nav="screen-4" title="Voltar">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                  </svg>
+                </button>
+                <button class="icon-round-blur-btn" id="profileFavToggle" title="Favoritar">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="#EF4444" stroke="#EF4444" stroke-width="2">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Big Hero Image -->
+              <div class="profile-hero-image">
+                <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800&auto=format&fit=crop&q=80" alt="Juliana Silva">
+              </div>
+
+              <!-- Main Profile Card Container -->
+              <div class="profile-card-content">
+                
+                <div class="profile-title-block">
+                  <h2>Juliana Silva</h2>
+                  <span class="pro-role-subtitle">Cabeleireira</span>
+                  <div class="profile-ratings-row">
+                    <span class="rating-badge">
+                      <svg viewBox="0 0 24 24" width="15" height="15" fill="#F59E0B">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                      </svg>
+                      <strong>4.9</strong> (1124 avaliações)
+                    </span>
+                    <span class="distance-badge">
+                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                      </svg>
+                      2,3 km
+                    </span>
+                  </div>
+                </div>
+
+                <!-- 3 Highlights Stat Boxes -->
+                <div class="profile-stats-grid">
+                  <div class="stat-box">
+                    <div class="stat-icon">
+                      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="7" width="20" height="14" rx="2"></rect>
+                        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                      </svg>
+                    </div>
+                    <span class="stat-label">Experiência</span>
+                    <strong class="stat-value">5 anos</strong>
+                  </div>
+
+                  <div class="stat-box">
+                    <div class="stat-icon">
+                      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="6" cy="6" r="3"></circle>
+                        <circle cx="6" cy="18" r="3"></circle>
+                        <line x1="20" y1="4" x2="8.12" y2="15.88"></line>
+                        <line x1="14.47" y1="14.48" x2="20" y2="20"></line>
+                        <line x1="8.12" y1="8.12" x2="12" y2="12"></line>
+                      </svg>
+                    </div>
+                    <span class="stat-label">Especialidade</span>
+                    <strong class="stat-value">Cortes e coloração</strong>
+                  </div>
+
+                  <div class="stat-box">
+                    <div class="stat-icon">
+                      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                      </svg>
+                    </div>
+                    <span class="stat-label">Horário</span>
+                    <strong class="stat-value">Seg a Sáb</strong>
+                  </div>
+                </div>
+
+                <!-- Bio / About -->
+                <div class="profile-bio-box">
+                  <p>Com muito carinho e dedicação, realizo a sua beleza e autoestima. Aqui você encontra um atendimento personalizado e de qualidade.</p>
+                </div>
+
+                <!-- Service Selection list with Multi-Service Combo Support -->
+                <div class="profile-services-block">
+                  <div class="services-block-header">
+                    <div>
+                      <h3>Serviços disponíveis</h3>
+                      <p class="combo-hint">Selecione um ou monte seu combo com mais de um serviço</p>
+                    </div>
+                    <span class="combo-tag-badge">Multi-serviço</span>
+                  </div>
+                  
+                  <div class="service-selection-item active" data-service-id="s1" data-service-name="Corte e escova" data-service-price="130" data-service-duration="1h">
+                    <div class="service-checkbox-custom">
+                      <span class="check-icon">✓</span>
+                    </div>
+                    <div class="service-info-text">
+                      <span class="service-name">Corte e escova</span>
+                      <span class="service-duration">1 hora de atendimento • Lavagem especial</span>
+                    </div>
+                    <span class="service-price-tag">R$ 130</span>
+                  </div>
+
+                  <div class="service-selection-item" data-service-id="s2" data-service-name="Corte feminino" data-service-price="90" data-service-duration="45 min">
+                    <div class="service-checkbox-custom">
+                      <span class="check-icon">✓</span>
+                    </div>
+                    <div class="service-info-text">
+                      <span class="service-name">Corte feminino</span>
+                      <span class="service-duration">45 min • Finalização</span>
+                    </div>
+                    <span class="service-price-tag">R$ 90</span>
+                  </div>
+
+                  <div class="service-selection-item" data-service-id="s3" data-service-name="Coloração completa" data-service-price="210" data-service-duration="2h">
+                    <div class="service-checkbox-custom">
+                      <span class="check-icon">✓</span>
+                    </div>
+                    <div class="service-info-text">
+                      <span class="service-name">Coloração completa</span>
+                      <span class="service-duration">2 horas • Tintura de alta fixação</span>
+                    </div>
+                    <span class="service-price-tag">R$ 210</span>
+                  </div>
+
+                  <div class="service-selection-item" data-service-id="s4" data-service-name="Hidratação profunda" data-service-price="110" data-service-duration="50 min">
+                    <div class="service-checkbox-custom">
+                      <span class="check-icon">✓</span>
+                    </div>
+                    <div class="service-info-text">
+                      <span class="service-name">Hidratação profunda</span>
+                      <span class="service-duration">50 min • Nutrição com óleos essenciais</span>
+                    </div>
+                    <span class="service-price-tag">R$ 110</span>
+                  </div>
+                </div>
+
+                <!-- Spacing for fixed button -->
+                <div style="height: 70px;"></div>
+              </div>
+
+              <!-- Pinned Bottom Action Button with Live Combo Recap -->
+              <div class="profile-fixed-footer">
+                <div class="combo-summary-bar">
+                  <div class="combo-summary-info">
+                    <strong id="comboCountLabel">1 serviço selecionado</strong>
+                    <span id="comboTimePriceLabel">1h • R$ 130,00</span>
+                  </div>
+                  <button class="btn btn-primary btn-combo-action" data-nav="screen-6" id="goToScheduleBtn">
+                    <span>Continuar</span>
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <line x1="5" y1="12" x2="19" y2="12"></line>
+                      <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+
+          <!-- ---------------------------------------- -->
+          <!-- SCREEN 6: ESCOLHA DE HORÁRIO            -->
+          <!-- ---------------------------------------- -->
+          <section class="app-screen" id="screen-6" data-title="6. Escolha de horário">
+            <div class="screen-content schedule-screen">
+              
+              <!-- Screen Top Nav -->
+              <div class="screen-top-nav">
+                <button class="nav-back-btn" data-nav="screen-5" title="Voltar ao perfil">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                  </svg>
+                </button>
+                <div class="header-pro-summary">
+                  <div class="mini-circle-avatar">
+                    <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&auto=format&fit=crop&q=80" alt="Juliana Silva">
+                  </div>
+                  <div>
+                    <h4>Juliana Silva</h4>
+                    <span>Cabeleireira</span>
+                  </div>
+                </div>
+                <div style="width: 36px;"></div>
+              </div>
+
+              <div class="schedule-body">
+                
+                <!-- Service Selected Recap -->
+                <div class="selected-service-pill">
+                  <div class="pill-info">
+                    <span class="pill-title" id="schedServiceName">Corte e escova</span>
+                    <span class="pill-sub" id="schedServiceTime">1 hora • R$ 130</span>
+                  </div>
+                  <button class="pill-change-btn" data-nav="screen-5">Trocar</button>
+                </div>
+
+                <!-- Date Picker Section -->
+                <div class="schedule-section">
+                  <div class="section-title-row">
+                    <h3>Escolha a data</h3>
+                    <span class="current-month-label">Abril, 2025</span>
+                  </div>
+
+                  <!-- Horizontal Days Slider -->
+                  <div class="calendar-days-slider" id="calendarDaysSlider">
+                    
+                    <button class="cal-day-chip active" data-day="Seg" data-date="22" data-full="22 de abril de 2025">
+                      <span class="chip-weekday">Seg</span>
+                      <span class="chip-daynum">22</span>
+                    </button>
+
+                    <button class="cal-day-chip" data-day="Ter" data-date="23" data-full="23 de abril de 2025">
+                      <span class="chip-weekday">Ter</span>
+                      <span class="chip-daynum">23</span>
+                    </button>
+
+                    <button class="cal-day-chip" data-day="Qua" data-date="24" data-full="24 de abril de 2025">
+                      <span class="chip-weekday">Qua</span>
+                      <span class="chip-daynum">24</span>
+                    </button>
+
+                    <button class="cal-day-chip" data-day="Qui" data-date="25" data-full="25 de abril de 2025">
+                      <span class="chip-weekday">Qui</span>
+                      <span class="chip-daynum">25</span>
+                    </button>
+
+                    <button class="cal-day-chip" data-day="Sex" data-date="26" data-full="26 de abril de 2025">
+                      <span class="chip-weekday">Sex</span>
+                      <span class="chip-daynum">26</span>
+                    </button>
+
+                    <button class="cal-day-chip" data-day="Sáb" data-date="27" data-full="27 de abril de 2025">
+                      <span class="chip-weekday">Sáb</span>
+                      <span class="chip-daynum">27</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Time Slots Section Grouped by Shifts (Manhã, Tarde, Noite) -->
+                <div class="schedule-section">
+                  <div class="section-title-row">
+                    <h3>Horários disponíveis</h3>
+                    <span class="slots-avail-badge" id="slotsCountBadge">12 horários livres</span>
+                  </div>
+
+                  <!-- Turno Manhã -->
+                  <div class="shift-group">
+                    <div class="shift-header">
+                      <div class="shift-title">
+                        <span>☀️ Manhã</span>
+                        <small>08:00 - 12:00</small>
+                      </div>
+                      <span class="shift-badge badge-morning">4 livres</span>
+                    </div>
+                    <div class="time-slots-grid">
+                      <button class="slot-pill" data-time="08:00">08:00</button>
+                      <button class="slot-pill" data-time="08:30">08:30</button>
+                      <button class="slot-pill active" data-time="09:00">09:00</button>
+                      <button class="slot-pill" data-time="10:30">10:30</button>
+                    </div>
+                  </div>
+
+                  <!-- Turno Tarde -->
+                  <div class="shift-group">
+                    <div class="shift-header">
+                      <div class="shift-title">
+                        <span>⛅ Tarde</span>
+                        <small>13:00 - 18:00</small>
+                      </div>
+                      <span class="shift-badge badge-hot">Mais concorrido 🔥</span>
+                    </div>
+                    <div class="time-slots-grid">
+                      <button class="slot-pill" data-time="14:00">14:00</button>
+                      <button class="slot-pill" data-time="14:30">14:30</button>
+                      <button class="slot-pill" data-time="15:30">15:30</button>
+                      <button class="slot-pill" data-time="16:00">16:00</button>
+                      <button class="slot-pill" data-time="17:00">17:00</button>
+                    </div>
+                  </div>
+
+                  <!-- Turno Noite -->
+                  <div class="shift-group">
+                    <div class="shift-header">
+                      <div class="shift-title">
+                        <span>🌙 Noite</span>
+                        <small>18:00 - 20:00</small>
+                      </div>
+                      <span class="shift-badge badge-night">Últimos horários</span>
+                    </div>
+                    <div class="time-slots-grid">
+                      <button class="slot-pill" data-time="18:00">18:00</button>
+                      <button class="slot-pill" data-time="18:30">18:30</button>
+                      <button class="slot-pill" data-time="19:00">19:00</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Summary Bar -->
+                <div class="booking-draft-recap">
+                  <div class="draft-recap-icon">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                  </div>
+                  <div class="draft-recap-text">
+                    <span id="recapDateTimeLabel">Segunda-feira, 22 de abril às 09:00</span>
+                    <small>Atendimento com Juliana Silva no salão</small>
+                  </div>
+                </div>
+
+                <div style="height: 60px;"></div>
+              </div>
+
+              <!-- Fixed Bottom Confirm Button -->
+              <div class="schedule-fixed-footer">
+                <button class="btn btn-primary btn-block" id="confirmScheduleBtn" data-nav="screen-7">
+                  <span>Confirmar horário</span>
+                </button>
+              </div>
+            </div>
+          </section>
+
+
+          <!-- ---------------------------------------- -->
+          <!-- SCREEN 7: CONFIRMAÇÃO DO AGENDAMENTO     -->
+          <!-- ---------------------------------------- -->
+          <section class="app-screen" id="screen-7" data-title="7. Confirmação do agendamento">
+            <div class="screen-content confirmation-screen">
+              
+              <!-- Success Animation Circle -->
+              <div class="success-burst-wrapper">
+                <div class="success-burst-circle">
+                  <svg viewBox="0 0 24 24" width="46" height="46" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                </div>
+                <div class="burst-sparks">
+                  <span class="burst-ray r1"></span>
+                  <span class="burst-ray r2"></span>
+                  <span class="burst-ray r3"></span>
+                  <span class="burst-ray r4"></span>
+                </div>
+              </div>
+
+              <!-- Congratulatory Text -->
+              <div class="confirmation-headings">
+                <h2>Agendamento confirmado!</h2>
+                <p>Seu horário foi agendado com sucesso. Você receberá um lembrete no seu e-mail e no app.</p>
+              </div>
+
+              <!-- Ticket / Receipt Card -->
+              <div class="confirmed-ticket-card">
+                <div class="ticket-pro-row">
+                  <div class="ticket-avatar">
+                    <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=160&auto=format&fit=crop&q=80" alt="Juliana Silva">
+                  </div>
+                  <div class="ticket-pro-details">
+                    <h4>Juliana Silva</h4>
+                    <span>Cabeleireira</span>
+                  </div>
+                  <span class="ticket-status-pill">Agendado</span>
+                </div>
+
+                <div class="ticket-divider"></div>
+
+                <div class="ticket-info-rows">
+                  <div class="ticket-info-item">
+                    <div class="info-icon">
+                      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                      </svg>
+                    </div>
+                    <div class="info-texts">
+                      <label>Data e hora</label>
+                      <strong id="ticketDateText">22 de abril de 2025 às 09:00</strong>
+                    </div>
+                  </div>
+
+                  <div class="ticket-info-item">
+                    <div class="info-icon">
+                      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                      </svg>
+                    </div>
+                    <div class="info-texts">
+                      <label>Local</label>
+                      <span>Rua das Flores, 123 - Centro (2,3 km)</span>
+                    </div>
+                  </div>
+
+                  <div class="ticket-info-item">
+                    <div class="info-icon">
+                      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M12 6v6l4 2"></path>
+                      </svg>
+                    </div>
+                    <div class="info-texts">
+                      <label>Serviço selecionado</label>
+                      <strong id="ticketServiceText">Corte e escova • R$ 130,00</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Confirmation Actions -->
+              <div class="confirmation-actions">
+                <button class="btn btn-outline-primary btn-block" id="addToCalBtn">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                    <line x1="12" y1="14" x2="12" y2="18"></line>
+                    <line x1="10" y1="16" x2="14" y2="16"></line>
+                  </svg>
+                  <span>Adicionar ao calendário</span>
+                </button>
+
+                <button class="btn btn-primary btn-block" data-nav="screen-8">
+                  <span>Ver meus agendamentos</span>
+                </button>
+              </div>
+
+            </div>
+          </section>
+
+
+          <!-- ---------------------------------------- -->
+          <!-- SCREEN 8: MEUS AGENDAMENTOS              -->
+          <!-- ---------------------------------------- -->
+          <section class="app-screen" id="screen-8" data-title="8. Meus agendamentos">
+            <div class="screen-content appointments-screen">
+              
+              <!-- Screen Title -->
+              <div class="appointments-header">
+                <h2>Meus agendamentos</h2>
+              </div>
+
+              <!-- Segmented Tabs (Próximos | Passados | Cancelados) -->
+              <div class="segmented-control" id="appointmentsTabs">
+                <button class="seg-btn active" data-tab="proximos">
+                  <span>Próximos</span>
+                </button>
+                <button class="seg-btn" data-tab="passados">
+                  <span>Passados</span>
+                </button>
+                <button class="seg-btn" data-tab="cancelados">
+                  <span>Cancelados</span>
+                </button>
+              </div>
+
+              <!-- Tab Contents: PRÓXIMOS -->
+              <div class="tab-pane active" id="pane-proximos">
+                
+                <!-- Card 1: Juliana Silva -->
+                <div class="my-booking-card" id="bookingCardJuliana">
+                  <div class="booking-card-main">
+                    <div class="booking-card-avatar">
+                      <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=160&auto=format&fit=crop&q=80" alt="Juliana Silva">
+                    </div>
+                    <div class="booking-card-details">
+                      <h4>Juliana Silva</h4>
+                      <p class="booking-card-spec">Cabeleireira</p>
+                      <div class="booking-card-time">
+                        <span id="bookingCardDate1">22 de abril de 2025 • 09:00</span>
+                      </div>
+                      <span class="badge-status-confirmed">Confirmado</span>
+                    </div>
+                  </div>
+                  <div class="booking-card-actions">
+                    <button class="booking-action-btn" onclick="app.showBookingDetails('Juliana Silva')">Ver detalhes</button>
+                    <button class="booking-action-btn cancel-btn" onclick="app.cancelBooking('Juliana Silva')">Cancelar</button>
+                  </div>
+                </div>
+
+                <!-- Card 2: Dr. Rafael Mendes -->
+                <div class="my-booking-card" id="bookingCardRafael">
+                  <div class="booking-card-main">
+                    <div class="booking-card-avatar">
+                      <img src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=160&auto=format&fit=crop&q=80" alt="Dr. Rafael Mendes">
+                    </div>
+                    <div class="booking-card-details">
+                      <h4>Dr. Rafael Mendes</h4>
+                      <p class="booking-card-spec">Clínico Geral</p>
+                      <div class="booking-card-time">
+                        <span>25 de abril de 2025 • 14:30</span>
+                      </div>
+                      <span class="badge-status-confirmed">Confirmado</span>
+                    </div>
+                  </div>
+                  <div class="booking-card-actions">
+                    <button class="booking-action-btn" onclick="app.showBookingDetails('Dr. Rafael Mendes')">Ver detalhes</button>
+                    <button class="booking-action-btn cancel-btn" onclick="app.cancelBooking('Dr. Rafael Mendes')">Cancelar</button>
+                  </div>
+                </div>
+
+                <!-- Card 3: Studio Bem Estar -->
+                <div class="my-booking-card" id="bookingCardSpa">
+                  <div class="booking-card-main">
+                    <div class="booking-card-avatar">
+                      <img src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=160&auto=format&fit=crop&q=80" alt="Studio Bem Estar">
+                    </div>
+                    <div class="booking-card-details">
+                      <h4>Studio Bem Estar</h4>
+                      <p class="booking-card-spec">Massagem Relaxante</p>
+                      <div class="booking-card-time">
+                        <span>30 de abril de 2025 • 10:00</span>
+                      </div>
+                      <span class="badge-status-confirmed">Confirmado</span>
+                    </div>
+                  </div>
+                  <div class="booking-card-actions">
+                    <button class="booking-action-btn" onclick="app.showBookingDetails('Studio Bem Estar')">Ver detalhes</button>
+                    <button class="booking-action-btn cancel-btn" onclick="app.cancelBooking('Studio Bem Estar')">Cancelar</button>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Tab Contents: PASSADOS -->
+              <div class="tab-pane" id="pane-passados">
+                <div class="my-booking-card past-card">
+                  <div class="booking-card-main">
+                    <div class="booking-card-avatar">
+                      <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=160&auto=format&fit=crop&q=80" alt="Bruna Nunes">
+                    </div>
+                    <div class="booking-card-details">
+                      <h4>Bruna Nunes</h4>
+                      <p class="booking-card-spec">Manicure & Spa dos Pés</p>
+                      <div class="booking-card-time">
+                        <span>10 de abril de 2025 • 15:00</span>
+                      </div>
+                      <span class="badge-status-completed">Realizado</span>
+                    </div>
+                  </div>
+                  <div class="booking-card-actions">
+                    <button class="booking-action-btn" onclick="app.rateService('Bruna Nunes')">⭐ Avaliar serviço</button>
+                    <button class="booking-action-btn rebook-btn" data-nav="screen-6">Agendar novamente</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tab Contents: CANCELADOS -->
+              <div class="tab-pane" id="pane-cancelados">
+                <div class="my-booking-card cancelled-card">
+                  <div class="booking-card-main">
+                    <div class="booking-card-avatar">
+                      <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=160&auto=format&fit=crop&q=80" alt="Fernanda Costa">
+                    </div>
+                    <div class="booking-card-details">
+                      <h4>Fernanda Costa</h4>
+                      <p class="booking-card-spec">Design de Sobrancelhas</p>
+                      <div class="booking-card-time">
+                        <span>05 de abril de 2025 • 11:00</span>
+                      </div>
+                      <span class="badge-status-cancelled">Cancelado</span>
+                    </div>
+                  </div>
+                  <div class="booking-card-actions">
+                    <button class="booking-action-btn rebook-btn" data-nav="screen-5">Ver profissional</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Spacing for fixed nav -->
+              <div style="height: 16px;"></div>
+            </div>
+          </section>
+
+
+          <!-- ---------------------------------------- -->
+          <!-- SCREEN 9: DASHBOARD DO PROFISSIONAL      -->
+          <!-- ---------------------------------------- -->
+          <section class="app-screen" id="screen-9" data-title="9. Dashboard do profissional">
+            <div class="screen-content pro-dashboard-screen">
+              
+              <!-- Pro Header -->
+              <div class="pro-dash-topbar">
+                <div class="pro-profile-summary">
+                  <div class="pro-dash-avatar">
+                    <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=160&auto=format&fit=crop&q=80" alt="Juliana">
+                  </div>
+                  <div class="pro-greeting-text">
+                    <h2>Olá, Juliana! <span class="wave-emoji">👋</span></h2>
+                    <p>Aqui está o seu dia de hoje.</p>
+                  </div>
+                </div>
+
+                <!-- Quick Switch back to client view -->
+                <button class="switch-view-chip" data-nav="screen-3" title="Voltar à visão do cliente">
+                  <span>Modo Cliente</span>
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Date Picker Row -->
+              <div class="pro-date-switcher">
+                <button class="date-arrow-btn" id="prevDayBtn">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                  </svg>
+                </button>
+                <div class="current-pro-date">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                  </svg>
+                  <span id="proCurrentDateLabel">Hoje, 22 de abril</span>
+                </div>
+                <button class="date-arrow-btn" id="nextDayBtn">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Pro Day Summary Banner -->
+              <div class="pro-stats-pill-row">
+                <div class="pro-stat-chip">
+                  <strong>4</strong> agendamentos
+                </div>
+                <div class="pro-stat-chip">
+                  <strong>R$ 480</strong> previsto
+                </div>
+                <div class="pro-stat-chip highlight">
+                  <span>100% preenchido</span>
+                </div>
+              </div>
+
+              <!-- Appointments List for Today -->
+              <div class="pro-agenda-timeline" id="proAgendaTimeline">
+                
+                <!-- 09:00 - Maria Eduarda -->
+                <div class="timeline-slot-card" data-slot="09:00">
+                  <div class="slot-time-col">
+                    <span class="slot-time">09:00</span>
+                  </div>
+                  <div class="slot-info-card">
+                    <div class="slot-card-header">
+                      <h4>Maria Eduarda</h4>
+                      <span class="badge-status-confirmed">Confirmado</span>
+                    </div>
+                    <p class="slot-service-name">Corte e escova</p>
+                    <div class="slot-footer-actions">
+                      <span class="slot-price">R$ 130</span>
+                      <button class="slot-check-btn" onclick="app.toggleProSlotStatus(this)" title="Marcar como atendido">
+                        ✓ Concluir
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 11:30 - Ana Beatriz -->
+                <div class="timeline-slot-card" data-slot="11:30">
+                  <div class="slot-time-col">
+                    <span class="slot-time">11:30</span>
+                  </div>
+                  <div class="slot-info-card">
+                    <div class="slot-card-header">
+                      <h4>Ana Beatriz</h4>
+                      <span class="badge-status-confirmed">Confirmado</span>
+                    </div>
+                    <p class="slot-service-name">Coloração</p>
+                    <div class="slot-footer-actions">
+                      <span class="slot-price">R$ 180</span>
+                      <button class="slot-check-btn" onclick="app.toggleProSlotStatus(this)" title="Marcar como atendido">
+                        ✓ Concluir
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 14:00 - Camila Martins -->
+                <div class="timeline-slot-card" data-slot="14:00">
+                  <div class="slot-time-col">
+                    <span class="slot-time">14:00</span>
+                  </div>
+                  <div class="slot-info-card">
+                    <div class="slot-card-header">
+                      <h4>Camila Martins</h4>
+                      <span class="badge-status-confirmed">Confirmado</span>
+                    </div>
+                    <p class="slot-service-name">Hidratação</p>
+                    <div class="slot-footer-actions">
+                      <span class="slot-price">R$ 90</span>
+                      <button class="slot-check-btn" onclick="app.toggleProSlotStatus(this)" title="Marcar como atendido">
+                        ✓ Concluir
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 16:30 - Larissa Souza -->
+                <div class="timeline-slot-card" data-slot="16:30">
+                  <div class="slot-time-col">
+                    <span class="slot-time">16:30</span>
+                  </div>
+                  <div class="slot-info-card">
+                    <div class="slot-card-header">
+                      <h4>Larissa Souza</h4>
+                      <span class="badge-status-confirmed">Confirmado</span>
+                    </div>
+                    <p class="slot-service-name">Corte</p>
+                    <div class="slot-footer-actions">
+                      <span class="slot-price">R$ 80</span>
+                      <button class="slot-check-btn" onclick="app.toggleProSlotStatus(this)" title="Marcar como atendido">
+                        ✓ Concluir
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Button to Block / Add Slot -->
+              <div class="pro-agenda-bottom-cta">
+                <button class="btn btn-outline-primary btn-block" onclick="app.showAddSlotPrompt()">
+                  <span>+ Adicionar ou bloquear horário</span>
+                </button>
+              </div>
+
+              <div style="height: 16px;"></div>
+            </div>
+          </section>
+
+        </div> <!-- /screens-viewport -->
+
+        <!-- UNIFIED ROCK-SOLID BOTTOM NAVIGATION BAR (FIXO E ESTÁVEL) -->
+        <nav class="phone-bottom-nav" id="appBottomNav">
+          <!-- Client Nav Tabs (Screens 3, 4, 8) -->
+          <div class="nav-tabs-group" id="clientNavGroup">
+            <button class="nav-tab active" data-tab-id="home" data-nav="screen-3">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+              </svg>
+              <span>Início</span>
+            </button>
+
+            <button class="nav-tab" data-tab-id="agendamentos" data-nav="screen-8">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="3"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+                <path d="m9 16 2 2 4-4"></path>
+              </svg>
+              <span>Agendamentos</span>
+            </button>
+
+            <button class="nav-tab" data-tab-id="favoritos" data-nav="screen-4">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              </svg>
+              <span>Favoritos</span>
+            </button>
+
+            <button class="nav-tab" data-tab-id="perfil" id="openClientProfileBtn">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              <span>Perfil</span>
+            </button>
+          </div>
+
+          <!-- Professional Nav Tabs (Screen 9) -->
+          <div class="nav-tabs-group" id="proNavGroup" style="display: none;">
+            <button class="nav-tab active" data-tab-id="pro-inicio" data-nav="screen-9">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+              </svg>
+              <span>Início</span>
+            </button>
+
+            <button class="nav-tab" data-tab-id="pro-agenda" data-nav="screen-9">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="3"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+                <path d="m9 16 2 2 4-4"></path>
+              </svg>
+              <span>Agenda</span>
+            </button>
+
+            <button class="nav-tab" data-tab-id="pro-clientes" id="proClientesTab">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+              <span>Clientes</span>
+            </button>
+
+            <button class="nav-tab" data-tab-id="pro-perfil" data-nav="screen-5">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              <span>Perfil</span>
+            </button>
+          </div>
+        </nav>
+
+        <!-- CLIENT PROFILE SHEET MODAL -->
+        <div class="profile-sheet-overlay" id="clientProfileSheet">
+          <div class="profile-sheet-card">
+            <div class="sheet-handle"></div>
+            <div class="sheet-user-header">
+              <div class="sheet-avatar">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=160&auto=format&fit=crop&q=80" alt="Maria Vitória">
+              </div>
+              <div class="sheet-user-info">
+                <h3>Maria Vitória</h3>
+                <span>maria.vitoria@email.com</span>
+                <span class="user-phone-tag">(11) 98765-4321</span>
+              </div>
+              <button class="sheet-close-btn" id="closeProfileSheetBtn">&times;</button>
+            </div>
+
+            <div class="sheet-menu-list">
+              <button class="sheet-menu-item" data-nav="screen-8" onclick="app.closeProfileSheet()">
+                <div class="sheet-menu-icon">📅</div>
+                <div class="sheet-menu-text">
+                  <strong>Meus Agendamentos</strong>
+                  <small>Ver horários marcados e histórico</small>
+                </div>
+                <span>›</span>
+              </button>
+
+              <button class="sheet-menu-item" data-nav="screen-4" onclick="app.closeProfileSheet()">
+                <div class="sheet-menu-icon">❤️</div>
+                <div class="sheet-menu-text">
+                  <strong>Profissionais Favoritos</strong>
+                  <small>Salvos para acesso rápido</small>
+                </div>
+                <span>›</span>
+              </button>
+
+              <button class="sheet-menu-item" id="sheetSwitchProBtn">
+                <div class="sheet-menu-icon">💼</div>
+                <div class="sheet-menu-text">
+                  <strong>Área do Profissional</strong>
+                  <small>Acessar painel e agenda de Juliana</small>
+                </div>
+                <span>›</span>
+              </button>
+            </div>
+
+            <button class="btn btn-outline-primary btn-block" style="margin-top: 14px;" data-nav="screen-1" onclick="app.closeProfileSheet()">
+              Sair da conta
+            </button>
+          </div>
+        </div>
+
+        <!-- STORY VIEWER MODAL (POPUP STORIES) -->
+        <div class="story-viewer-overlay" id="storyViewerModal">
+          <div class="story-viewer-window">
+            <!-- Progress Bar -->
+            <div class="story-progress-bar">
+              <div class="story-progress-fill" id="storyProgressFill"></div>
+            </div>
+
+            <!-- Top Header -->
+            <div class="story-author-header">
+              <div class="story-author-avatar">
+                <img id="storyAuthorImg" src="" alt="">
+              </div>
+              <div class="story-author-text">
+                <strong id="storyAuthorName">Juliana Silva</strong>
+                <span id="storyTimeAgo">há 2 horas • Trabalho recente</span>
+              </div>
+              <button class="story-close-btn" onclick="app.closeStory()">&times;</button>
+            </div>
+
+            <!-- Main Story Photo -->
+            <div class="story-photo-view">
+              <img id="storyMainImg" src="" alt="Trabalho">
+            </div>
+
+            <!-- Story Caption & CTA -->
+            <div class="story-bottom-overlay">
+              <p class="story-caption" id="storyCaptionText"></p>
+              <button class="btn btn-white btn-block" id="storyBookNowBtn">
+                <span>Agendar este serviço</span>
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- HOME INDICATOR BAR (iOS) -->
+        <div class="ios-home-indicator"></div>
+
+      </div> <!-- /phone-screen -->
+    </div> <!-- /phone-frame -->
+
+  </main>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div class="proto-toast" id="protoToast">
+    <div class="toast-icon" id="toastIcon">✓</div>
+    <div class="toast-message" id="toastMsg">Notificação</div>
+  </div>
+
+  <!-- SCRIPT -->
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
