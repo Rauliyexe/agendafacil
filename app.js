@@ -42,7 +42,7 @@ const state = {
       avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=160&auto=format&fit=crop&q=80',
       time: 'há 2 horas',
       image: 'https://images.unsplash.com/photo-1560869713-7d0a29430803?w=800&auto=format&fit=crop&q=80',
-      caption: 'Morena iluminada em tons quentes de avelã + hidratação espelhada ✨ Trabalho finalizado hoje!',
+      caption: 'Morena iluminada em tons quentes de avelã + hidratação espelhada. Trabalho finalizado hoje.',
       service: 'Corte e escova',
       price: 130
     },
@@ -52,7 +52,7 @@ const state = {
       avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=160&auto=format&fit=crop&q=80',
       time: 'há 3 horas',
       image: 'https://images.unsplash.com/photo-1632345031435-8727f6897d53?w=800&auto=format&fit=crop&q=80',
-      caption: 'Alongamento em fibra de vidro com encapsulado rosé gold e acabamento natural 💅',
+      caption: 'Alongamento em fibra de vidro com encapsulado rosé gold e acabamento natural.',
       service: 'Corte feminino',
       price: 90
     },
@@ -62,7 +62,7 @@ const state = {
       avatar: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=160&auto=format&fit=crop&q=80',
       time: 'há 4 horas',
       image: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800&auto=format&fit=crop&q=80',
-      caption: 'Sessão de massagem relaxante com pedras vulcânicas aquecidas e blend de lavanda 🌿',
+      caption: 'Sessão de massagem relaxante com pedras vulcânicas aquecidas e blend de lavanda.',
       service: 'Hidratação profunda',
       price: 110
     },
@@ -72,7 +72,7 @@ const state = {
       avatar: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=160&auto=format&fit=crop&q=80',
       time: 'ontem',
       image: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=800&auto=format&fit=crop&q=80',
-      caption: 'Novas salas de atendimento para medicina preventiva e consultas de rotina 🩺',
+      caption: 'Novas salas de atendimento para medicina preventiva e consultas de rotina.',
       service: 'Corte e escova',
       price: 130
     },
@@ -82,7 +82,7 @@ const state = {
       avatar: 'https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?w=160&auto=format&fit=crop&q=80',
       time: 'ontem',
       image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&auto=format&fit=crop&q=80',
-      caption: 'Penteado clássico semi-preso para casamento no campo com fixação suave 👰',
+      caption: 'Penteado clássico semi-preso para casamento no campo com fixação suave.',
       service: 'Coloração completa',
       price: 210
     }
@@ -381,7 +381,7 @@ class AgendaFacilApp {
     const proClientesTab = document.getElementById('proClientesTab');
     if (proClientesTab) {
       proClientesTab.addEventListener('click', () => {
-        this.showToast('42 clientes ativos cadastrados na sua carteira', '👥');
+        this.showToast('42 clientes ativos cadastrados na sua carteira');
       });
     }
   }
@@ -397,13 +397,13 @@ class AgendaFacilApp {
       state.role = 'pro';
       this.roleLabel.innerHTML = 'Modo: <strong>Profissional</strong>';
       this.toggleRoleBtn.classList.add('active');
-      this.showToast('Alternado para a visão de Juliana Silva (Cabeleireira)', '💼');
+      this.showToast('Alternado para a visão de Juliana Silva (Cabeleireira)');
       this.navigateTo('screen-9');
     } else {
       state.role = 'client';
       this.roleLabel.innerHTML = 'Modo: <strong>Cliente</strong>';
       this.toggleRoleBtn.classList.remove('active');
-      this.showToast('Alternado para a visão de Maria Vitória (Cliente)', '👤');
+      this.showToast('Alternado para a visão de Maria Vitória (Cliente)');
       this.navigateTo('screen-3');
     }
   }
@@ -426,18 +426,23 @@ class AgendaFacilApp {
   toggleTheme() {
     const isDark = document.body.classList.toggle('dark-mode');
     localStorage.setItem('agendafacil_theme', isDark ? 'dark' : 'light');
-    if (this.themeIcon) this.themeIcon.textContent = isDark ? '☀️' : '🌙';
-    this.showToast(isDark ? 'Modo Escuro (Dark Mode) ativado' : 'Modo Claro ativado', isDark ? '🌙' : '☀️');
+    this.updateThemeIcons(isDark);
+    this.showToast(isDark ? 'Modo Escuro ativado' : 'Modo Claro ativado');
   }
 
   loadSavedTheme() {
     const saved = localStorage.getItem('agendafacil_theme');
-    if (saved === 'dark') {
-      document.body.classList.add('dark-mode');
-      if (this.themeIcon) this.themeIcon.textContent = '☀️';
-    } else {
-      document.body.classList.remove('dark-mode');
-      if (this.themeIcon) this.themeIcon.textContent = '🌙';
+    const isDark = saved === 'dark';
+    document.body.classList.toggle('dark-mode', isDark);
+    this.updateThemeIcons(isDark);
+  }
+
+  updateThemeIcons(isDark) {
+    const sun = document.querySelector('.icon-sun');
+    const moon = document.querySelector('.icon-moon');
+    if (sun && moon) {
+      sun.style.display = isDark ? 'inline-block' : 'none';
+      moon.style.display = isDark ? 'none' : 'inline-block';
     }
   }
 
@@ -480,7 +485,7 @@ class AgendaFacilApp {
         const activeRoleBtn = document.querySelector('#registerRoleSegment .seg-btn.active');
         const isPro = activeRoleBtn && activeRoleBtn.getAttribute('data-role') === 'pro';
 
-        this.showToast('Conta criada com sucesso! Seja bem-vindo(a).', '🎉');
+        this.showToast('Conta criada com sucesso! Seja bem-vindo(a).');
         if (isPro) {
           state.role = 'pro';
           this.roleLabel.innerHTML = 'Modo: <strong>Profissional</strong>';
@@ -497,9 +502,9 @@ class AgendaFacilApp {
     const googleBtn = document.getElementById('googleAuthBtn');
     if (googleBtn) {
       googleBtn.addEventListener('click', () => {
-        this.showToast('Conectando via Google...', '🔍');
+        this.showToast('Conectando via Google...');
         setTimeout(() => {
-          this.showToast('Login com Google realizado!', '✓');
+          this.showToast('Login com Google realizado!');
           this.navigateTo('screen-3');
         }, 600);
       });
@@ -562,12 +567,12 @@ class AgendaFacilApp {
           state.favorites.delete(proId);
           favBtn.classList.remove('active');
           favBtn.querySelector('svg').setAttribute('fill', 'none');
-          this.showToast('Removido dos seus favoritos', '♡');
+          this.showToast('Removido dos seus favoritos');
         } else {
           state.favorites.add(proId);
           favBtn.classList.add('active');
           favBtn.querySelector('svg').setAttribute('fill', 'currentColor');
-          this.showToast('Adicionado aos seus favoritos!', '❤️');
+          this.showToast('Adicionado aos seus favoritos!');
         }
       }
     });
@@ -658,12 +663,12 @@ class AgendaFacilApp {
           state.favorites.delete(proId);
           heartSvg.setAttribute('fill', 'none');
           heartSvg.setAttribute('stroke', '#0F172A');
-          this.showToast('Removido dos favoritos', '♡');
+          this.showToast('Removido dos favoritos');
         } else {
           state.favorites.add(proId);
           heartSvg.setAttribute('fill', '#EF4444');
           heartSvg.setAttribute('stroke', '#EF4444');
-          this.showToast('Salvo nos favoritos!', '❤️');
+          this.showToast('Salvo nos favoritos!');
         }
       });
     }
@@ -818,7 +823,7 @@ class AgendaFacilApp {
     const date1 = document.getElementById('bookingCardDate1');
     if (date1) date1.textContent = `${state.bookingDraft.fullDate} • ${state.bookingDraft.time}`;
 
-    this.showToast('Horário agendado com sucesso!', '🎉');
+    this.showToast('Horário agendado com sucesso!');
     this.navigateTo('screen-7');
   }
 
@@ -828,7 +833,7 @@ class AgendaFacilApp {
     if (addCalBtn) {
       addCalBtn.addEventListener('click', () => {
         this.downloadCalendarFile();
-        this.showToast('Lembrete adicionado ao calendário (.ics)!', '📅');
+        this.showToast('Lembrete adicionado ao calendário (.ics)!');
       });
     }
 
@@ -843,15 +848,15 @@ class AgendaFacilApp {
   shareOnWhatsapp() {
     const text = encodeURIComponent(
       `Olá! Confirmei meu agendamento pelo app AgendaFácil:\n\n` +
-      `👤 Profissional: ${state.currentPro.name}\n` +
-      `✂️ Serviço: ${state.bookingDraft.serviceName}\n` +
-      `📅 Data: ${state.bookingDraft.fullDate} às ${state.bookingDraft.time}\n` +
-      `📍 Endereço: ${state.currentPro.address}\n` +
-      `💰 Valor: R$ ${state.bookingDraft.servicePrice},00\n\n` +
-      `Agendamento garantido com sucesso! ✨`
+      `Profissional: ${state.currentPro.name}\n` +
+      `Serviço: ${state.bookingDraft.serviceName}\n` +
+      `Data: ${state.bookingDraft.fullDate} às ${state.bookingDraft.time}\n` +
+      `Endereço: ${state.currentPro.address}\n` +
+      `Valor: R$ ${state.bookingDraft.servicePrice},00\n\n` +
+      `Agendamento garantido com sucesso.`
     );
     window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
-    this.showToast('Abrindo WhatsApp para compartilhar...', '💬');
+    this.showToast('Abrindo WhatsApp para compartilhar...');
   }
 
   downloadCalendarFile() {
@@ -895,7 +900,7 @@ END:VCALENDAR`;
 
   cancelBooking(proName) {
     if (confirm(`Deseja realmente cancelar seu agendamento com ${proName}?`)) {
-      this.showToast(`Agendamento com ${proName} cancelado.`, '⚠️');
+      this.showToast(`Agendamento com ${proName} cancelado.`);
       const card = document.getElementById('bookingCardJuliana');
       if (card) {
         card.style.opacity = '0.5';
@@ -910,7 +915,7 @@ END:VCALENDAR`;
   }
 
   rateService(proName) {
-    this.showToast(`Obrigado pela sua avaliação para ${proName}! 5 estrelas registradas ⭐`);
+    this.showToast(`Obrigado pela sua avaliação para ${proName}! 5 estrelas registradas`);
   }
 
   // Tela 9: Dashboard do Profissional
@@ -941,10 +946,10 @@ END:VCALENDAR`;
     if (card) {
       const isCompleted = card.classList.toggle('completed');
       if (isCompleted) {
-        btn.textContent = '✓ Realizado';
-        this.showToast('Atendimento marcado como concluído!', '✅');
+        btn.textContent = 'Realizado';
+        this.showToast('Atendimento marcado como concluído!');
       } else {
-        btn.textContent = '✓ Concluir';
+        btn.textContent = 'Concluir';
         this.showToast('Status restaurado para confirmado');
       }
     }
@@ -953,12 +958,12 @@ END:VCALENDAR`;
   showAddSlotPrompt() {
     const novoHorario = prompt('Digite o horário que deseja abrir na sua agenda (Ex: 15:30):', '15:30');
     if (novoHorario) {
-      this.showToast(`Horário das ${novoHorario} adicionado com sucesso à sua agenda!`, '📅');
+      this.showToast(`Horário das ${novoHorario} adicionado com sucesso à sua agenda!`);
     }
   }
 
   // Sistema de Notificações Toast
-  showToast(message, icon = '✓') {
+  showToast(message, icon = '') {
     if (!this.toast) return;
 
     this.toastMsg.textContent = message;

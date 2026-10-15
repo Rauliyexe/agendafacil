@@ -52,7 +52,10 @@
       <div class="proto-actions">
         <!-- Role toggle -->
         <button id="toggleRoleBtn" class="proto-btn proto-btn-role" title="Alternar perfil de usuário">
-          <span class="role-icon">👤</span>
+          <svg class="role-icon-svg" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
           <span id="roleLabel">Modo: <strong>Cliente</strong></span>
         </button>
 
@@ -67,7 +70,22 @@
 
         <!-- Theme toggle (Dark / Light) -->
         <button id="toggleThemeBtn" class="proto-btn proto-btn-icon" title="Alternar Modo Escuro / Claro">
-          <span id="themeIcon">🌙</span>
+          <span id="themeIcon" class="theme-icon-box">
+            <svg class="icon-moon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+            <svg class="icon-sun" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          </span>
         </button>
 
         <!-- Reset demo data -->
@@ -211,10 +229,21 @@
                       <strong>Olá, Maria!</strong>
                       <span>Que bom te ver por aqui!</span>
                     </div>
-                    <div class="mini-bell">🔔</div>
+                    <div class="mini-bell">
+                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                      </svg>
+                    </div>
                   </div>
-                  <div class="mini-search">🔍 Buscar serviços, profissionais...</div>
-                  <div class="mini-bubble">Mais tempo para o que importa! ♡</div>
+                  <div class="mini-search">
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="11" cy="11" r="8"></circle>
+                      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <span>Buscar serviços, profissionais...</span>
+                  </div>
+                  <div class="mini-bubble">Mais tempo para o que importa</div>
                 </div>
               </div>
 
@@ -456,7 +485,7 @@
 
               <!-- Greeting Banner -->
               <div class="home-greeting">
-                <h2>Olá, Maria Vitória! <span class="wave-emoji">👋</span></h2>
+                <h2>Olá, Maria Vitória!</h2>
                 <p>O que você precisa hoje?</p>
               </div>
 
@@ -555,25 +584,25 @@
               <!-- Sleek Horizontal Categories Chips (Minimalist & Compact) -->
               <div class="home-categories-chips" id="homeCategoriesChips">
                 <button class="category-chip active" data-category="Todos" data-nav="screen-4">
-                  <span>✨ Todos</span>
+                  <span>Todos</span>
                 </button>
                 <button class="category-chip" data-category="Beleza" data-nav="screen-4">
-                  <span>💇‍♀️ Cabelo & Beleza</span>
+                  <span>Cabelo & Beleza</span>
                 </button>
                 <button class="category-chip" data-category="Saúde" data-nav="screen-4">
-                  <span>🩺 Saúde</span>
+                  <span>Saúde</span>
                 </button>
                 <button class="category-chip" data-category="Estética" data-nav="screen-4">
-                  <span>💅 Estética & Unhas</span>
+                  <span>Estética & Unhas</span>
                 </button>
                 <button class="category-chip" data-category="Bem-estar" data-nav="screen-4">
-                  <span>🧘 Massagem & Spa</span>
+                  <span>Massagem & Spa</span>
                 </button>
                 <button class="category-chip" data-category="Pet" data-nav="screen-4">
-                  <span>🐾 Pet Care</span>
+                  <span>Pet Care</span>
                 </button>
                 <button class="category-chip" data-category="Serviços" data-nav="screen-4">
-                  <span>🔧 Serviços</span>
+                  <span>Serviços</span>
                 </button>
               </div>
 
@@ -605,7 +634,7 @@
                           <strong>4.9</strong> (1.124)
                         </span>
                         <span class="meta-dot-sep">•</span>
-                        <span class="meta-distance">📍 2,3 km</span>
+                        <span class="meta-distance">2,3 km</span>
                       </div>
                     </div>
                     <div class="pro-card-cta">
@@ -639,7 +668,7 @@
                           <strong>5.0</strong> (890)
                         </span>
                         <span class="meta-dot-sep">•</span>
-                        <span class="meta-distance">📍 1,8 km</span>
+                        <span class="meta-distance">1,8 km</span>
                       </div>
                     </div>
                     <div class="pro-card-cta">
@@ -695,7 +724,7 @@
                 <button class="filter-chip active" data-filter="todos">Todos</button>
                 <button class="filter-chip" data-filter="avaliados">Mais bem avaliados</button>
                 <button class="filter-chip" data-filter="perto">Mais perto</button>
-                <button class="filter-chip" data-filter="favoritos">Favoritos ♡</button>
+                <button class="filter-chip" data-filter="favoritos">Favoritos</button>
               </div>
 
               <!-- Search Results Count -->
@@ -1105,7 +1134,7 @@
                   <div class="shift-group">
                     <div class="shift-header">
                       <div class="shift-title">
-                        <span>☀️ Manhã</span>
+                        <span>Manhã</span>
                         <small>08:00 - 12:00</small>
                       </div>
                       <span class="shift-badge badge-morning">4 livres</span>
@@ -1122,10 +1151,10 @@
                   <div class="shift-group">
                     <div class="shift-header">
                       <div class="shift-title">
-                        <span>⛅ Tarde</span>
+                        <span>Tarde</span>
                         <small>13:00 - 18:00</small>
                       </div>
-                      <span class="shift-badge badge-hot">Mais concorrido 🔥</span>
+                      <span class="shift-badge badge-hot">Mais concorrido</span>
                     </div>
                     <div class="time-slots-grid">
                       <button class="slot-pill" data-time="14:00">14:00</button>
@@ -1140,7 +1169,7 @@
                   <div class="shift-group">
                     <div class="shift-header">
                       <div class="shift-title">
-                        <span>🌙 Noite</span>
+                        <span>Noite</span>
                         <small>18:00 - 20:00</small>
                       </div>
                       <span class="shift-badge badge-night">Últimos horários</span>
@@ -1429,7 +1458,7 @@
                     </div>
                   </div>
                   <div class="booking-card-actions">
-                    <button class="booking-action-btn" onclick="app.rateService('Bruna Nunes')">⭐ Avaliar serviço</button>
+                    <button class="booking-action-btn" onclick="app.rateService('Bruna Nunes')">Avaliar serviço</button>
                     <button class="booking-action-btn rebook-btn" data-nav="screen-6">Agendar novamente</button>
                   </div>
                 </div>
@@ -1476,7 +1505,7 @@
                     <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=160&auto=format&fit=crop&q=80" alt="Juliana">
                   </div>
                   <div class="pro-greeting-text">
-                    <h2>Olá, Juliana! <span class="wave-emoji">👋</span></h2>
+                    <h2>Olá, Juliana!</h2>
                     <p>Aqui está o seu dia de hoje.</p>
                   </div>
                 </div>
@@ -1722,7 +1751,14 @@
 
             <div class="sheet-menu-list">
               <button class="sheet-menu-item" data-nav="screen-8" onclick="app.closeProfileSheet()">
-                <div class="sheet-menu-icon">📅</div>
+                <div class="sheet-menu-icon">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                  </svg>
+                </div>
                 <div class="sheet-menu-text">
                   <strong>Meus Agendamentos</strong>
                   <small>Ver horários marcados e histórico</small>
@@ -1731,7 +1767,11 @@
               </button>
 
               <button class="sheet-menu-item" data-nav="screen-4" onclick="app.closeProfileSheet()">
-                <div class="sheet-menu-icon">❤️</div>
+                <div class="sheet-menu-icon">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                  </svg>
+                </div>
                 <div class="sheet-menu-text">
                   <strong>Profissionais Favoritos</strong>
                   <small>Salvos para acesso rápido</small>
@@ -1740,7 +1780,12 @@
               </button>
 
               <button class="sheet-menu-item" id="sheetSwitchProBtn">
-                <div class="sheet-menu-icon">💼</div>
+                <div class="sheet-menu-icon">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="7" width="20" height="14" rx="2"></rect>
+                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                  </svg>
+                </div>
                 <div class="sheet-menu-text">
                   <strong>Área do Profissional</strong>
                   <small>Acessar painel e agenda de Juliana</small>
