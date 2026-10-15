@@ -154,6 +154,7 @@ class AgendaFacilApp {
 
   init() {
     this.bindDomElements();
+    this.loadSavedTheme();
     this.attachEventListeners();
     this.navigateTo(state.activeScreen);
     this.updateClock();
@@ -166,6 +167,8 @@ class AgendaFacilApp {
     this.roleLabel = document.getElementById('roleLabel');
     this.toggleDeviceBtn = document.getElementById('toggleDeviceBtn');
     this.deviceModeLabel = document.getElementById('deviceModeLabel');
+    this.toggleThemeBtn = document.getElementById('toggleThemeBtn');
+    this.themeIcon = document.getElementById('themeIcon');
     this.resetDataBtn = document.getElementById('resetDataBtn');
     this.toast = document.getElementById('protoToast');
     this.toastMsg = document.getElementById('toastMsg');
@@ -191,6 +194,13 @@ class AgendaFacilApp {
     if (this.toggleDeviceBtn) {
       this.toggleDeviceBtn.addEventListener('click', () => {
         this.toggleDeviceFrame();
+      });
+    }
+
+    // 3.1 Botão alternar Dark Mode / Light Mode
+    if (this.toggleThemeBtn) {
+      this.toggleThemeBtn.addEventListener('click', () => {
+        this.toggleTheme();
       });
     }
 
@@ -409,6 +419,25 @@ class AgendaFacilApp {
     } else {
       this.deviceModeLabel.textContent = 'Tela Cheia';
       this.showToast('Modo tela cheia responsivo ativado');
+    }
+  }
+
+  // Alterna tema Claro / Escuro
+  toggleTheme() {
+    const isDark = document.body.classList.toggle('dark-mode');
+    localStorage.setItem('agendafacil_theme', isDark ? 'dark' : 'light');
+    if (this.themeIcon) this.themeIcon.textContent = isDark ? '☀️' : '🌙';
+    this.showToast(isDark ? 'Modo Escuro (Dark Mode) ativado' : 'Modo Claro ativado', isDark ? '🌙' : '☀️');
+  }
+
+  loadSavedTheme() {
+    const saved = localStorage.getItem('agendafacil_theme');
+    if (saved === 'dark') {
+      document.body.classList.add('dark-mode');
+      if (this.themeIcon) this.themeIcon.textContent = '☀️';
+    } else {
+      document.body.classList.remove('dark-mode');
+      if (this.themeIcon) this.themeIcon.textContent = '🌙';
     }
   }
 
@@ -754,6 +783,18 @@ class AgendaFacilApp {
     // Atualiza próximo agendamento na home (tela 3)
     const homeDate = document.getElementById('homeNextDate');
     if (homeDate) homeDate.textContent = `${state.bookingDraft.fullDate} • ${state.bookingDraft.time}`;
+
+    const homeTimePill = document.getElementById('homeWidgetTimePill');
+    const homeServiceText = document.getElementById('homeWidgetServiceText');
+    const homeProName = document.getElementById('homeWidgetProName');
+    const homeAddress = document.getElementById('homeWidgetAddress');
+    const homeAvatar = document.getElementById('homeWidgetAvatar');
+
+    if (homeTimePill) homeTimePill.textContent = `${state.bookingDraft.dayName === 'Seg' ? 'Amanhã' : state.bookingDraft.dayName} • ${state.bookingDraft.time}`;
+    if (homeServiceText) homeServiceText.textContent = `${state.bookingDraft.serviceName} • R$ ${state.bookingDraft.servicePrice}`;
+    if (homeProName) homeProName.textContent = state.currentPro.name;
+    if (homeAddress) homeAddress.textContent = `${state.currentPro.address} (${state.currentPro.distance})`;
+    if (homeAvatar) homeAvatar.src = state.currentPro.avatar;
   }
 
   finalizeBooking() {
@@ -787,9 +828,30 @@ class AgendaFacilApp {
     if (addCalBtn) {
       addCalBtn.addEventListener('click', () => {
         this.downloadCalendarFile();
-        this.showToast('Lembrete adicionado ao calendário!', '📅');
+        this.showToast('Lembrete adicionado ao calendário (.ics)!', '📅');
       });
     }
+
+    const shareWhatsappBtn = document.getElementById('shareWhatsappBtn');
+    if (shareWhatsappBtn) {
+      shareWhatsappBtn.addEventListener('click', () => {
+        this.shareOnWhatsapp();
+      });
+    }
+  }
+
+  shareOnWhatsapp() {
+    const text = encodeURIComponent(
+      `Olá! Confirmei meu agendamento pelo app AgendaFácil:\n\n` +
+      `👤 Profissional: ${state.currentPro.name}\n` +
+      `✂️ Serviço: ${state.bookingDraft.serviceName}\n` +
+      `📅 Data: ${state.bookingDraft.fullDate} às ${state.bookingDraft.time}\n` +
+      `📍 Endereço: ${state.currentPro.address}\n` +
+      `💰 Valor: R$ ${state.bookingDraft.servicePrice},00\n\n` +
+      `Agendamento garantido com sucesso! ✨`
+    );
+    window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+    this.showToast('Abrindo WhatsApp para compartilhar...', '💬');
   }
 
   downloadCalendarFile() {

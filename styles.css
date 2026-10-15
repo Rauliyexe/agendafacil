@@ -3,17 +3,28 @@
    ======================================================== */
 
 :root {
-  /* Brand Colors */
-  --primary: #3461FD;
-  --primary-hover: #234ee4;
+  /* Brand Colors - Modern Tech Indigo & Violet */
+  --primary: #6366F1;
+  --primary-hover: #4F46E5;
+  --primary-dark: #4338CA;
   --primary-light: #EEF2FF;
-  --primary-gradient: linear-gradient(135deg, #3B67FF 0%, #204BE8 100%);
-  --primary-glow: rgba(52, 97, 253, 0.25);
+  --primary-gradient: linear-gradient(135deg, #6366F1 0%, #4F46E5 55%, #4338CA 100%);
+  --primary-glow: rgba(99, 102, 241, 0.35);
+
+  /* Modern Accents */
+  --accent-rose: #F43F5E;
+  --accent-rose-gradient: linear-gradient(135deg, #FB7185 0%, #F43F5E 100%);
+  --accent-violet: #8B5CF6;
+  --accent-amber: #F59E0B;
+  --accent-emerald: #10B981;
+  --accent-cyan: #06B6D4;
   
   /* Neutral Colors */
-  --bg-stage: #F1F4F9;
+  --bg-stage: #F8FAFC;
+  --bg-stage-gradient: radial-gradient(circle at 50% 20%, #EDE9FE 0%, #F1F5F9 55%, #E2E8F0 100%);
   --bg-card: #FFFFFF;
-  --bg-subtle: #F8FAFC;
+  --bg-card-glass: rgba(255, 255, 255, 0.88);
+  --bg-subtle: #F8FAFD;
   --bg-input: #F8FAFD;
   
   --text-main: #0F172A;
@@ -21,31 +32,57 @@
   --text-muted: #64748B;
   --text-light: #94A3B8;
   
-  /* Feedback & Accents */
+  /* Feedback */
   --success: #10B981;
-  --success-bg: #E8FDF3;
+  --success-bg: #ECFDF5;
   --warning: #F59E0B;
   --warning-bg: #FFFBEB;
   --danger: #EF4444;
   --danger-bg: #FEF2F2;
   
   /* Borders & Shadows */
-  --border-light: #E9EEF5;
-  --border-focus: #3461FD;
+  --border-light: #E2E8F0;
+  --border-glass: rgba(255, 255, 255, 0.8);
+  --border-focus: #6366F1;
   --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.04);
-  --shadow-md: 0 8px 24px rgba(32, 75, 232, 0.08);
-  --shadow-lg: 0 16px 40px rgba(32, 75, 232, 0.12);
-  --shadow-phone: 0 25px 60px -15px rgba(22, 38, 90, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 10px 25px -4px rgba(79, 70, 229, 0.09), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+  --shadow-lg: 0 20px 40px -6px rgba(79, 70, 229, 0.16);
+  --shadow-phone: 0 35px 80px -15px rgba(30, 27, 75, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.5), 0 0 45px rgba(99, 102, 241, 0.12);
   
   /* Layout Dimensions */
   --phone-width: 400px;
   --phone-height: 844px;
-  --border-radius-phone: 50px;
+  --border-radius-phone: 52px;
   --border-radius-card: 22px;
   --border-radius-pill: 9999px;
   
   --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --transition-smooth: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ========================================================
+   DARK THEME PALETTE
+   ======================================================== */
+body.dark-mode {
+  --bg-stage: #07090E;
+  --bg-stage-gradient: radial-gradient(circle at 50% 20%, #1E1B4B 0%, #0B0E17 55%, #030712 100%);
+  --bg-card: #151A26;
+  --bg-card-glass: rgba(21, 26, 38, 0.88);
+  --bg-subtle: #1C2333;
+  --bg-input: #171E2D;
+  
+  --text-main: #F1F5F9;
+  --text-heading: #FFFFFF;
+  --text-muted: #94A3B8;
+  --text-light: #64748B;
+  
+  --border-light: rgba(255, 255, 255, 0.08);
+  --border-glass: rgba(255, 255, 255, 0.12);
+  
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 10px 25px -4px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 20px 40px -6px rgba(0, 0, 0, 0.65);
+  --shadow-phone: 0 40px 90px -20px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.12), 0 0 50px rgba(99, 102, 241, 0.2);
 }
 
 /* Base Reset */
@@ -60,11 +97,14 @@
 body {
   font-family: var(--font-family);
   background-color: var(--bg-stage);
+  background-image: var(--bg-stage-gradient);
+  background-attachment: fixed;
   color: var(--text-main);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* ========================================================
@@ -3272,4 +3312,630 @@ body.fullscreen-mode .phone-screen {
   .phone-screen {
     border-radius: 0;
   }
+}
+
+/* ========================================================
+   PREMIUM TECH & LIFESTYLE ENHANCEMENTS
+   ======================================================== */
+
+/* 1. DYNAMIC NEXT APPOINTMENT WIDGET (iOS Smart Stack) */
+.next-appointment-widget {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(244, 63, 94, 0.05) 100%), #FFFFFF;
+  border: 1.5px solid rgba(99, 102, 241, 0.22);
+  border-radius: 20px;
+  padding: 13px 15px;
+  margin-bottom: 18px;
+  box-shadow: 0 10px 24px -6px rgba(99, 102, 241, 0.12);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: var(--transition-smooth);
+}
+
+.next-appointment-widget:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px -4px rgba(99, 102, 241, 0.18);
+  border-color: var(--primary);
+}
+
+.widget-top-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.widget-live-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--primary);
+}
+
+.live-dot-pulse {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--success);
+  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  animation: livePulse 1.8s infinite cubic-bezier(0.66, 0, 0, 1);
+}
+
+@keyframes livePulse {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+  70% { box-shadow: 0 0 0 7px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+.widget-time-pill {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #4338CA;
+  background: rgba(99, 102, 241, 0.14);
+  padding: 3px 9px;
+  border-radius: var(--border-radius-pill);
+}
+
+.widget-main-body {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.widget-avatar-box {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  flex-shrink: 0;
+}
+
+.widget-avatar-box img {
+  width: 100%;
+  height: 100%;
+  border-radius: 14px;
+  object-fit: cover;
+}
+
+.widget-verified-mini {
+  position: absolute;
+  bottom: -3px;
+  right: -3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #FFFFFF;
+  font-size: 0.62rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid #FFFFFF;
+}
+
+.widget-details {
+  flex: 1;
+}
+
+.widget-title-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.widget-title-row h4 {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--text-heading);
+}
+
+.widget-role-tag {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.widget-service-highlight {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-top: 2px;
+}
+
+.widget-location-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.widget-arrow-action {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(99, 102, 241, 0.08);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: var(--transition-smooth);
+}
+
+.next-appointment-widget:hover .widget-arrow-action {
+  background: var(--primary);
+  color: #FFFFFF;
+  transform: translateX(3px);
+}
+
+/* 2. CALENDAR DAY CHIP AVAILABILITY STATUS DOTS */
+.cal-day-chip {
+  position: relative;
+}
+
+.chip-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-top: 4px;
+}
+
+.chip-dot.dot-available {
+  background: #10B981;
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.5);
+}
+
+.chip-dot.dot-limited {
+  background: #F59E0B;
+  box-shadow: 0 0 6px rgba(245, 158, 11, 0.5);
+}
+
+.chip-dot.dot-busy {
+  background: #F43F5E;
+  box-shadow: 0 0 6px rgba(244, 63, 94, 0.5);
+}
+
+.cal-day-chip.active .chip-dot {
+  background: #FFFFFF;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+}
+
+/* 3. APPLE WALLET STYLE CONFIRMATION PASS */
+.apple-pass-card {
+  position: relative;
+  background: #FFFFFF;
+  border: 1.5px solid var(--border-light);
+  border-radius: 24px;
+  padding: 0;
+  overflow: hidden;
+  box-shadow: 0 20px 45px -10px rgba(99, 102, 241, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.04);
+}
+
+.pass-header-strip {
+  background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
+  color: #FFFFFF;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pass-brand-tag {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  opacity: 0.95;
+}
+
+.apple-pass-card .ticket-pro-row {
+  padding: 16px 18px 12px;
+}
+
+.verified-pass-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  background: #6366F1;
+  color: #FFFFFF;
+  font-size: 0.62rem;
+  border-radius: 50%;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
+/* Perforated ticket cutouts (scalloped notches) */
+.ticket-perforated-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 20px;
+  margin: 4px 0;
+}
+
+.ticket-dashed-line {
+  flex: 1;
+  border-top: 2px dashed #E2E8F0;
+  margin: 0 14px;
+}
+
+.ticket-notch {
+  width: 16px;
+  height: 20px;
+  background: #FAFBFD;
+  position: absolute;
+  top: 0;
+  z-index: 10;
+}
+
+.ticket-notch.notch-left {
+  left: -2px;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  border-right: 1.5px solid var(--border-light);
+}
+
+.ticket-notch.notch-right {
+  right: -2px;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  border-left: 1.5px solid var(--border-light);
+}
+
+.apple-pass-card .ticket-info-rows {
+  padding: 6px 18px 14px;
+}
+
+/* Barcode section */
+.pass-barcode-section {
+  background: #F8FAFD;
+  border-top: 1px solid var(--border-light);
+  padding: 12px 18px 14px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.barcode-graphic-sim {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2.5px;
+  height: 38px;
+  padding: 4px 10px;
+  background: #FFFFFF;
+  border-radius: 6px;
+  border: 1px solid #E2E8F0;
+}
+
+.barcode-graphic-sim .bar {
+  display: block;
+  background: #0F172A;
+  height: 100%;
+  border-radius: 1px;
+}
+
+.bar.b1 { width: 1.5px; }
+.bar.b2 { width: 3px; }
+.bar.b3 { width: 4.5px; }
+.bar.b4 { width: 6px; }
+
+.pass-code-label {
+  font-family: monospace;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+
+/* WhatsApp Share Button */
+.btn-whatsapp {
+  background: #25D366;
+  color: #FFFFFF;
+  font-weight: 700;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 14px rgba(37, 211, 102, 0.25);
+  transition: var(--transition-smooth);
+}
+
+.btn-whatsapp:hover {
+  background: #1EBE5D;
+  box-shadow: 0 6px 20px rgba(37, 211, 102, 0.35);
+  transform: translateY(-1px);
+}
+
+/* 4. BUTTONS & MICRO-INTERACTIONS */
+button:active,
+.btn:active,
+.proto-btn:active,
+.category-item:active,
+.cal-day-chip:active,
+.slot-pill:active,
+.pro-featured-card:active {
+  transform: scale(0.97) !important;
+}
+
+/* 5. FULL DARK THEME ADAPTATIONS */
+body.dark-mode .proto-topbar {
+  background: rgba(15, 20, 31, 0.85);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .proto-app-name strong {
+  color: #F8FAFC;
+}
+
+body.dark-mode .proto-select {
+  background: #171E2D;
+  color: #F8FAFC;
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+body.dark-mode .proto-btn {
+  background: #171E2D;
+  color: #F8FAFC;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .proto-btn:hover {
+  background: #20293D;
+}
+
+body.dark-mode .phone-screen {
+  background: #0D111A;
+}
+
+body.dark-mode .ios-status-bar {
+  color: #F8FAFC !important;
+}
+
+body.dark-mode .app-screen {
+  background: #0D111A;
+}
+
+body.dark-mode .home-screen,
+body.dark-mode .search-screen,
+body.dark-mode .appointments-screen,
+body.dark-mode .pro-dashboard-screen,
+body.dark-mode .confirmation-screen,
+body.dark-mode .schedule-screen,
+body.dark-mode .pro-profile-screen,
+body.dark-mode .register-screen {
+  background: #0D111A;
+  color: #F8FAFC;
+}
+
+body.dark-mode .home-brand-name strong {
+  color: #F8FAFC;
+}
+
+body.dark-mode .icon-round-btn {
+  background: #171E2D;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #F8FAFC;
+}
+
+body.dark-mode .home-search-trigger {
+  background: #151A26;
+  border-color: rgba(255, 255, 255, 0.08);
+  color: #94A3B8;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .next-appointment-widget {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(244, 63, 94, 0.08) 100%), #151A26;
+  border-color: rgba(99, 102, 241, 0.3);
+  box-shadow: 0 10px 24px -6px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-mode .widget-time-pill {
+  background: rgba(99, 102, 241, 0.25);
+  color: #A5B4FC;
+}
+
+body.dark-mode .widget-arrow-action {
+  background: rgba(255, 255, 255, 0.08);
+  color: #A5B4FC;
+}
+
+body.dark-mode .pro-featured-card {
+  background: #151A26;
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode .portfolio-thumb {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .cal-day-chip {
+  background: #151A26;
+  border-color: rgba(255, 255, 255, 0.08);
+  color: #F8FAFC;
+}
+
+body.dark-mode .cal-day-chip .chip-daynum {
+  color: #F8FAFC;
+}
+
+body.dark-mode .cal-day-chip.active {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+body.dark-mode .slot-pill {
+  background: #151A26;
+  border-color: rgba(255, 255, 255, 0.08);
+  color: #F8FAFC;
+}
+
+body.dark-mode .slot-pill.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #FFFFFF;
+}
+
+body.dark-mode .apple-pass-card {
+  background: #151A26;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .ticket-notch {
+  background: #0D111A;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .pass-barcode-section {
+  background: #10141F;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .barcode-graphic-sim {
+  background: #FFFFFF;
+}
+
+body.dark-mode .info-texts strong,
+body.dark-mode .info-texts span {
+  color: #F8FAFC;
+}
+
+body.dark-mode .my-booking-card {
+  background: #151A26;
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+body.dark-mode .booking-card-details h4 {
+  color: #F8FAFC;
+}
+
+body.dark-mode .pro-list-item {
+  background: #151A26;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .item-name {
+  color: #F8FAFC;
+}
+
+body.dark-mode .filter-chip {
+  background: #151A26;
+  border-color: rgba(255, 255, 255, 0.08);
+  color: #94A3B8;
+}
+
+body.dark-mode .filter-chip.active {
+  background: var(--primary);
+  color: #FFFFFF;
+}
+
+body.dark-mode .search-input-wrapper {
+  background: #151A26;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .search-input-wrapper input {
+  color: #F8FAFC;
+}
+
+body.dark-mode .service-selection-item {
+  background: #151A26;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .service-selection-item.active {
+  background: rgba(99, 102, 241, 0.12);
+  border-color: var(--primary);
+}
+
+body.dark-mode .service-name {
+  color: #F8FAFC;
+}
+
+body.dark-mode .profile-fixed-footer {
+  background: rgba(21, 26, 38, 0.92);
+  backdrop-filter: blur(16px);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .schedule-fixed-footer {
+  background: rgba(21, 26, 38, 0.92);
+  backdrop-filter: blur(16px);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .phone-bottom-nav {
+  background: rgba(21, 26, 38, 0.94);
+  backdrop-filter: blur(20px);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .form-input {
+  background: #151A26;
+  border-color: rgba(255, 255, 255, 0.08);
+  color: #F8FAFC;
+}
+
+body.dark-mode .sheet-card,
+body.dark-mode .modal-card,
+body.dark-mode .cancel-modal-card {
+  background: #151A26;
+  color: #F8FAFC;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .sheet-header,
+body.dark-mode .slot-info-card,
+body.dark-mode .pro-stat-chip {
+  background: #151A26;
+  border-color: rgba(255, 255, 255, 0.08);
+  color: #F8FAFC;
+}
+
+body.dark-mode .stat-box {
+  background: #151A26;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .profile-card-content {
+  background: #0D111A;
+}
+
+body.dark-mode .selected-service-pill {
+  background: rgba(99, 102, 241, 0.12);
+  border-color: rgba(99, 102, 241, 0.25);
+}
+
+body.dark-mode .booking-draft-recap {
+  background: #151A26;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .segmented-control {
+  background: #151A26;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .seg-btn {
+  color: #94A3B8;
+}
+
+body.dark-mode .seg-btn.active {
+  background: #20293D;
+  color: #F8FAFC;
 }

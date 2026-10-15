@@ -65,6 +65,11 @@
           <span id="deviceModeLabel">Moldura iPhone</span>
         </button>
 
+        <!-- Theme toggle (Dark / Light) -->
+        <button id="toggleThemeBtn" class="proto-btn proto-btn-icon" title="Alternar Modo Escuro / Claro">
+          <span id="themeIcon">🌙</span>
+        </button>
+
         <!-- Reset demo data -->
         <button id="resetDataBtn" class="proto-btn proto-btn-icon" title="Restaurar dados de teste">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
@@ -462,6 +467,42 @@
                   <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                 </svg>
                 <span>Buscar serviços, profissionais...</span>
+              </div>
+
+              <!-- DYNAMIC NEXT APPOINTMENT WIDGET (Estilo iOS Smart Card) -->
+              <div class="next-appointment-widget" id="homeNextAppointmentWidget" data-nav="screen-8" title="Clique para ver detalhes do agendamento">
+                <div class="widget-top-strip">
+                  <div class="widget-live-badge">
+                    <span class="live-dot-pulse"></span>
+                    <span>Próximo agendamento</span>
+                  </div>
+                  <span class="widget-time-pill" id="homeWidgetTimePill">Amanhã • 09:00</span>
+                </div>
+                <div class="widget-main-body">
+                  <div class="widget-avatar-box">
+                    <img id="homeWidgetAvatar" src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=160&auto=format&fit=crop&q=80" alt="Juliana Silva">
+                    <span class="widget-verified-mini" title="Profissional Verificado">✓</span>
+                  </div>
+                  <div class="widget-details">
+                    <div class="widget-title-row">
+                      <h4 id="homeWidgetProName">Juliana Silva</h4>
+                      <span class="widget-role-tag">Cabeleireira</span>
+                    </div>
+                    <p class="widget-service-highlight" id="homeWidgetServiceText">Corte e escova • R$ 130</p>
+                    <div class="widget-location-row">
+                      <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                      </svg>
+                      <span id="homeWidgetAddress">Rua das Flores, 123 (2,3 km)</span>
+                    </div>
+                  </div>
+                  <div class="widget-arrow-action">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                  </div>
+                </div>
               </div>
 
               <!-- INSPIRATION STORIES / TRABALHOS RECENTES -->
@@ -1160,31 +1201,37 @@
                     <button class="cal-day-chip active" data-day="Seg" data-date="22" data-full="22 de abril de 2025">
                       <span class="chip-weekday">Seg</span>
                       <span class="chip-daynum">22</span>
+                      <span class="chip-dot dot-available" title="Muitos horários livres"></span>
                     </button>
 
                     <button class="cal-day-chip" data-day="Ter" data-date="23" data-full="23 de abril de 2025">
                       <span class="chip-weekday">Ter</span>
                       <span class="chip-daynum">23</span>
+                      <span class="chip-dot dot-available" title="Muitos horários livres"></span>
                     </button>
 
                     <button class="cal-day-chip" data-day="Qua" data-date="24" data-full="24 de abril de 2025">
                       <span class="chip-weekday">Qua</span>
                       <span class="chip-daynum">24</span>
+                      <span class="chip-dot dot-limited" title="Poucos horários livres"></span>
                     </button>
 
                     <button class="cal-day-chip" data-day="Qui" data-date="25" data-full="25 de abril de 2025">
                       <span class="chip-weekday">Qui</span>
                       <span class="chip-daynum">25</span>
+                      <span class="chip-dot dot-available" title="Muitos horários livres"></span>
                     </button>
 
                     <button class="cal-day-chip" data-day="Sex" data-date="26" data-full="26 de abril de 2025">
                       <span class="chip-weekday">Sex</span>
                       <span class="chip-daynum">26</span>
+                      <span class="chip-dot dot-limited" title="Poucos horários livres"></span>
                     </button>
 
                     <button class="cal-day-chip" data-day="Sáb" data-date="27" data-full="27 de abril de 2025">
                       <span class="chip-weekday">Sáb</span>
                       <span class="chip-daynum">27</span>
+                      <span class="chip-dot dot-busy" title="Últimas vagas"></span>
                     </button>
                   </div>
                 </div>
@@ -1302,20 +1349,32 @@
                 <p>Seu horário foi agendado com sucesso. Você receberá um lembrete no seu e-mail e no app.</p>
               </div>
 
-              <!-- Ticket / Receipt Card -->
-              <div class="confirmed-ticket-card">
+              <!-- Apple Wallet Style Passbook Ticket -->
+              <div class="confirmed-ticket-card apple-pass-card">
+                <!-- Pass Header -->
+                <div class="pass-header-strip">
+                  <div class="pass-brand-tag">
+                    <span>AGENDAFÁCIL PASS</span>
+                  </div>
+                  <span class="ticket-status-pill">✓ Confirmado</span>
+                </div>
+
                 <div class="ticket-pro-row">
                   <div class="ticket-avatar">
                     <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=160&auto=format&fit=crop&q=80" alt="Juliana Silva">
                   </div>
                   <div class="ticket-pro-details">
-                    <h4>Juliana Silva</h4>
-                    <span>Cabeleireira</span>
+                    <h4>Juliana Silva <span class="verified-pass-badge">✓</span></h4>
+                    <span>Cabeleireira & Colorista</span>
                   </div>
-                  <span class="ticket-status-pill">Agendado</span>
                 </div>
 
-                <div class="ticket-divider"></div>
+                <!-- Perforated Line with Left & Right Cutout Notches -->
+                <div class="ticket-perforated-wrap">
+                  <span class="ticket-notch notch-left"></span>
+                  <div class="ticket-dashed-line"></div>
+                  <span class="ticket-notch notch-right"></span>
+                </div>
 
                 <div class="ticket-info-rows">
                   <div class="ticket-info-item">
@@ -1328,7 +1387,7 @@
                       </svg>
                     </div>
                     <div class="info-texts">
-                      <label>Data e hora</label>
+                      <label>DATA E HORÁRIO</label>
                       <strong id="ticketDateText">22 de abril de 2025 às 09:00</strong>
                     </div>
                   </div>
@@ -1341,7 +1400,7 @@
                       </svg>
                     </div>
                     <div class="info-texts">
-                      <label>Local</label>
+                      <label>LOCALIZAÇÃO</label>
                       <span>Rua das Flores, 123 - Centro (2,3 km)</span>
                     </div>
                   </div>
@@ -1354,10 +1413,22 @@
                       </svg>
                     </div>
                     <div class="info-texts">
-                      <label>Serviço selecionado</label>
+                      <label>SERVIÇO & VALOR</label>
                       <strong id="ticketServiceText">Corte e escova • R$ 130,00</strong>
                     </div>
                   </div>
+                </div>
+
+                <!-- Barcode & QR Code Pass Footer -->
+                <div class="pass-barcode-section">
+                  <div class="barcode-graphic-sim">
+                    <span class="bar b1"></span><span class="bar b3"></span><span class="bar b1"></span><span class="bar b2"></span>
+                    <span class="bar b4"></span><span class="bar b1"></span><span class="bar b2"></span><span class="bar b3"></span>
+                    <span class="bar b1"></span><span class="bar b4"></span><span class="bar b2"></span><span class="bar b1"></span>
+                    <span class="bar b3"></span><span class="bar b2"></span><span class="bar b1"></span><span class="bar b4"></span>
+                    <span class="bar b2"></span><span class="bar b1"></span><span class="bar b3"></span><span class="bar b2"></span>
+                  </div>
+                  <span class="pass-code-label">CÓDIGO: #AGF-2025-9842</span>
                 </div>
               </div>
 
@@ -1372,7 +1443,14 @@
                     <line x1="12" y1="14" x2="12" y2="18"></line>
                     <line x1="10" y1="16" x2="14" y2="16"></line>
                   </svg>
-                  <span>Adicionar ao calendário</span>
+                  <span>Adicionar ao calendário (.ics)</span>
+                </button>
+
+                <button class="btn btn-whatsapp btn-block" id="shareWhatsappBtn">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                    <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2M12.05 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.72 20.28 11.92C20.28 16.46 16.58 20.15 12.04 20.15C10.56 20.15 9.11 19.76 7.85 19L7.55 18.83L4.43 19.65L5.26 16.61L5.06 16.29C4.24 14.99 3.81 13.47 3.81 11.91C3.81 7.37 7.5 3.67 12.05 3.67Z"/>
+                  </svg>
+                  <span>Compartilhar no WhatsApp</span>
                 </button>
 
                 <button class="btn btn-primary btn-block" data-nav="screen-8">
