@@ -463,7 +463,8 @@ class AgendaFacilApp {
       // Ajusta cor do status bar
       const statusBar = document.getElementById('statusBar');
       if (statusBar) {
-        if (screenId === 'screen-1-splash' || screenId === 'screen-5') {
+        const isDark = document.body.classList.contains('dark-mode');
+        if (isDark || screenId === 'screen-1-splash' || screenId === 'screen-5') {
           statusBar.style.color = '#FFFFFF';
         } else {
           statusBar.style.color = '#0F172A';
@@ -934,6 +935,14 @@ class AgendaFacilApp {
     const isDark = document.body.classList.toggle('dark-mode');
     localStorage.setItem('agendafacil_theme', isDark ? 'dark' : 'light');
     this.updateThemeIcons(isDark);
+    const statusBar = document.getElementById('statusBar');
+    if (statusBar) {
+      if (isDark || state.activeScreen === 'screen-1-splash' || state.activeScreen === 'screen-5') {
+        statusBar.style.color = '#FFFFFF';
+      } else {
+        statusBar.style.color = '#0F172A';
+      }
+    }
     this.showToast(isDark ? 'Modo Escuro ativado' : 'Modo Claro ativado');
   }
 
@@ -942,6 +951,14 @@ class AgendaFacilApp {
     const isDark = saved === 'dark';
     document.body.classList.toggle('dark-mode', isDark);
     this.updateThemeIcons(isDark);
+    const statusBar = document.getElementById('statusBar');
+    if (statusBar) {
+      if (isDark || state.activeScreen === 'screen-1-splash' || state.activeScreen === 'screen-5') {
+        statusBar.style.color = '#FFFFFF';
+      } else {
+        statusBar.style.color = '#0F172A';
+      }
+    }
   }
 
   updateThemeIcons(isDark) {
