@@ -8,6 +8,11 @@ package-lock.json.bak
 # Production build
 dist/
 dist-ssr/
+.next/
+out/
+.vercel
+*.tsbuildinfo
+next-env.d.ts
 
 # Environment
 .env

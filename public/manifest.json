@@ -1,0 +1,56 @@
+{
+  "name": "AgendaFácil — Agendamento Rápido de Trabalhos e Serviços",
+  "short_name": "AgendaFácil",
+  "description": "Plataforma PWA para agendar trabalhos técnicos, serviços e aulas com preço tabelado, chat ao vivo e confirmação imediata.",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0B132B",
+  "theme_color": "#2563EB",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/icons/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Painel Principal",
+      "short_name": "Painel",
+      "description": "Abrir painel de agendamentos e abas",
+      "url": "/dashboard",
+      "icons": [{ "src": "/icons/icon-192.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "Chat ao Vivo",
+      "short_name": "Chat",
+      "description": "Conversar com prestadores e clientes",
+      "url": "/chat",
+      "icons": [{ "src": "/icons/icon-192.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "Explorar Prestadores",
+      "short_name": "Explorar",
+      "description": "Contratar trabalhos com preço fechado",
+      "url": "/explorar",
+      "icons": [{ "src": "/icons/icon-192.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "1ª Conta: Beach Tennis",
+      "short_name": "Beach Tennis",
+      "description": "Agenda pública do Prof. Lucas Becker",
+      "url": "/lucas-beachtennis",
+      "icons": [{ "src": "/icons/icon-192.svg", "sizes": "192x192" }]
+    }
+  ],
+  "categories": ["business", "productivity", "lifestyle"]
+}
