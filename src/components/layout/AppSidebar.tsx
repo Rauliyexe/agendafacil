@@ -38,6 +38,9 @@ interface AppSidebarProps {
   onSelectDashboardTab?: (tab: DashboardTabId) => void;
   chatUnreadCount?: number;
   notificationsCount?: number;
+  activePage?: string;
+  headerTitle?: string;
+  headerSubtitle?: string;
   children: React.ReactNode;
 }
 
