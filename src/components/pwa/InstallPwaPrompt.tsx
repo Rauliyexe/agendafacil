@@ -136,7 +136,7 @@ export default function InstallPwaPrompt() {
                     Instalar Aplicativo AgendaFácil (PWA)
                   </h3>
                   <p className="text-xs text-slate-500">
-                    Service Worker {swRegistered ? 'Ativo ✓' : 'Pronto'} • Funciona em Celular e PC
+                    Service Worker {swRegistered ? 'Ativo' : 'Pronto'} • Funciona em Celular e PC
                   </p>
                 </div>
               </div>

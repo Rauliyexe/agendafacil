@@ -137,21 +137,21 @@ export default function Navbar() {
             onClick={() => setMobileMenuOpen(false)}
             className="block px-3 py-2.5 text-sm font-bold text-blue-600 bg-blue-50 rounded-xl"
           >
-            📊 Painel Completo com Abas (Olá, Raul!)
+            Painel Completo com Abas (Olá, Raul!)
           </NextLink>
           <NextLink
             href="/explorar"
             onClick={() => setMobileMenuOpen(false)}
             className="block px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 rounded-xl"
           >
-            👤 Área do Cliente (Explorar & Meus Horários)
+            Área do Cliente (Explorar & Meus Horários)
           </NextLink>
           <NextLink
             href="/lucas-beachtennis"
             onClick={() => setMobileMenuOpen(false)}
             className="block px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 rounded-xl"
           >
-            🎾 1ª Conta Demo: Prof. Lucas (Beach Tennis)
+            1ª Conta Demo: Prof. Lucas (Beach Tennis)
           </NextLink>
           <NextLink
             href="/chat"
@@ -170,7 +170,7 @@ export default function Navbar() {
             onClick={() => setMobileMenuOpen(false)}
             className="block px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 rounded-xl"
           >
-            💳 Planos (Grátis e R$ 19,90)
+            Planos (Grátis e R$ 19,90)
           </NextLink>
           <div className="pt-2 grid grid-cols-2 gap-2">
             <NextLink

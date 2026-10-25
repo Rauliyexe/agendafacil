@@ -314,13 +314,14 @@ export default function AppSidebar({
 
             <NextLink
               href="/lucas-beachtennis"
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold border transition ${
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold border transition flex items-center gap-1.5 ${
                 pathname === '/lucas-beachtennis'
-                  ? 'bg-amber-500 text-white border-amber-500'
-                  : 'bg-amber-50 hover:bg-amber-100 text-amber-800 border-amber-200'
+                  ? 'bg-blue-600 text-white border-blue-600'
+                  : 'bg-blue-50 hover:bg-blue-100 text-blue-800 border-blue-200'
               }`}
             >
-              🎾 1ª Conta (Beach Tennis)
+              <Trophy className="w-3.5 h-3.5" />
+              <span>1ª Conta (Beach Tennis)</span>
             </NextLink>
 
             <NextLink

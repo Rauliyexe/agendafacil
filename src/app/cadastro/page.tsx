@@ -505,8 +505,9 @@ export default function CadastroPage() {
                   <div className="space-y-5">
                     {/* Quick Template Selector */}
                     <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5">
-                      <p className="text-xs font-extrabold text-slate-700">
-                        ⚡ Preencher modelo rápido de área de trabalho (opcional):
+                      <p className="text-xs font-extrabold text-slate-700 flex items-center gap-1.5">
+                        <Zap className="w-3.5 h-3.5 text-blue-600" />
+                        <span>Preencher modelo rápido de área de trabalho (opcional):</span>
                       </p>
                       <div className="flex flex-wrap gap-2">
                         {PROFESSION_TEMPLATES.map((tpl) => {

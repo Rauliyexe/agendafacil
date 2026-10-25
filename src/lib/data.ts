@@ -433,7 +433,7 @@ export const SAAS_PLANS: SubscriptionPlan[] = [
     recommended: true,
     features: [
       'Tudo do Plano Normal Gratuito',
-      '⚡ Lembretes automáticos no WhatsApp (confirmação em 1 clique)',
+      'Lembretes automáticos no WhatsApp (confirmação em 1 clique)',
       'Destaque na aba de Prestadores Ativos',
       'Cobrança opcional de Sinal / Pix antecipado',
       'Relatórios de serviços mais solicitados e faturamento',
@@ -634,7 +634,7 @@ export const INITIAL_STORIES: ProviderStory[] = [
       {
         id: 'sl-lucas-1',
         imageUrl: 'https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=900&auto=format&fit=crop&q=80',
-        badgeText: '🎾 QUADRA 02 PRONTA • VAGA HOJE 16:00',
+        badgeText: 'QUADRA 02 PRONTA • VAGA HOJE 16:00',
         caption: 'Areia nivelada e kit de raquetes de carbono 18K prontos na Arena Sunset! Abriu 1 horário hoje às 16:00 para aula individual ou dupla.',
         postedAt: 'Há 18 min',
         likes: 64,
@@ -645,7 +645,7 @@ export const INITIAL_STORIES: ProviderStory[] = [
       {
         id: 'sl-lucas-2',
         imageUrl: 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=900&auto=format&fit=crop&q=80',
-        badgeText: '🏆 CLÍNICA DE SMASH & SAQUE',
+        badgeText: 'CLÍNICA DE SMASH & SAQUE',
         caption: 'Resultado do treino tático da turma das 07h! Quer evoluir sua defesa e bloqueio na rede? Reserve seu horário na agenda.',
         postedAt: 'Há 1h',
         likes: 92,
@@ -667,7 +667,7 @@ export const INITIAL_STORIES: ProviderStory[] = [
       {
         id: 'sl-carlos-1',
         imageUrl: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=900&auto=format&fit=crop&q=80',
-        badgeText: '❄️ ANTES E DEPOIS • HIGIENIZAÇÃO SPLIT',
+        badgeText: 'ANTES E DEPOIS • HIGIENIZAÇÃO SPLIT',
         caption: 'Trabalho concluído agora na Av. Paulista! Limpeza química da serpentina + recarga de gás. Seu ar voltou a gelar como novo!',
         postedAt: 'Há 35 min',
         likes: 47,
@@ -689,7 +689,7 @@ export const INITIAL_STORIES: ProviderStory[] = [
       {
         id: 'sl-joao-1',
         imageUrl: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=900&auto=format&fit=crop&q=80',
-        badgeText: '⚡ QUADRO ELÉTRICO NOVO • NBR 5410',
+        badgeText: 'QUADRO ELÉTRICO NOVO • NBR 5410',
         caption: 'Montagem e identificação completa de quadro de disjuntores DIN com DR e DPS contra surtos. Segurança total para sua residência!',
         postedAt: 'Há 1h 20min',
         likes: 53,
@@ -711,7 +711,7 @@ export const INITIAL_STORIES: ProviderStory[] = [
       {
         id: 'sl-aqua-1',
         imageUrl: 'https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?w=900&auto=format&fit=crop&q=80',
-        badgeText: '💧 ÁGUA CRISTALINA • PH 7.4',
+        badgeText: 'ÁGUA CRISTALINA • PH 7.4',
         caption: 'Tratamento de choque, aspiração de fundo e limpeza de bordas finalizados no condomínio Jardins. Agenda aberta para esta semana!',
         postedAt: 'Há 2h',
         likes: 39,
@@ -733,7 +733,7 @@ export const INITIAL_STORIES: ProviderStory[] = [
       {
         id: 'sl-lara-1',
         imageUrl: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=900&auto=format&fit=crop&q=80',
-        badgeText: '✨ ENTREGA PÓS-REFORMA IMPECÁVEL',
+        badgeText: 'ENTREGA PÓS-REFORMA IMPECÁVEL',
         caption: 'Remoção de resíduos de tinta e rejunte de porcelanato com maquinário profissional e produtos biodegradáveis.',
         postedAt: 'Há 3h',
         likes: 71,

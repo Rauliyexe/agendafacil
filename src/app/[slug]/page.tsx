@@ -532,7 +532,7 @@ export default function TenantBookingDesktopPage() {
                               : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                           }`}
                         >
-                          {isSelected ? '✓ Trabalho Selecionado' : '+ Selecionar Trabalho'}
+                          {isSelected ? 'Trabalho Selecionado' : '+ Selecionar Trabalho'}
                         </span>
                       </div>
                     </div>
