@@ -116,7 +116,7 @@ const PROFESSION_TEMPLATES = [
   },
   {
     id: 'beachtennis',
-    label: 'Beach Tennis (1ª Conta)',
+    label: 'Beach Tennis & Aulas',
     icon: Trophy,
     role: 'Professor de Beach Tennis',
     experience: '6 anos',

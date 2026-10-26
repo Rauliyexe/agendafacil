@@ -64,10 +64,10 @@ export default function PlanosPage() {
             </div>
 
             <NextLink
-              href="/lucas-beachtennis"
+              href="/explorar"
               className="shrink-0 px-6 py-3.5 rounded-xl bg-white hover:bg-emerald-50 text-emerald-800 font-extrabold text-sm shadow-md transition"
             >
-              Testar Agendamento de Exemplo
+              Explorar Prestadores
             </NextLink>
           </div>
         </div>

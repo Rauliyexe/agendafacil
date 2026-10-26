@@ -139,7 +139,7 @@ export default function LoginPage() {
                         Prof. Lucas Becker
                       </p>
                       <p className="text-[11px] text-slate-500 truncate">
-                        1ª Conta • Beach Tennis
+                        Beach Tennis • Aulas
                       </p>
                     </div>
                   </NextLink>

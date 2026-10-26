@@ -133,7 +133,7 @@ export default function TenantBookingDesktopPage() {
     if (tenantSlug === 'lucas-beachtennis') {
       return {
         icon: Trophy,
-        tag: 'Esportes & Aulas (1ª Conta)',
+        tag: 'Esportes & Aulas',
         workType: 'Aulas & Locação de Quadra',
         includes: ['Equipamentos (raquetes e bolinhas) inclusos', 'Quadra de areia oficial reservada', 'Confirmação imediata na agenda'],
       };

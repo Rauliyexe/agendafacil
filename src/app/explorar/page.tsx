@@ -18,6 +18,7 @@ import {
   MessageCircle,
   CheckCircle2,
   User,
+  Compass,
 } from 'lucide-react';
 import { getStoredTenants, getStoredBookings } from '@/lib/store';
 import { Tenant, Booking } from '@/lib/types';
@@ -93,8 +94,8 @@ export default function ExplorarClientePage() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[11px] font-extrabold">
-                <User className="w-3 h-3 text-blue-600" />
-                Visão do Cliente • Simples e Direta
+                <Compass className="w-3 h-3 text-blue-600" />
+                Explorar Prestadores
               </span>
               <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 mt-1">
                 O que você quer agendar hoje?
@@ -106,7 +107,7 @@ export default function ExplorarClientePage() {
               className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-extrabold flex items-center gap-2 w-fit transition"
             >
               <Calendar className="w-4 h-4 text-blue-600" />
-              <span>Meus Horários Marcados ({myBookings.length})</span>
+              <span>Meus Horários ({myBookings.length})</span>
             </NextLink>
           </div>
 

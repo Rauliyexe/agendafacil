@@ -106,7 +106,7 @@ export default function AppSidebar({
   const clientMenuItems = [
     {
       href: '/explorar',
-      label: 'Explorar & Agendar',
+      label: 'Explorar Prestadores',
       description: 'Profissionais e preços fixos',
       icon: Compass,
       active: pathname === '/explorar',
@@ -114,16 +114,9 @@ export default function AppSidebar({
     {
       href: '/meus-agendamentos',
       label: 'Meus Agendamentos',
-      description: 'Horários que você marcou',
+      description: 'Horários marcados',
       icon: Calendar,
       active: pathname === '/meus-agendamentos',
-    },
-    {
-      href: '/lucas-beachtennis',
-      label: '1ª Conta: Beach Tennis',
-      description: 'Prof. Lucas Becker',
-      icon: Trophy,
-      active: pathname === '/lucas-beachtennis',
     },
     {
       href: '/chat',
