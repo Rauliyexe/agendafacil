@@ -35,7 +35,7 @@ export default function LoginPage() {
       headerTitle="Entrar na Plataforma"
       headerSubtitle="Acesse seus agendamentos de trabalhos, sua agenda profissional ou o chat ao vivo"
     >
-      <div className="flex-1 max-w-[1600px] w-full mx-auto p-4 sm:p-6 lg:p-8 flex items-center">
+      <div className="flex-1 max-w-[1600px] w-full mx-auto p-3.5 sm:p-6 lg:p-8 pb-28 lg:pb-8 flex items-center">
         <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
           {/* =================================================================
               LEFT 6 COLUMNS: LOGIN FORM & 1-CLICK DEMO PROFILES

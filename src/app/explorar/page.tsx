@@ -92,7 +92,7 @@ export default function ExplorarClienteDesktopPage() {
   return (
     <AppSidebar>
       {/* MAIN DESKTOP WORKSPACE */}
-      <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-24 lg:pb-10 w-full max-w-7xl mx-auto space-y-8">
+      <main className="flex-1 p-3.5 sm:p-6 lg:p-8 pb-28 lg:pb-10 w-full max-w-7xl mx-auto space-y-6 sm:space-y-8">
         
         {/* Top Desktop Bar */}
         <div className="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/80 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-4">

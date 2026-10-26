@@ -12,7 +12,7 @@ function ChatPageContent() {
 
   return (
     <AppSidebar activeDashboardTab="chat" chatUnreadCount={unreadCount}>
-      <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-24 lg:pb-8 max-w-[1440px] w-full mx-auto space-y-6">
+      <main className="flex-1 p-3.5 sm:p-6 lg:p-8 pb-28 lg:pb-8 max-w-[1440px] w-full mx-auto space-y-4 sm:space-y-6">
         <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-extrabold text-slate-900">

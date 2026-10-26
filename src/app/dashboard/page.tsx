@@ -270,27 +270,50 @@ function DashboardContent() {
       notificationsCount={notifications.length}
     >
       {/* MAIN WORKSPACE CONTENT AREA */}
-      <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-24 lg:pb-10 w-full max-w-[1440px] mx-auto">
+      <main className="flex-1 p-3.5 sm:p-6 lg:p-8 pb-28 lg:pb-10 w-full max-w-[1440px] mx-auto space-y-4 sm:space-y-6">
         
+        {/* MOBILE-ONLY SEGMENTED PILL SWITCHER (SCROLLS WITH PAGE, NOT GLUED TO SCREEN) */}
+        <div className="lg:hidden flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
+          {sidebarItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = activeTab === item.id;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => setActiveTab(item.id)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap flex items-center gap-1.5 shrink-0 transition ${
+                  isActive
+                    ? 'bg-blue-600 text-white shadow-xs'
+                    : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+                }`}
+              >
+                <Icon className="w-3.5 h-3.5" />
+                <span>{item.label}</span>
+              </button>
+            );
+          })}
+        </div>
+
         {/* -------------------------------------------------------------------
             ABA 1: INÍCIO ("Olá, Raul!" - Dashboard Overview)
            ------------------------------------------------------------------- */}
         {activeTab === 'inicio' && (
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {/* Top Greeting Bar */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/80 shadow-2xs">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 sm:p-6 rounded-2xl border border-slate-200/80 shadow-2xs">
               <div>
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                <h1 className="text-xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
                   Olá, Raul!
                 </h1>
-                <p className="text-sm text-slate-500 mt-0.5">
+                <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
                   Aqui está um resumo dos seus serviços de hoje.
                 </p>
               </div>
 
-              <div className="flex flex-wrap items-center gap-3">
-                <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700">
-                  <Calendar className="w-4 h-4 text-blue-600" />
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-[11px] sm:text-xs font-semibold text-slate-700">
+                  <Calendar className="w-3.5 h-3.5 text-blue-600" />
                   <span>26 de outubro de 2026</span>
                 </div>
 
@@ -299,10 +322,10 @@ function DashboardContent() {
                     setBookingStep(1);
                     setActiveTab('servicos');
                   }}
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold shadow-sm shadow-blue-600/20 transition"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 sm:py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold shadow-xs transition"
                 >
-                  <Plus className="w-4 h-4" />
-                  Novo agendamento
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Novo agendamento</span>
                 </button>
               </div>
             </div>
@@ -310,49 +333,49 @@ function DashboardContent() {
             {/* STORIES DOS PRESTADORES (Rede Social de Trabalhos no Celular e PC) */}
             <ProviderStoriesBar />
 
-            {/* 4 KPI Metric Cards (Identical to Design Board) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-2xs flex items-start gap-4">
-                <div className="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-                  <Calendar className="w-5 h-5" />
+            {/* 4 KPI Metric Cards (2x2 Grid on Mobile, 4 Cols on PC) */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+              <div className="bg-white rounded-2xl p-3.5 sm:p-5 border border-slate-200/80 shadow-2xs flex flex-col sm:flex-row sm:items-start gap-2.5 sm:gap-4">
+                <div className="w-8 h-8 sm:w-11 sm:h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                  <Calendar className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
-                <div>
-                  <p className="text-xs font-semibold text-slate-500">Agendamentos hoje</p>
-                  <p className="text-2xl font-black text-slate-900 mt-0.5">{activeBookings.length}</p>
-                  <p className="text-[11px] text-slate-400 mt-0.5">+2 em relação a ontem</p>
-                </div>
-              </div>
-
-              <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-2xs flex items-start gap-4">
-                <div className="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-                  <Users className="w-5 h-5" />
-                </div>
-                <div>
-                  <p className="text-xs font-semibold text-slate-500">Prestadores ativos</p>
-                  <p className="text-2xl font-black text-slate-900 mt-0.5">8</p>
-                  <p className="text-[11px] text-slate-400 mt-0.5">Todos confirmados</p>
+                <div className="min-w-0">
+                  <p className="text-[11px] sm:text-xs font-semibold text-slate-500 truncate">Agendamentos hoje</p>
+                  <p className="text-xl sm:text-2xl font-black text-slate-900 mt-0.5">{activeBookings.length}</p>
+                  <p className="text-[10px] sm:text-[11px] text-slate-400 mt-0.5 truncate">+2 vs ontem</p>
                 </div>
               </div>
 
-              <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-2xs flex items-start gap-4">
-                <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-                  <CheckCircle2 className="w-5 h-5" />
+              <div className="bg-white rounded-2xl p-3.5 sm:p-5 border border-slate-200/80 shadow-2xs flex flex-col sm:flex-row sm:items-start gap-2.5 sm:gap-4">
+                <div className="w-8 h-8 sm:w-11 sm:h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                  <Users className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
-                <div>
-                  <p className="text-xs font-semibold text-slate-500">Serviços concluídos</p>
-                  <p className="text-2xl font-black text-slate-900 mt-0.5">{confirmedCount}</p>
-                  <p className="text-[11px] text-slate-400 mt-0.5">de {activeBookings.length} agendamentos</p>
+                <div className="min-w-0">
+                  <p className="text-[11px] sm:text-xs font-semibold text-slate-500 truncate">Prestadores ativos</p>
+                  <p className="text-xl sm:text-2xl font-black text-slate-900 mt-0.5">8</p>
+                  <p className="text-[10px] sm:text-[11px] text-slate-400 mt-0.5 truncate">Confirmados</p>
                 </div>
               </div>
 
-              <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-2xs flex items-start gap-4">
-                <div className="w-11 h-11 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
-                  <Clock className="w-5 h-5" />
+              <div className="bg-white rounded-2xl p-3.5 sm:p-5 border border-slate-200/80 shadow-2xs flex flex-col sm:flex-row sm:items-start gap-2.5 sm:gap-4">
+                <div className="w-8 h-8 sm:w-11 sm:h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                  <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
-                <div>
-                  <p className="text-xs font-semibold text-slate-500">Pendentes</p>
-                  <p className="text-2xl font-black text-slate-900 mt-0.5">{pendingCount || 2}</p>
-                  <p className="text-[11px] text-slate-400 mt-0.5">em andamento</p>
+                <div className="min-w-0">
+                  <p className="text-[11px] sm:text-xs font-semibold text-slate-500 truncate">Concluídos</p>
+                  <p className="text-xl sm:text-2xl font-black text-slate-900 mt-0.5">{confirmedCount}</p>
+                  <p className="text-[10px] sm:text-[11px] text-slate-400 mt-0.5 truncate">de {activeBookings.length} total</p>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-2xl p-3.5 sm:p-5 border border-slate-200/80 shadow-2xs flex flex-col sm:flex-row sm:items-start gap-2.5 sm:gap-4">
+                <div className="w-8 h-8 sm:w-11 sm:h-11 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                  <Clock className="w-4 h-4 sm:w-5 sm:h-5" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[11px] sm:text-xs font-semibold text-slate-500 truncate">Pendentes</p>
+                  <p className="text-xl sm:text-2xl font-black text-slate-900 mt-0.5">{pendingCount || 2}</p>
+                  <p className="text-[10px] sm:text-[11px] text-slate-400 mt-0.5 truncate">Em andamento</p>
                 </div>
               </div>
             </div>
