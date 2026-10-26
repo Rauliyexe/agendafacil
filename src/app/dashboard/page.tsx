@@ -30,6 +30,8 @@ import {
   QrCode,
   CreditCard,
   ShieldCheck,
+  Database,
+  Server,
 } from 'lucide-react';
 import {
   getStoredTenants,
@@ -37,7 +39,9 @@ import {
   saveNewBooking,
   updateBookingStatus,
   saveTenant,
+  syncWithSupabase,
 } from '@/lib/store';
+import { isSupabaseConfigured } from '@/lib/supabase/client';
 import { INITIAL_NOTIFICATIONS } from '@/lib/data';
 import { Tenant, Booking, Service, AppNotification } from '@/lib/types';
 import { generatePixBRCode } from '@/lib/pix';
@@ -108,10 +112,47 @@ function DashboardContent() {
     }
   }, [searchParams]);
 
+  const [supabaseSyncing, setSupabaseSyncing] = useState(false);
+  const [supabaseSyncResult, setSupabaseSyncResult] = useState<string | null>(null);
+
   useEffect(() => {
     setTenants(getStoredTenants());
     setBookings(getStoredBookings());
+
+    // Try auto-sync with Supabase on mount
+    syncWithSupabase().then((res) => {
+      if (res.synced) {
+        setTenants(getStoredTenants());
+        setBookings(getStoredBookings());
+      }
+    });
+
+    const handleSync = () => {
+      setTenants(getStoredTenants());
+      setBookings(getStoredBookings());
+    };
+    window.addEventListener('agendafacil-data-synced', handleSync);
+    return () => window.removeEventListener('agendafacil-data-synced', handleSync);
   }, []);
+
+  const handleManualSupabaseSync = async () => {
+    setSupabaseSyncing(true);
+    setSupabaseSyncResult(null);
+    const res = await syncWithSupabase();
+    setSupabaseSyncing(false);
+    if (res.synced) {
+      setTenants(getStoredTenants());
+      setBookings(getStoredBookings());
+      setSupabaseSyncResult('Dados sincronizados com o Supabase com sucesso!');
+    } else {
+      setSupabaseSyncResult(
+        isSupabaseConfigured()
+          ? `Falha ao sincronizar: ${res.error}`
+          : 'Supabase ainda não configurado no .env.local (Modo Local ativo).'
+      );
+    }
+    setTimeout(() => setSupabaseSyncResult(null), 4000);
+  };
 
   const currentProvider: Tenant | undefined = useMemo(() => {
     if (selectedProviderSlug === 'todos') {
@@ -1160,6 +1201,83 @@ function DashboardContent() {
                     </>
                   )}
                 </button>
+              </div>
+            </div>
+
+            {/* Full-width 12 Cols: Supabase PostgreSQL Database Integration */}
+            <div className="lg:col-span-12 bg-white rounded-3xl border border-slate-200 p-6 shadow-2xs space-y-5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                    <Database className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-base font-extrabold text-slate-900">
+                        Banco de Dados Supabase (PostgreSQL)
+                      </h3>
+                      <span
+                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider ${
+                          isSupabaseConfigured()
+                            ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                            : 'bg-amber-100 text-amber-800 border border-amber-300'
+                        }`}
+                      >
+                        {isSupabaseConfigured()
+                          ? 'Conectado em Tempo Real'
+                          : 'Aguardando Credenciais (.env.local)'}
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Sincronização em nuvem para prestadores, serviços, agendamentos e conversas de chat.
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleManualSupabaseSync}
+                  disabled={supabaseSyncing}
+                  className="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-extrabold flex items-center justify-center gap-2 transition disabled:opacity-50 shrink-0"
+                >
+                  <Server className="w-3.5 h-3.5 text-blue-400" />
+                  <span>{supabaseSyncing ? 'Sincronizando...' : 'Sincronizar Agora'}</span>
+                </button>
+              </div>
+
+              {supabaseSyncResult && (
+                <div
+                  className={`p-3 rounded-xl text-xs font-bold ${
+                    supabaseSyncResult.includes('sucesso')
+                      ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                      : 'bg-amber-50 text-amber-800 border border-amber-200'
+                  }`}
+                >
+                  {supabaseSyncResult}
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2 border-t border-slate-100 text-xs">
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
+                  <span className="font-extrabold text-slate-900 block">1. Script SQL Pronto</span>
+                  <p className="text-slate-600 leading-relaxed text-[11px]">
+                    Arquivo <code className="px-1.5 py-0.5 rounded bg-slate-200 font-mono text-slate-800">supabase/schema.sql</code> já criado com tabelas, índices e dados iniciais.
+                  </p>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
+                  <span className="font-extrabold text-slate-900 block">2. Variáveis de Ambiente</span>
+                  <p className="text-slate-600 leading-relaxed text-[11px]">
+                    Configure no <code className="px-1.5 py-0.5 rounded bg-slate-200 font-mono text-slate-800">.env.local</code> e na Vercel: <code className="font-mono text-blue-600">NEXT_PUBLIC_SUPABASE_URL</code> e <code className="font-mono text-blue-600">NEXT_PUBLIC_SUPABASE_ANON_KEY</code>.
+                  </p>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
+                  <span className="font-extrabold text-slate-900 block">3. Fallback Resiliente</span>
+                  <p className="text-slate-600 leading-relaxed text-[11px]">
+                    Se o Supabase ainda não estiver conectado ou ficar offline, o app opera no cache local sem travar nada para clientes e prestadores.
+                  </p>
+                </div>
               </div>
             </div>
           </div>

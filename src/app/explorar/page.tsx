@@ -20,7 +20,7 @@ import {
   User,
   Compass,
 } from 'lucide-react';
-import { getStoredTenants, getStoredBookings } from '@/lib/store';
+import { getStoredTenants, getStoredBookings, syncWithSupabase } from '@/lib/store';
 import { Tenant, Booking } from '@/lib/types';
 import ProviderStoriesBar from '@/components/stories/ProviderStoriesBar';
 import AppSidebar from '@/components/layout/AppSidebar';
@@ -42,6 +42,20 @@ export default function ExplorarClientePage() {
   useEffect(() => {
     setTenants(getStoredTenants());
     setBookings(getStoredBookings());
+
+    syncWithSupabase().then((res) => {
+      if (res.synced) {
+        setTenants(getStoredTenants());
+        setBookings(getStoredBookings());
+      }
+    });
+
+    const handleSync = () => {
+      setTenants(getStoredTenants());
+      setBookings(getStoredBookings());
+    };
+    window.addEventListener('agendafacil-data-synced', handleSync);
+    return () => window.removeEventListener('agendafacil-data-synced', handleSync);
   }, []);
 
   const tenantList = useMemo(() => Object.values(tenants), [tenants]);

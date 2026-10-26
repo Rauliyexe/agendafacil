@@ -6,6 +6,14 @@ import {
   INITIAL_PROVIDER_CONVERSATIONS,
   INITIAL_STORIES,
 } from './data';
+import {
+  fetchTenantsFromSupabase,
+  saveTenantToSupabase,
+  fetchBookingsFromSupabase,
+  saveBookingToSupabase,
+  updateBookingStatusInSupabase,
+} from './supabase/api';
+import { isSupabaseConfigured } from './supabase/client';
 
 const STORAGE_KEYS = {
   TENANTS: 'agendafacil_tenants_v4_pix',
@@ -58,6 +66,13 @@ export function saveTenant(tenant: Tenant): void {
   const tenants = getStoredTenants();
   tenants[tenant.slug] = tenant;
   localStorage.setItem(STORAGE_KEYS.TENANTS, JSON.stringify(tenants));
+
+  // Asynchronously sync to Supabase if configured
+  if (isSupabaseConfigured()) {
+    saveTenantToSupabase(tenant).catch((err) =>
+      console.error('Background Supabase tenant sync error:', err)
+    );
+  }
 }
 
 export function getStoredBookings(): Booking[] {
@@ -79,6 +94,13 @@ export function saveNewBooking(booking: Booking): void {
   const bookings = getStoredBookings();
   const updated = [booking, ...bookings];
   localStorage.setItem(STORAGE_KEYS.BOOKINGS, JSON.stringify(updated));
+
+  // Asynchronously sync to Supabase if configured
+  if (isSupabaseConfigured()) {
+    saveBookingToSupabase(booking).catch((err) =>
+      console.error('Background Supabase booking sync error:', err)
+    );
+  }
 }
 
 export function updateBookingStatus(bookingId: string, status: Booking['status']): void {
@@ -86,6 +108,13 @@ export function updateBookingStatus(bookingId: string, status: Booking['status']
   const bookings = getStoredBookings();
   const updated = bookings.map((b) => (b.id === bookingId ? { ...b, status } : b));
   localStorage.setItem(STORAGE_KEYS.BOOKINGS, JSON.stringify(updated));
+
+  // Asynchronously sync to Supabase if configured
+  if (isSupabaseConfigured()) {
+    updateBookingStatusInSupabase(bookingId, status).catch((err) =>
+      console.error('Background Supabase status sync error:', err)
+    );
+  }
 }
 
 export function getStoredConversations(): ChatConversation[] {
@@ -148,4 +177,33 @@ export function saveStories(stories: ProviderStory[]): void {
   localStorage.setItem(STORAGE_KEYS.STORIES, JSON.stringify(stories));
 }
 
+/**
+ * Initializes and synchronizes local storage with Supabase database
+ * Can be called inside useEffect on root/dashboard/explorar.
+ */
+export async function syncWithSupabase(): Promise<{ synced: boolean; error?: string }> {
+  if (!isSupabaseConfigured()) {
+    return { synced: false, error: 'Supabase credentials not configured' };
+  }
 
+  try {
+    const [remoteTenants, remoteBookings] = await Promise.all([
+      fetchTenantsFromSupabase(),
+      fetchBookingsFromSupabase(),
+    ]);
+
+    if (typeof window !== 'undefined') {
+      if (Object.keys(remoteTenants).length > 0) {
+        localStorage.setItem(STORAGE_KEYS.TENANTS, JSON.stringify(remoteTenants));
+      }
+      if (remoteBookings.length > 0) {
+        localStorage.setItem(STORAGE_KEYS.BOOKINGS, JSON.stringify(remoteBookings));
+      }
+      window.dispatchEvent(new CustomEvent('agendafacil-data-synced'));
+    }
+
+    return { synced: true };
+  } catch (err: any) {
+    return { synced: false, error: err?.message || 'Sync failed' };
+  }
+}
