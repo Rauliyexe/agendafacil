@@ -27,6 +27,9 @@ import {
   User,
   Briefcase,
   AlertCircle,
+  QrCode,
+  CreditCard,
+  ShieldCheck,
 } from 'lucide-react';
 import {
   getStoredTenants,
@@ -37,6 +40,8 @@ import {
 } from '@/lib/store';
 import { INITIAL_NOTIFICATIONS } from '@/lib/data';
 import { Tenant, Booking, Service, AppNotification } from '@/lib/types';
+import { generatePixBRCode } from '@/lib/pix';
+import PixPaymentModal, { PixQrCodeSvg } from '@/components/pix/PixPaymentModal';
 import ChatWorkspace from '@/components/chat/ChatWorkspace';
 import ProviderStoriesBar from '@/components/stories/ProviderStoriesBar';
 import AppSidebar, { DashboardTabId } from '@/components/layout/AppSidebar';
@@ -68,6 +73,22 @@ function DashboardContent() {
   const [newServicePrice, setNewServicePrice] = useState('');
   const [newServiceDuration, setNewServiceDuration] = useState('1h');
 
+  // Pix & Stripe Settings State for Active Provider
+  const [pixKeyInput, setPixKeyInput] = useState('lucas.becker@arenasunset.com.br');
+  const [pixKeyTypeInput, setPixKeyTypeInput] = useState<
+    'cpf' | 'cnpj' | 'email' | 'telefone' | 'aleatoria'
+  >('email');
+  const [pixBeneficiaryInput, setPixBeneficiaryInput] = useState(
+    'LUCAS BECKER BEACH TENNIS'
+  );
+  const [acceptStripeInput, setAcceptStripeInput] = useState(true);
+  const [pixTestAmount, setPixTestAmount] = useState(90);
+  const [pixSavedMsg, setPixSavedMsg] = useState(false);
+  const [copiedTestPix, setCopiedTestPix] = useState(false);
+
+  // Active Booking for QR Code Modal
+  const [pixModalBooking, setPixModalBooking] = useState<Booking | null>(null);
+
   useEffect(() => {
     const tabParam = searchParams.get('tab') as DashboardTabId | null;
     if (
@@ -98,6 +119,47 @@ function DashboardContent() {
     }
     return tenants[selectedProviderSlug] || tenants['lucas-beachtennis'];
   }, [tenants, selectedProviderSlug]);
+
+  useEffect(() => {
+    if (currentProvider) {
+      setPixKeyInput(currentProvider.pixKey || 'lucas.becker@arenasunset.com.br');
+      setPixKeyTypeInput(currentProvider.pixKeyType || 'email');
+      setPixBeneficiaryInput(
+        currentProvider.pixBeneficiary || currentProvider.name.toUpperCase()
+      );
+      setAcceptStripeInput(currentProvider.acceptStripeCard ?? true);
+      setPixTestAmount(currentProvider.services[0]?.price || 90);
+    }
+  }, [currentProvider]);
+
+  const handleSavePixSettings = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!currentProvider) return;
+    const updated: Tenant = {
+      ...currentProvider,
+      pixKey: pixKeyInput,
+      pixKeyType: pixKeyTypeInput,
+      pixBeneficiary: pixBeneficiaryInput,
+      acceptStripeCard: acceptStripeInput,
+    };
+    saveTenant(updated);
+    setTenants((prev) => ({ ...prev, [updated.slug]: updated }));
+    setPixSavedMsg(true);
+    setTimeout(() => setPixSavedMsg(false), 2500);
+  };
+
+  const livePreviewBrCode = useMemo(
+    () =>
+      generatePixBRCode({
+        pixKey: pixKeyInput || 'lucas.becker@arenasunset.com.br',
+        pixKeyType: pixKeyTypeInput,
+        merchantName: pixBeneficiaryInput || currentProvider?.name || 'PRESTADOR',
+        merchantCity: 'SAO PAULO',
+        amount: Number(pixTestAmount) || 90,
+        description: currentProvider?.services[0]?.name || 'SERVICO',
+      }),
+    [pixKeyInput, pixKeyTypeInput, pixBeneficiaryInput, pixTestAmount, currentProvider]
+  );
 
   // Filter bookings belonging to the active provider (or all if 'todos')
   const providerBookings = useMemo(() => {
@@ -260,7 +322,7 @@ function DashboardContent() {
     { id: 'servicos', label: 'Meus Serviços', icon: Wrench },
     { id: 'clientes', label: 'Meus Clientes', icon: Users },
     { id: 'chat', label: 'Chat', icon: MessageSquare },
-    { id: 'configuracoes', label: 'Horários', icon: Settings },
+    { id: 'configuracoes', label: 'Chave Pix & Stripe', icon: QrCode },
   ];
 
   return (
@@ -642,6 +704,15 @@ function DashboardContent() {
                             </button>
                           )}
 
+                          <button
+                            type="button"
+                            onClick={() => setPixModalBooking(booking)}
+                            className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-extrabold flex items-center gap-1.5 transition"
+                          >
+                            <QrCode className="w-3.5 h-3.5 text-emerald-400" />
+                            <span>QR Code Pix</span>
+                          </button>
+
                           <a
                             href={`https://wa.me/55${booking.clientPhone.replace(/\D/g, '')}?text=${encodeURIComponent(
                               `Olá ${booking.clientName}, aqui é ${booking.tenantName} sobre seu agendamento de ${booking.services[0]?.name} no dia ${booking.formattedDate} às ${booking.time}.`
@@ -911,27 +982,207 @@ function DashboardContent() {
         )}
 
         {/* ===================================================================
-            ABA 6 & 7: NOTIFICAÇÕES & CONFIGURAÇÕES DE HORÁRIO
+            ABA 6 & 7: CHAVE PIX, GERADOR DE QR CODE E STRIPE DO PRESTADOR
            =================================================================== */}
         {(activeTab === 'notificacoes' || activeTab === 'configuracoes') && currentProvider && (
-          <div className="bg-white rounded-3xl border border-slate-200 p-6 space-y-4">
-            <h2 className="text-lg font-extrabold text-slate-900">
-              Configuração de Atendimento — {currentProvider.name}
-            </h2>
-            <p className="text-xs text-slate-500">
-              Endereço de atendimento: {currentProvider.address} • Telefone: {currentProvider.phone}
-            </p>
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-2">
-              <p className="font-extrabold text-slate-800">
-                Horários abertos para agendamento automático:
-              </p>
-              <p className="text-slate-600">
-                Segunda a Sábado — 08:00 às 19:00 (Intervalo de almoço 12:00 às 13:30)
-              </p>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            {/* Left 7 Cols: Configurar Chave Pix & Stripe */}
+            <div className="lg:col-span-7 bg-white rounded-3xl border border-slate-200 p-6 shadow-2xs space-y-5">
+              <div>
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-extrabold uppercase tracking-wider">
+                  <QrCode className="w-3.5 h-3.5" />
+                  Recebimento Direto na Sua Conta
+                </span>
+                <h2 className="text-lg sm:text-xl font-extrabold text-slate-900 mt-1">
+                  Configurar Chave Pix & Pagamentos — {currentProvider.name}
+                </h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Cadastre sua chave Pix abaixo. O sistema gera automaticamente o QR Code e o código Pix Copia e Cola já com o valor exato de cada serviço para seus clientes pagarem sem taxa.
+                </p>
+              </div>
+
+              <form onSubmit={handleSavePixSettings} className="space-y-4 text-xs">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">
+                      Tipo da Chave Pix
+                    </label>
+                    <select
+                      value={pixKeyTypeInput}
+                      onChange={(e) => setPixKeyTypeInput(e.target.value as any)}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white font-semibold outline-none focus:border-blue-600"
+                    >
+                      <option value="cpf">CPF</option>
+                      <option value="cnpj">CNPJ</option>
+                      <option value="email">E-mail</option>
+                      <option value="telefone">Celular / WhatsApp</option>
+                      <option value="aleatoria">Chave Aleatória</option>
+                    </select>
+                  </div>
+
+                  <div className="sm:col-span-2">
+                    <label className="block font-bold text-slate-700 mb-1">
+                      Sua Chave Pix (para gerar o QR Code automático)
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={pixKeyInput}
+                      onChange={(e) => setPixKeyInput(e.target.value)}
+                      placeholder="Ex: seu@email.com, CPF ou (11) 99999-9999"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-semibold outline-none focus:border-blue-600"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">
+                    Nome do Favorecido / Titular da Conta
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={pixBeneficiaryInput}
+                    onChange={(e) => setPixBeneficiaryInput(e.target.value)}
+                    placeholder="Ex: LUCAS BECKER BEACH TENNIS"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-semibold outline-none focus:border-blue-600"
+                  />
+                </div>
+
+                {/* Stripe Option Toggle */}
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-4">
+                  <div className="space-y-0.5">
+                    <p className="font-extrabold text-slate-900 flex items-center gap-1.5">
+                      <CreditCard className="w-4 h-4 text-blue-600" />
+                      <span>Habilitar também Cartão de Crédito (Stripe Checkout)</span>
+                    </p>
+                    <p className="text-[11px] text-slate-500">
+                      Permite que o cliente escolha pagar no Pix (0% de taxa, direto para você) ou parcelar no Cartão via Stripe.
+                    </p>
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={acceptStripeInput}
+                    onChange={(e) => setAcceptStripeInput(e.target.checked)}
+                    className="w-5 h-5 accent-blue-600 rounded cursor-pointer shrink-0"
+                  />
+                </div>
+
+                {pixSavedMsg && (
+                  <div className="p-3 rounded-xl bg-emerald-600 text-white font-extrabold text-center flex items-center justify-center gap-2">
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>Chave Pix salva! Todos os seus agendamentos e chat já usam esta chave.</span>
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold transition flex items-center justify-center gap-2"
+                >
+                  <Check className="w-4 h-4" />
+                  <span>Salvar Chave Pix e Configurações de Pagamento</span>
+                </button>
+              </form>
+            </div>
+
+            {/* Right 5 Cols: Simulador e Gerador de QR Code Pix Ao Vivo */}
+            <div className="lg:col-span-5 bg-slate-900 text-white rounded-3xl p-6 border border-slate-800 space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-400">
+                  QR Code Pix Gerado em Tempo Real
+                </span>
+                <span className="px-2 py-0.5 rounded-full bg-slate-800 text-[10px] font-bold text-slate-300">
+                  Padrão Banco Central
+                </span>
+              </div>
+
+              <div className="flex flex-col items-center text-center space-y-2 py-2">
+                <PixQrCodeSvg brCode={livePreviewBrCode} size={176} />
+                <p className="text-xs font-extrabold text-white pt-1">
+                  {pixBeneficiaryInput || currentProvider.name}
+                </p>
+                <p className="text-[11px] text-blue-400">
+                  Chave ({pixKeyTypeInput.toUpperCase()}): {pixKeyInput}
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold text-slate-300 mb-1">
+                  Testar Valor no QR Code (R$):
+                </label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    value={pixTestAmount}
+                    onChange={(e) => setPixTestAmount(Number(e.target.value) || 0)}
+                    className="w-28 px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-white font-black text-sm outline-none focus:border-blue-500"
+                  />
+                  <div className="flex flex-wrap gap-1">
+                    {currentProvider.services.slice(0, 3).map((s) => (
+                      <button
+                        key={s.id}
+                        type="button"
+                        onClick={() => setPixTestAmount(s.price)}
+                        className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-[11px] font-bold text-slate-200 transition"
+                      >
+                        R$ {s.price}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <span className="block text-[10px] font-bold text-slate-400 uppercase">
+                  Código Pix Copia e Cola Gerado:
+                </span>
+                <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-[10px] font-mono text-slate-400 break-all line-clamp-2">
+                  {livePreviewBrCode}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(livePreviewBrCode);
+                    setCopiedTestPix(true);
+                    setTimeout(() => setCopiedTestPix(false), 2500);
+                  }}
+                  className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-extrabold flex items-center justify-center gap-1.5 transition"
+                >
+                  {copiedTestPix ? (
+                    <>
+                      <Check className="w-4 h-4" />
+                      <span>Pix Copia e Cola Copiado!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-4 h-4" />
+                      <span>Copiar Código com Valor R$ {pixTestAmount}</span>
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         )}
       </main>
+
+      {/* MODAL DE QR CODE PIX / STRIPE PARA UM AGENDAMENTO ESPECÍFICO */}
+      {pixModalBooking && (
+        <PixPaymentModal
+          isOpen={!!pixModalBooking}
+          onClose={() => setPixModalBooking(null)}
+          providerName={pixModalBooking.tenantName}
+          pixKey={currentProvider?.pixKey || 'lucas.becker@arenasunset.com.br'}
+          pixKeyType={currentProvider?.pixKeyType || 'email'}
+          pixBeneficiary={currentProvider?.pixBeneficiary || pixModalBooking.tenantName}
+          serviceName={`${pixModalBooking.services[0]?.name || 'Serviço'} (${pixModalBooking.clientName})`}
+          amount={pixModalBooking.totalPrice}
+          allowEditAmount={true}
+          onPaymentConfirmed={() => {
+            handleConfirmBooking(pixModalBooking.id);
+          }}
+        />
+      )}
 
       {/* MODAL PARA O PRESTADOR ENCAIXAR CLIENTE MANUALMENTE */}
       {showManualModal && (

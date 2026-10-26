@@ -27,6 +27,7 @@ import {
   Building2,
   BadgeCheck,
   FileCheck2,
+  QrCode,
 } from 'lucide-react';
 import AppSidebar from '@/components/layout/AppSidebar';
 import { getStoredTenants, getStoredBookings, saveNewBooking } from '@/lib/store';
@@ -34,6 +35,7 @@ import { INITIAL_TENANTS } from '@/lib/data';
 import { Tenant, Service, Booking } from '@/lib/types';
 import { generateAvailableSlots } from '@/lib/slot-engine';
 import ProviderStoriesBar from '@/components/stories/ProviderStoriesBar';
+import PixPaymentModal from '@/components/pix/PixPaymentModal';
 
 export default function TenantBookingDesktopPage() {
   const params = useParams();
@@ -58,6 +60,7 @@ export default function TenantBookingDesktopPage() {
   const [customAddress, setCustomAddress] = useState('Av. Paulista, 1578 - Bela Vista');
   const [isSuccess, setIsSuccess] = useState(false);
   const [createdBooking, setCreatedBooking] = useState<Booking | null>(null);
+  const [showPixModal, setShowPixModal] = useState(false);
 
   // Client Form states
   const [clientName, setClientName] = useState('Raul Freitas');
@@ -779,6 +782,15 @@ export default function TenantBookingDesktopPage() {
                     <span>Confirmar Contratação & Horário</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowPixModal(true)}
+                    className="w-full py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs flex items-center justify-center gap-2 transition"
+                  >
+                    <QrCode className="w-4 h-4 text-emerald-400" />
+                    <span>Ver QR Code Pix (R$ {totalPrice}) ou Pagar com Cartão</span>
+                  </button>
                 </>
               ) : (
                 /* SUCCESS CONFIRMATION STATE */
@@ -814,6 +826,15 @@ export default function TenantBookingDesktopPage() {
                   </div>
 
                   <div className="space-y-2.5 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowPixModal(true)}
+                      className="w-full py-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs flex items-center justify-center gap-2 transition"
+                    >
+                      <QrCode className="w-4 h-4 text-emerald-400" />
+                      <span>Gerar QR Code Pix (R$ {createdBooking?.totalPrice || totalPrice}) ou Cartão</span>
+                    </button>
+
                     <NextLink
                       href={`/chat?prestador=${tenant.slug}`}
                       className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs flex items-center justify-center gap-2 transition"
@@ -858,26 +879,20 @@ export default function TenantBookingDesktopPage() {
         </div>
       </main>
 
-      {/* STICKY MOBILE BOTTOM BAR FOR SMARTPHONES */}
-      {!isSuccess && (
-        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 px-4 py-3 flex items-center justify-between gap-3 shadow-xl safe-bottom">
-          <div className="min-w-0">
-            <p className="text-[11px] font-bold text-slate-500 truncate">
-              {selectedServices.length} trabalho(s) selecionado(s)
-            </p>
-            <p className="text-base font-black text-slate-900">
-              Total: R$ {totalPrice}
-            </p>
-          </div>
-          <a
-            href="#checkout-mobile-anchor"
-            className="px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-extrabold flex items-center gap-1.5 shrink-0"
-          >
-            <span>Escolher Horário</span>
-            <ArrowRight className="w-4 h-4" />
-          </a>
-        </div>
-      )}
+      <PixPaymentModal
+        isOpen={showPixModal}
+        onClose={() => setShowPixModal(false)}
+        providerName={tenant.name}
+        pixKey={tenant.pixKey || 'lucas.becker@arenasunset.com.br'}
+        pixKeyType={tenant.pixKeyType || 'email'}
+        pixBeneficiary={tenant.pixBeneficiary || tenant.name}
+        serviceName={
+          (createdBooking?.services || selectedServices)
+            .map((s) => s.name)
+            .join(' + ') || 'Atendimento'
+        }
+        amount={createdBooking?.totalPrice || totalPrice}
+      />
     </AppSidebar>
   );
 }

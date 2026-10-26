@@ -36,6 +36,10 @@ export interface Tenant {
   };
   services: Service[];
   plan: 'free' | 'pro' | 'arena';
+  pixKey?: string;
+  pixKeyType?: 'cpf' | 'cnpj' | 'email' | 'telefone' | 'aleatoria';
+  pixBeneficiary?: string;
+  acceptStripeCard?: boolean;
 }
 
 export interface Booking {
@@ -98,6 +102,14 @@ export interface ChatMessage {
     time: string;
     price: number;
     status: 'confirmado' | 'pendente';
+  };
+  pixCard?: {
+    pixKey: string;
+    pixKeyType: string;
+    beneficiary: string;
+    amount: number;
+    serviceName: string;
+    brCode: string;
   };
 }
 

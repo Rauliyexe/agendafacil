@@ -8,7 +8,7 @@ import {
 } from './data';
 
 const STORAGE_KEYS = {
-  TENANTS: 'agendafacil_tenants_v3_design',
+  TENANTS: 'agendafacil_tenants_v4_pix',
   BOOKINGS: 'agendafacil_bookings_v4_roles',
   CONVERSATIONS: 'agendafacil_conversations_v3_design',
   PROVIDER_CONVERSATIONS: 'agendafacil_provider_conversations_v1',

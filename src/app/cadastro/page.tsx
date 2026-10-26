@@ -182,6 +182,10 @@ export default function CadastroPage() {
   const [proSlotMinutes, setProSlotMinutes] = useState(60);
   const [proSelectedDays, setProSelectedDays] = useState<number[]>([1, 2, 3, 4, 5, 6]);
   const [proPlan, setProPlan] = useState<'free' | 'pro'>('pro');
+  const [proPixKeyType, setProPixKeyType] = useState<
+    'cpf' | 'cnpj' | 'email' | 'telefone' | 'aleatoria'
+  >('telefone');
+  const [proPixKey, setProPixKey] = useState('(11) 98765-4321');
 
   const [proServices, setProServices] = useState<
     Array<{
@@ -285,6 +289,10 @@ export default function CadastroPage() {
       whatsapp: `55${(proPhone || '11987654321').replace(/\D/g, '')}`,
       active: true,
       plan: proPlan,
+      pixKey: proPixKey || proPhone || '(11) 98765-4321',
+      pixKeyType: proPixKeyType,
+      pixBeneficiary: (proName || 'PROFISSIONAL').toUpperCase(),
+      acceptStripeCard: true,
       openingHours: {
         start: proStartTime,
         end: proEndTime,
@@ -650,6 +658,43 @@ export default function CadastroPage() {
                           placeholder="Mínimo de 6 caracteres"
                           className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm outline-none focus:border-blue-600"
                         />
+                      </div>
+                    </div>
+
+                    {/* Chave Pix para Gerar QR Code Automático */}
+                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+                      <p className="text-xs font-extrabold text-slate-900">
+                        Sua Chave Pix (O site gera o QR Code já com o valor do serviço automaticamente):
+                      </p>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                          <label className="block text-[11px] font-bold text-slate-600 mb-1">
+                            Tipo de Chave
+                          </label>
+                          <select
+                            value={proPixKeyType}
+                            onChange={(e) => setProPixKeyType(e.target.value as any)}
+                            className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-xs font-bold outline-none focus:border-blue-600"
+                          >
+                            <option value="telefone">Celular / WhatsApp</option>
+                            <option value="cpf">CPF</option>
+                            <option value="cnpj">CNPJ</option>
+                            <option value="email">E-mail</option>
+                            <option value="aleatoria">Chave Aleatória</option>
+                          </select>
+                        </div>
+                        <div className="sm:col-span-2">
+                          <label className="block text-[11px] font-bold text-slate-600 mb-1">
+                            Chave Pix para Recebimento Direto (Taxa 0%)
+                          </label>
+                          <input
+                            type="text"
+                            value={proPixKey}
+                            onChange={(e) => setProPixKey(e.target.value)}
+                            placeholder="Digite sua chave Pix..."
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-xs font-bold outline-none focus:border-blue-600"
+                          />
+                        </div>
                       </div>
                     </div>
 

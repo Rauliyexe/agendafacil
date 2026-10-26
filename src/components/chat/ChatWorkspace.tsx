@@ -25,8 +25,12 @@ import {
   Bell,
   FileText,
   ArrowRight,
+  QrCode,
+  Copy,
 } from 'lucide-react';
 import { ChatConversation, ChatMessage, Tenant } from '@/lib/types';
+import { generatePixBRCode } from '@/lib/pix';
+import PixPaymentModal, { PixQrCodeSvg } from '@/components/pix/PixPaymentModal';
 import {
   INITIAL_CONVERSATIONS,
   INITIAL_PROVIDER_CONVERSATIONS,
@@ -79,6 +83,8 @@ export default function ChatWorkspace({
   // Mobile native navigation: 'list' (Inbox) or 'chat' (Full conversation)
   const [mobileScreen, setMobileScreen] = useState<'list' | 'chat'>('list');
   const [showMobileDetailsSheet, setShowMobileDetailsSheet] = useState(false);
+  const [showPixModal, setShowPixModal] = useState(false);
+  const [copiedMsgId, setCopiedMsgId] = useState<string | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -216,7 +222,8 @@ export default function ChatWorkspace({
 
   const handleSendMessage = (
     customText?: string,
-    customBookingCard?: ChatMessage['bookingCard']
+    customBookingCard?: ChatMessage['bookingCard'],
+    customPixCard?: ChatMessage['pixCard']
   ) => {
     const textToSend = (customText ?? messageInput).trim();
     if (!textToSend || !activeConversation) return;
@@ -233,6 +240,7 @@ export default function ChatWorkspace({
       time: timeStr,
       status: 'read',
       bookingCard: customBookingCard,
+      pixCard: customPixCard,
     };
 
     const targetConvId = activeConversation.id;
@@ -357,14 +365,37 @@ export default function ChatWorkspace({
     );
   };
 
-  // Provider 1-Click Action: Send Pix Charge in Chat
+  // Provider 1-Click Action: Send Pix Charge with Real QR Code in Chat
   const handleProviderSendPixCharge = () => {
     if (!activeConversation) return;
     const price = activeConversation.servicePrice || 90;
+    const srvName = activeConversation.serviceName || 'Atendimento';
+    const pixKey = activeTenant.pixKey || 'lucas.becker@arenasunset.com.br';
+    const pixKeyType = activeTenant.pixKeyType || 'email';
+    const beneficiary = activeTenant.pixBeneficiary || activeTenant.name;
+
+    const brCode = generatePixBRCode({
+      pixKey,
+      pixKeyType,
+      merchantName: beneficiary,
+      merchantCity: 'SAO PAULO',
+      amount: price,
+      description: srvName,
+    });
+
     handleSendMessage(
-      `Segue a chave Pix para pagamento do serviço "${
-        activeConversation.serviceName || 'Atendimento'
-      }" no valor tabelado de R$ ${price}: pix@agendafacil.app (ou pague direto no local).`
+      `Olá ${activeConversation.contactName}! Segue o QR Code Pix oficial e o código Copia e Cola já com o valor exato de R$ ${price.toFixed(
+        2
+      )} para o serviço "${srvName}":`,
+      undefined,
+      {
+        pixKey,
+        pixKeyType,
+        beneficiary,
+        amount: price,
+        serviceName: srvName,
+        brCode,
+      }
     );
   };
 
@@ -767,6 +798,67 @@ export default function ChatWorkspace({
                           </div>
                         )}
 
+                        {/* Optional Attached Pix QR Code Card inside Message */}
+                        {msg.pixCard && (
+                          <div className="mt-2.5 p-3.5 rounded-2xl bg-slate-900 border border-slate-800 text-white text-xs space-y-2.5">
+                            <div className="flex items-center justify-between gap-2">
+                              <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-400 flex items-center gap-1">
+                                <QrCode className="w-3.5 h-3.5" />
+                                QR Code Pix Oficial
+                              </span>
+                              <span className="text-sm font-black text-white">
+                                R$ {msg.pixCard.amount.toFixed(2).replace('.', ',')}
+                              </span>
+                            </div>
+
+                            <div className="flex justify-center py-1">
+                              <PixQrCodeSvg brCode={msg.pixCard.brCode} size={136} />
+                            </div>
+
+                            <div className="text-[10px] text-slate-300 space-y-0.5 text-center">
+                              <p className="font-bold text-white">
+                                {msg.pixCard.beneficiary}
+                              </p>
+                              <p className="text-blue-300 truncate">
+                                Chave: {msg.pixCard.pixKey}
+                              </p>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-1.5 pt-1">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  navigator.clipboard.writeText(msg.pixCard!.brCode);
+                                  setCopiedMsgId(msg.id);
+                                  setTimeout(() => setCopiedMsgId(null), 2500);
+                                }}
+                                className="py-2 px-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-[11px] font-extrabold flex items-center justify-center gap-1 transition"
+                              >
+                                {copiedMsgId === msg.id ? (
+                                  <>
+                                    <Check className="w-3.5 h-3.5" />
+                                    <span>Copiado!</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Copy className="w-3.5 h-3.5" />
+                                    <span>Copia e Cola</span>
+                                  </>
+                                )}
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={() => setShowPixModal(true)}
+                                className="py-2 px-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-[11px] font-extrabold flex items-center justify-center gap-1 transition"
+                              >
+                                <QrCode className="w-3.5 h-3.5 text-blue-400" />
+                                <span>Ampliar / Cartão</span>
+                              </button>
+                            </div>
+                          </div>
+                        )}
+
                         <div
                           className={`flex items-center justify-end gap-1 mt-1 text-[10px] ${
                             isUser ? 'text-blue-100' : 'text-slate-400'
@@ -1123,6 +1215,29 @@ export default function ChatWorkspace({
             )}
           </div>
         </div>
+      )}
+
+      {/* PIX & STRIPE CHECKOUT MODAL */}
+      {activeConversation && (
+        <PixPaymentModal
+          isOpen={showPixModal}
+          onClose={() => setShowPixModal(false)}
+          providerName={activeTenant.name}
+          pixKey={activeTenant.pixKey || 'lucas.becker@arenasunset.com.br'}
+          pixKeyType={activeTenant.pixKeyType || 'email'}
+          pixBeneficiary={activeTenant.pixBeneficiary || activeTenant.name}
+          serviceName={
+            activeConversation.serviceName ||
+            activeTenant.services[0]?.name ||
+            'Atendimento'
+          }
+          amount={
+            activeConversation.servicePrice ||
+            activeTenant.services[0]?.price ||
+            90
+          }
+          allowEditAmount={chatRole === 'prestador'}
+        />
       )}
     </div>
   );
