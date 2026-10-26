@@ -3,10 +3,27 @@ import { INITIAL_TENANTS, INITIAL_BOOKINGS, INITIAL_CONVERSATIONS, INITIAL_STORI
 
 const STORAGE_KEYS = {
   TENANTS: 'agendafacil_tenants_v3_design',
-  BOOKINGS: 'agendafacil_bookings_v3_design',
+  BOOKINGS: 'agendafacil_bookings_v4_roles',
   CONVERSATIONS: 'agendafacil_conversations_v3_design',
   STORIES: 'agendafacil_stories_v3_design',
+  USER_ROLE: 'agendafacil_user_role_mode',
 };
+
+export function getStoredUserRole(): 'cliente' | 'prestador' {
+  if (typeof window === 'undefined') return 'cliente';
+  try {
+    const val = localStorage.getItem(STORAGE_KEYS.USER_ROLE);
+    if (val === 'prestador' || val === 'cliente') return val;
+    return 'cliente';
+  } catch {
+    return 'cliente';
+  }
+}
+
+export function saveStoredUserRole(role: 'cliente' | 'prestador'): void {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(STORAGE_KEYS.USER_ROLE, role);
+}
 
 export function getStoredTenants(): Record<string, Tenant> {
   if (typeof window === 'undefined') return INITIAL_TENANTS;

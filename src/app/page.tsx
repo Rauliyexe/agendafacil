@@ -46,20 +46,41 @@ export default function LandingPage() {
                 O AgendaFácil conecta você aos seus prestadores de serviço, facilita o agendamento e mantém tudo organizado em um só lugar.
               </p>
 
-              <div className="flex flex-wrap items-center gap-3.5 pt-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                 <NextLink
-                  href="/dashboard"
-                  className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-lg shadow-blue-600/30 transition hover:-translate-y-0.5"
+                  href="/explorar"
+                  className="p-4 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white shadow-md transition flex flex-col justify-between gap-2"
                 >
-                  <span>Começar agora</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-extrabold uppercase tracking-wider text-blue-100">
+                      Para Contratar
+                    </span>
+                    <ArrowRight className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="text-base font-extrabold">Entrar como Cliente</p>
+                    <p className="text-xs text-blue-100 mt-0.5">
+                      Tela simples para ver preços e agendar
+                    </p>
+                  </div>
                 </NextLink>
 
                 <NextLink
-                  href="/lucas-beachtennis"
-                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-white hover:bg-slate-50 text-slate-700 font-bold text-sm border border-slate-300 shadow-2xs transition"
+                  href="/dashboard"
+                  className="p-4 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white shadow-md transition flex flex-col justify-between gap-2"
                 >
-                  Saiba mais (1ª Conta Demo)
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-extrabold uppercase tracking-wider text-blue-400">
+                      Para Profissionais
+                    </span>
+                    <ArrowRight className="w-4 h-4 text-blue-400" />
+                  </div>
+                  <div>
+                    <p className="text-base font-extrabold">Entrar como Prestador</p>
+                    <p className="text-xs text-slate-300 mt-0.5">
+                      Dashboard de quem agendou e horários
+                    </p>
+                  </div>
                 </NextLink>
               </div>
 

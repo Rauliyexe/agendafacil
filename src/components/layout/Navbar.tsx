@@ -96,19 +96,21 @@ export default function Navbar() {
           </NextLink>
         </nav>
 
-        {/* Right Action Buttons: Entrar | Cadastrar */}
-        <div className="hidden md:flex items-center gap-3">
+        {/* Right Action Buttons: Sou Cliente | Sou Prestador */}
+        <div className="hidden md:flex items-center gap-2.5">
           <NextLink
-            href="/login"
-            className="text-sm font-bold text-slate-700 hover:text-blue-600 px-3 py-2 transition"
+            href="/explorar"
+            className="inline-flex items-center gap-1.5 text-xs font-extrabold text-white bg-blue-600 hover:bg-blue-700 px-4 py-2.5 rounded-xl transition"
           >
-            Entrar
+            <User className="w-3.5 h-3.5" />
+            <span>Sou Cliente</span>
           </NextLink>
           <NextLink
-            href="/cadastro"
-            className="inline-flex items-center gap-2 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 px-5 py-2.5 rounded-full transition"
+            href="/dashboard"
+            className="inline-flex items-center gap-1.5 text-xs font-extrabold text-white bg-slate-900 hover:bg-slate-800 px-4 py-2.5 rounded-xl transition"
           >
-            Criar Conta
+            <LayoutDashboard className="w-3.5 h-3.5 text-blue-400" />
+            <span>Sou Prestador</span>
           </NextLink>
         </div>
 
