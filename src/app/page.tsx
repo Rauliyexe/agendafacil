@@ -208,57 +208,43 @@ export default function LandingPage() {
          ===================================================================== */}
       <section className="py-14 bg-[#F4F7FB] border-t border-slate-200" id="planos">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-10">
+          <div className="text-center max-w-2xl mx-auto mb-8">
             <h2 className="text-xs font-extrabold uppercase tracking-wider text-blue-600">
               Valores Transparentes
             </h2>
             <p className="mt-1.5 text-2xl sm:text-3xl font-extrabold text-slate-900">
-              Gratuito para Clientes e Justo para Prestadores
+              Planos para Prestadores e Profissionais
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {/* Card Cliente */}
-            <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
-              <div>
-                <span className="text-[11px] font-extrabold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full">
-                  Para Clientes
-                </span>
-                <h3 className="text-lg font-extrabold text-slate-900 mt-3">Sempre Grátis</h3>
-                <p className="text-xs text-slate-500 mt-1">Para quem quer agendar serviços</p>
-
-                <div className="mt-5 flex items-baseline gap-1">
-                  <span className="text-3xl font-black text-slate-900">R$ 0</span>
-                  <span className="text-xs text-slate-500 font-medium">/sempre</span>
-                </div>
-
-                <div className="mt-6 space-y-2.5 border-t border-slate-100 pt-5 text-xs text-slate-700">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <span>Agendamentos ilimitados</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <span>Lembretes e avisos</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <span>Chat direto com o profissional</span>
-                  </div>
-                </div>
+          {/* Banner Claro: 100% Gratuito para Clientes */}
+          <div className="max-w-5xl mx-auto mb-8 p-4 sm:p-5 rounded-2xl bg-emerald-50 border border-emerald-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-emerald-950 shadow-2xs">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0">
+                <CheckCircle2 className="w-5 h-5" />
               </div>
-
-              <div className="mt-8 pt-5 border-t border-slate-100">
-                <NextLink
-                  href="/explorar"
-                  className="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-center block text-xs transition"
-                >
-                  Explorar e Agendar
-                </NextLink>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-black uppercase tracking-wider text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-md">
+                    Para Clientes
+                  </span>
+                  <span className="text-sm font-extrabold text-emerald-900">100% Gratuito para Sempre</span>
+                </div>
+                <p className="text-xs text-emerald-700 mt-0.5">
+                  Quem agenda serviços não paga nenhuma taxa de uso da plataforma.
+                </p>
               </div>
             </div>
+            <NextLink
+              href="/explorar"
+              className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs transition shrink-0 text-center shadow-xs"
+            >
+              Explorar e Agendar
+            </NextLink>
+          </div>
 
-            {/* Planos Prestador */}
+          {/* 3 Planos para Prestadores (Grade 3 Colunas Perfeita: R$ 0, R$ 19,90, R$ 39,90) */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto items-stretch">
             {prestadorPlans.map((plan) => (
               <div
                 key={plan.id}
