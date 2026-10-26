@@ -717,6 +717,224 @@ export const INITIAL_CONVERSATIONS: ChatConversation[] = [
   }
 ];
 
+export const INITIAL_PROVIDER_CONVERSATIONS: ChatConversation[] = [
+  {
+    id: 'pconv-mariana',
+    tenantSlug: 'lucas-beachtennis',
+    contactName: 'Mariana Costa',
+    contactRole: 'Cliente • Aula em Dupla Hoje às 10:00',
+    contactAvatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=160&auto=format&fit=crop&q=80',
+    contactPhone: '(11) 99112-3344',
+    online: true,
+    unreadCount: 1,
+    lastMessage: 'Podemos fazer o Pix dos R$ 140 chegando aí na Quadra 02?',
+    lastTime: '09:12',
+    category: 'Hoje 10:00',
+    bookingId: 'b-6',
+    scheduledDate: 'Hoje, 26 Out',
+    scheduledTime: '10:00 – 11:00',
+    serviceName: 'Aula em Dupla de Beach Tennis',
+    servicePrice: 140,
+    bookingStatus: 'confirmado',
+    clientAddress: 'Arena Sunset - Quadra 02',
+    messages: [
+      {
+        id: 'pm-1',
+        sender: 'contact',
+        text: 'Bom dia Prof. Lucas! Acabei de agendar a Aula em Dupla hoje às 10:00 com a minha parceira.',
+        time: '08:50',
+        status: 'read',
+        bookingCard: {
+          serviceName: 'Aula em Dupla de Beach Tennis',
+          date: 'Hoje, 26 de outubro',
+          time: '10:00 – 11:00',
+          price: 140,
+          status: 'confirmado'
+        }
+      },
+      {
+        id: 'pm-2',
+        sender: 'user',
+        text: 'Bom dia Mariana! Horário confirmado na Quadra 02. Já separei o cesto de bolas e os cones para treinarmos transição!',
+        time: '09:05',
+        status: 'read'
+      },
+      {
+        id: 'pm-3',
+        sender: 'contact',
+        text: 'Podemos fazer o Pix dos R$ 140 chegando aí na Quadra 02?',
+        time: '09:12',
+        status: 'delivered'
+      }
+    ]
+  },
+  {
+    id: 'pconv-pedro',
+    tenantSlug: 'lucas-beachtennis',
+    contactName: 'Pedro Henrique',
+    contactRole: 'Cliente • Clínica Hoje às 14:00 (Pendente)',
+    contactAvatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=160&auto=format&fit=crop&q=80',
+    contactPhone: '(11) 99445-6677',
+    online: true,
+    unreadCount: 2,
+    lastMessage: 'Como é minha primeira vez, você tem raquete para emprestar na aula das 14h?',
+    lastTime: '09:20',
+    category: 'Hoje 14:00',
+    bookingId: 'b-7',
+    scheduledDate: 'Hoje, 26 Out',
+    scheduledTime: '14:00 – 15:30',
+    serviceName: 'Clínica de Saque & Smash em Grupo',
+    servicePrice: 60,
+    bookingStatus: 'pendente',
+    clientAddress: 'Arena Sunset - Quadra 01',
+    messages: [
+      {
+        id: 'pp-1',
+        sender: 'contact',
+        text: 'Oi Prof. Lucas! Solicitei o agendamento da Clínica de Saque & Smash hoje às 14:00.',
+        time: '09:18',
+        status: 'read',
+        bookingCard: {
+          serviceName: 'Clínica de Saque & Smash em Grupo',
+          date: 'Hoje, 26 de outubro',
+          time: '14:00 – 15:30',
+          price: 60,
+          status: 'pendente'
+        }
+      },
+      {
+        id: 'pp-2',
+        sender: 'contact',
+        text: 'Como é minha primeira vez, você tem raquete para emprestar na aula das 14h?',
+        time: '09:20',
+        status: 'delivered'
+      }
+    ]
+  },
+  {
+    id: 'pconv-raul',
+    tenantSlug: 'lucas-beachtennis',
+    contactName: 'Raul Freitas',
+    contactRole: 'Cliente • Aula Individual Hoje às 08:00',
+    contactAvatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=160&auto=format&fit=crop&q=80',
+    contactPhone: '(11) 98833-4455',
+    online: true,
+    unreadCount: 0,
+    lastMessage: 'Obrigado pela aula hoje cedo, evolução absurda no saque!',
+    lastTime: '09:02',
+    category: 'Hoje 08:00',
+    bookingId: 'b-1',
+    scheduledDate: 'Hoje, 26 Out',
+    scheduledTime: '08:00 – 09:00',
+    serviceName: 'Aula Individual de Beach Tennis',
+    servicePrice: 90,
+    bookingStatus: 'confirmado',
+    clientAddress: 'Arena Sunset - Quadra 02',
+    messages: [
+      {
+        id: 'pr-1',
+        sender: 'contact',
+        text: 'Bom dia Prof. Lucas! Já estou chegando na Arena para a nossa aula das 08:00.',
+        time: '07:52',
+        status: 'read'
+      },
+      {
+        id: 'pr-2',
+        sender: 'user',
+        text: 'Show Raul! Te espero na Quadra 02.',
+        time: '07:55',
+        status: 'read'
+      },
+      {
+        id: 'pr-3',
+        sender: 'contact',
+        text: 'Obrigado pela aula hoje cedo, evolução absurda no saque!',
+        time: '09:02',
+        status: 'read'
+      }
+    ]
+  },
+  {
+    id: 'pconv-fernanda',
+    tenantSlug: 'lucas-beachtennis',
+    contactName: 'Fernanda Lima',
+    contactRole: 'Cliente • Locação de Quadra Amanhã 18:00',
+    contactAvatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=160&auto=format&fit=crop&q=80',
+    contactPhone: '(11) 99778-8899',
+    online: false,
+    unreadCount: 0,
+    lastMessage: 'Perfeito! Amanhã às 18:00 estaremos aí em 4 pessoas.',
+    lastTime: 'Ontem',
+    category: 'Amanhã 18:00',
+    bookingId: 'b-8',
+    scheduledDate: 'Amanhã, 27 Out',
+    scheduledTime: '18:00 – 19:30',
+    serviceName: 'Locação de Quadra de Areia (Day Use)',
+    servicePrice: 120,
+    bookingStatus: 'confirmado',
+    clientAddress: 'Arena Sunset - Quadra 03',
+    messages: [
+      {
+        id: 'pf-1',
+        sender: 'contact',
+        text: 'Oi Lucas! Reservamos a Quadra 03 para amanhã às 18:00. A iluminação de LED já está inclusa nos R$ 120?',
+        time: 'Ontem, 19:10',
+        status: 'read'
+      },
+      {
+        id: 'pf-2',
+        sender: 'user',
+        text: 'Oi Fernanda! Sim, iluminação noturna, rede oficial e bolas já estão 100% inclusas.',
+        time: 'Ontem, 19:14',
+        status: 'read'
+      },
+      {
+        id: 'pf-3',
+        sender: 'contact',
+        text: 'Perfeito! Amanhã às 18:00 estaremos aí em 4 pessoas.',
+        time: 'Ontem, 19:20',
+        status: 'read'
+      }
+    ]
+  },
+  {
+    id: 'pconv-gustavo',
+    tenantSlug: 'carlos-mendes',
+    contactName: 'Gustavo Almeida',
+    contactRole: 'Cliente • Ar-Condicionado Hoje às 15:00',
+    contactAvatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=160&auto=format&fit=crop&q=80',
+    contactPhone: '(11) 99223-4455',
+    online: true,
+    unreadCount: 1,
+    lastMessage: 'Portaria já está avisada para hoje às 15:00 no Apto 82.',
+    lastTime: '08:40',
+    category: 'Hoje 15:00',
+    bookingId: 'b-9',
+    scheduledDate: 'Hoje, 26 Out',
+    scheduledTime: '15:00 – 16:30',
+    serviceName: 'Manutenção de ar-condicionado',
+    servicePrice: 150,
+    bookingStatus: 'pendente',
+    clientAddress: 'Rua Oscar Freire, 450 - Apto 82',
+    messages: [
+      {
+        id: 'pg-1',
+        sender: 'contact',
+        text: 'Olá! Agendei a higienização de 2 aparelhos Split para hoje às 15:00. Portaria já está avisada para hoje às 15:00 no Apto 82.',
+        time: '08:40',
+        status: 'delivered',
+        bookingCard: {
+          serviceName: 'Manutenção de ar-condicionado',
+          date: 'Hoje, 26 de outubro',
+          time: '15:00 – 16:30',
+          price: 150,
+          status: 'pendente'
+        }
+      }
+    ]
+  }
+];
+
 export const INITIAL_STORIES: ProviderStory[] = [
   {
     id: 'story-lucas',

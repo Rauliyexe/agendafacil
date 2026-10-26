@@ -113,6 +113,13 @@ export interface ChatConversation {
   lastMessage: string;
   lastTime: string;
   category: string;
+  bookingId?: string;
+  scheduledDate?: string;
+  scheduledTime?: string;
+  serviceName?: string;
+  servicePrice?: number;
+  bookingStatus?: 'confirmado' | 'pendente' | 'concluido';
+  clientAddress?: string;
   messages: ChatMessage[];
 }
 

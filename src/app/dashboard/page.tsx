@@ -904,6 +904,7 @@ function DashboardContent() {
            =================================================================== */}
         {activeTab === 'chat' && (
           <ChatWorkspace
+            forcedRole="prestador"
             initialTenantSlug={currentProvider?.slug}
             onUnreadChange={(c) => setChatUnreadCount(c)}
           />
