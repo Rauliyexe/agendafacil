@@ -16,6 +16,7 @@ import {
   MessageSquare,
   UserPlus,
   ShieldCheck,
+  User,
 } from 'lucide-react';
 import AppSidebar from '@/components/layout/AppSidebar';
 
@@ -109,7 +110,7 @@ export default function LoginPage() {
                   Acesso Rápido de Demonstração (1 Clique):
                 </p>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                   <NextLink
                     href="/dashboard"
                     className="p-3 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-300 flex items-center gap-3 transition"
@@ -119,44 +120,27 @@ export default function LoginPage() {
                     </div>
                     <div className="min-w-0">
                       <p className="text-xs font-extrabold text-slate-900 truncate">
-                        Raul Freitas
+                        Painel Prestador
                       </p>
                       <p className="text-[11px] text-slate-500 truncate">
-                        Painel Geral com Abas
+                        Acessar Gestão
                       </p>
                     </div>
                   </NextLink>
 
                   <NextLink
-                    href="/lucas-beachtennis"
-                    className="p-3 rounded-xl bg-slate-50 hover:bg-amber-50 border border-slate-200 hover:border-amber-300 flex items-center gap-3 transition"
-                  >
-                    <div className="w-9 h-9 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0">
-                      <Trophy className="w-4 h-4" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-xs font-extrabold text-slate-900 truncate">
-                        Prof. Lucas Becker
-                      </p>
-                      <p className="text-[11px] text-slate-500 truncate">
-                        Beach Tennis • Aulas
-                      </p>
-                    </div>
-                  </NextLink>
-
-                  <NextLink
-                    href="/carlos-mendes"
+                    href="/explorar"
                     className="p-3 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-300 flex items-center gap-3 transition"
                   >
                     <div className="w-9 h-9 rounded-xl bg-slate-900 text-white flex items-center justify-center shrink-0">
-                      <Wind className="w-4 h-4" />
+                      <User className="w-4 h-4" />
                     </div>
                     <div className="min-w-0">
                       <p className="text-xs font-extrabold text-slate-900 truncate">
-                        Carlos Mendes
+                        Área do Cliente
                       </p>
                       <p className="text-[11px] text-slate-500 truncate">
-                        Trabalho • Climatização
+                        Ver e Agendar
                       </p>
                     </div>
                   </NextLink>
@@ -173,7 +157,7 @@ export default function LoginPage() {
                         Central de Chat
                       </p>
                       <p className="text-[11px] text-slate-500 truncate">
-                        Mensagens ao Vivo
+                        Mensagens
                       </p>
                     </div>
                   </NextLink>

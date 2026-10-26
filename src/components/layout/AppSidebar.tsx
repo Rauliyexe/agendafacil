@@ -74,12 +74,7 @@ export default function AppSidebar({
       saveStoredUserRole('prestador');
     } else if (
       pathname === '/explorar' ||
-      pathname === '/meus-agendamentos' ||
-      pathname === '/lucas-beachtennis' ||
-      pathname === '/carlos-mendes' ||
-      pathname === '/joao-silva' ||
-      pathname === '/equipe-aqua' ||
-      pathname === '/lara-santos'
+      pathname === '/meus-agendamentos'
     ) {
       setRoleMode('cliente');
       saveStoredUserRole('cliente');
@@ -186,7 +181,7 @@ export default function AppSidebar({
 
   const handleCopyDemoLink = () => {
     if (typeof window === 'undefined') return;
-    const url = `${window.location.origin}/lucas-beachtennis`;
+    const url = `${window.location.origin}/dashboard`;
     navigator.clipboard.writeText(url);
     setCopiedLink(true);
     setTimeout(() => setCopiedLink(false), 2500);
@@ -361,14 +356,14 @@ export default function AppSidebar({
                 Sua Página Pública
               </p>
               <p className="text-xs font-bold truncate">
-                agendafacil.app/lucas-beachtennis
+                agendafacil.app/sua-agenda
               </p>
               <div className="flex items-center gap-1.5 pt-1">
                 <NextLink
-                  href="/lucas-beachtennis"
+                  href="/dashboard"
                   className="flex-1 text-center py-1.5 px-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-[11px] font-extrabold transition"
                 >
-                  Ver como Cliente
+                  Painel de Gestão
                 </NextLink>
                 <button
                   type="button"
@@ -410,11 +405,11 @@ export default function AppSidebar({
                   roleMode === 'prestador' ? 'bg-slate-900' : 'bg-blue-600'
                 }`}
               >
-                {roleMode === 'prestador' ? 'LB' : 'RF'}
+                {roleMode === 'prestador' ? 'P' : 'C'}
               </div>
               <div className="min-w-0">
                 <p className="text-xs font-extrabold text-slate-900 truncate">
-                  {roleMode === 'prestador' ? 'Prof. Lucas Becker' : 'Raul Freitas'}
+                  {roleMode === 'prestador' ? 'Prestador' : 'Cliente'}
                 </p>
                 <p className="text-[10px] text-slate-400 truncate">
                   {roleMode === 'prestador' ? 'Conta Prestador' : 'Conta Cliente (Grátis)'}
@@ -579,18 +574,6 @@ export default function AppSidebar({
             >
               <Calendar className="w-5 h-5" />
               <span className="text-[10px]">Meus Horários</span>
-            </NextLink>
-
-            <NextLink
-              href="/lucas-beachtennis"
-              className={`flex-1 py-1 flex flex-col items-center justify-center gap-1 transition ${
-                pathname === '/lucas-beachtennis'
-                  ? 'text-blue-600 font-extrabold'
-                  : 'text-slate-400 font-medium'
-              }`}
-            >
-              <Trophy className="w-5 h-5" />
-              <span className="text-[10px]">Beach Tennis</span>
             </NextLink>
 
             <NextLink

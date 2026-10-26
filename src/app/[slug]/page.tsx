@@ -28,10 +28,10 @@ import {
   BadgeCheck,
   FileCheck2,
   QrCode,
+  User,
 } from 'lucide-react';
 import AppSidebar from '@/components/layout/AppSidebar';
-import { getStoredTenants, getStoredBookings, saveNewBooking } from '@/lib/store';
-import { INITIAL_TENANTS } from '@/lib/data';
+import { getStoredTenants, getStoredBookings, saveNewBooking, syncWithSupabase } from '@/lib/store';
 import { Tenant, Service, Booking } from '@/lib/types';
 import { generateAvailableSlots } from '@/lib/slot-engine';
 import ProviderStoriesBar from '@/components/stories/ProviderStoriesBar';
@@ -39,24 +39,15 @@ import PixPaymentModal from '@/components/pix/PixPaymentModal';
 
 export default function TenantBookingDesktopPage() {
   const params = useParams();
-  const slug = (params?.slug as string) || 'lucas-beachtennis';
+  const slug = (params?.slug as string) || '';
 
-  const defaultTenant =
-    INITIAL_TENANTS[slug] ||
-    INITIAL_TENANTS['lucas-beachtennis'] ||
-    Object.values(INITIAL_TENANTS)[0];
-
-  const [tenants, setTenants] = useState<Record<string, Tenant>>(INITIAL_TENANTS);
-  const [tenant, setTenant] = useState<Tenant>(defaultTenant);
-  const [selectedServices, setSelectedServices] = useState<Service[]>(
-    defaultTenant && defaultTenant.services.length > 0 ? [defaultTenant.services[0]] : []
-  );
+  const [tenants, setTenants] = useState<Record<string, Tenant>>({});
+  const [tenant, setTenant] = useState<Tenant | null>(null);
+  const [selectedServices, setSelectedServices] = useState<Service[]>([]);
   const [activeCategory, setActiveCategory] = useState<string>('Todos');
   const [selectedDate, setSelectedDate] = useState<string>('2026-10-26');
   const [selectedTime, setSelectedTime] = useState<string>('09:00');
-  const [locationType, setLocationType] = useState<'local_prestador' | 'domicilio'>(
-    slug === 'lucas-beachtennis' ? 'local_prestador' : 'domicilio'
-  );
+  const [locationType, setLocationType] = useState<'local_prestador' | 'domicilio'>('domicilio');
   const [customAddress, setCustomAddress] = useState('Av. Paulista, 1578 - Bela Vista');
   const [isSuccess, setIsSuccess] = useState(false);
   const [createdBooking, setCreatedBooking] = useState<Booking | null>(null);
@@ -70,28 +61,43 @@ export default function TenantBookingDesktopPage() {
   useEffect(() => {
     const loaded = getStoredTenants();
     setTenants(loaded);
-    const found = loaded[slug] || loaded['lucas-beachtennis'] || Object.values(loaded)[0];
-    if (found) {
+    if (slug && loaded[slug]) {
+      const found = loaded[slug];
       setTenant(found);
       setActiveCategory('Todos');
-      setLocationType(found.slug === 'lucas-beachtennis' ? 'local_prestador' : 'domicilio');
-      if (found.services.length > 0) {
+      setLocationType('domicilio');
+      if (found.services && found.services.length > 0) {
         setSelectedServices([found.services[0]]);
       }
+    } else if (slug) {
+      syncWithSupabase().then(() => {
+        const fresh = getStoredTenants();
+        setTenants(fresh);
+        if (fresh[slug]) {
+          const found = fresh[slug];
+          setTenant(found);
+          setActiveCategory('Todos');
+          if (found.services && found.services.length > 0) {
+            setSelectedServices([found.services[0]]);
+          }
+        }
+      });
     }
   }, [slug]);
 
   const categories = useMemo(() => {
+    if (!tenant) return ['Todos'];
     const cats = new Set<string>(['Todos']);
-    tenant.services.forEach((s) => {
+    tenant.services?.forEach((s) => {
       if (s.category) cats.add(s.category);
     });
     return Array.from(cats);
   }, [tenant]);
 
   const filteredServices = useMemo(() => {
-    if (activeCategory === 'Todos') return tenant.services;
-    return tenant.services.filter((s) => s.category === activeCategory);
+    if (!tenant) return [];
+    if (activeCategory === 'Todos') return tenant.services || [];
+    return (tenant.services || []).filter((s) => s.category === activeCategory);
   }, [tenant, activeCategory]);
 
   const upcomingDays = useMemo(() => {
@@ -114,6 +120,7 @@ export default function TenantBookingDesktopPage() {
   }, [selectedServices]);
 
   const availableSlots = useMemo(() => {
+    if (!tenant) return [];
     const existingBookings = getStoredBookings();
     return generateAvailableSlots(tenant, selectedDate, existingBookings, totalDurationMinutes);
   }, [tenant, selectedDate, totalDurationMinutes]);
@@ -169,6 +176,38 @@ export default function TenantBookingDesktopPage() {
       includes: ['Produtos biodegradáveis e maquinário inclusos', 'Equipe uniformizada e verificada', 'Checklist completo por ambiente'],
     };
   };
+
+  if (!tenant) {
+    return (
+      <AppSidebar>
+        <main className="flex-1 p-6 flex items-center justify-center min-h-[60vh]">
+          <div className="bg-white rounded-3xl p-8 sm:p-12 border border-slate-200 text-center max-w-md space-y-4">
+            <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto">
+              <User className="w-7 h-7" />
+            </div>
+            <h1 className="text-xl font-black text-slate-900">Prestador não encontrado</h1>
+            <p className="text-xs text-slate-500">
+              O link <code className="font-mono text-blue-600">/{slug}</code> ainda não foi registrado na plataforma.
+            </p>
+            <div className="flex items-center justify-center gap-3 pt-2">
+              <NextLink
+                href="/explorar"
+                className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-extrabold"
+              >
+                Ver Prestadores
+              </NextLink>
+              <NextLink
+                href="/cadastro"
+                className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-extrabold"
+              >
+                Cadastrar este Link
+              </NextLink>
+            </div>
+          </div>
+        </main>
+      </AppSidebar>
+    );
+  }
 
   const currentMeta = getWorkCategoryMeta(tenant.slug);
 

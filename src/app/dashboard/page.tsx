@@ -58,8 +58,8 @@ function DashboardContent() {
   const [notifications, setNotifications] = useState<AppNotification[]>(INITIAL_NOTIFICATIONS);
   const [chatUnreadCount, setChatUnreadCount] = useState<number>(2);
 
-  // Provider Account Filter ("lucas-beachtennis" by default, or "todos" to see all)
-  const [selectedProviderSlug, setSelectedProviderSlug] = useState<string>('lucas-beachtennis');
+  // Provider Account Filter ("todos" by default, or specific slug)
+  const [selectedProviderSlug, setSelectedProviderSlug] = useState<string>('todos');
   const [whenFilter, setWhenFilter] = useState<'todos' | 'hoje' | 'proximos' | 'pendentes'>('todos');
   const [clientSearch, setClientSearch] = useState('');
   const [copiedLink, setCopiedLink] = useState(false);
@@ -155,10 +155,12 @@ function DashboardContent() {
   };
 
   const currentProvider: Tenant | undefined = useMemo(() => {
+    const list = Object.values(tenants);
+    if (list.length === 0) return undefined;
     if (selectedProviderSlug === 'todos') {
-      return tenants['lucas-beachtennis'] || Object.values(tenants)[0];
+      return list[0];
     }
-    return tenants[selectedProviderSlug] || tenants['lucas-beachtennis'];
+    return tenants[selectedProviderSlug] || list[0];
   }, [tenants, selectedProviderSlug]);
 
   useEffect(() => {
@@ -279,8 +281,8 @@ function DashboardContent() {
   };
 
   const handleCopyPublicLink = () => {
-    const slug = currentProvider?.slug || 'lucas-beachtennis';
-    const url = `${window.location.origin}/${slug}`;
+    if (!currentProvider) return;
+    const url = `${window.location.origin}/${currentProvider.slug}`;
     navigator.clipboard.writeText(url);
     setCopiedLink(true);
     setTimeout(() => setCopiedLink(false), 2500);
@@ -414,16 +416,17 @@ function DashboardContent() {
                 onChange={(e) => setSelectedProviderSlug(e.target.value)}
                 className="px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs font-extrabold outline-none focus:border-blue-500"
               >
-                <option value="lucas-beachtennis">
-                  Ver como: Prof. Lucas Becker (Beach Tennis)
-                </option>
-                <option value="carlos-mendes">
-                  Ver como: Carlos Mendes (Climatização)
-                </option>
-                <option value="joao-silva">Ver como: João Silva (Elétrica)</option>
-                <option value="equipe-aqua">Ver como: Equipe Aqua (Piscina)</option>
-                <option value="lara-santos">Ver como: Lara Santos (Limpeza)</option>
-                <option value="todos">Ver Todos os Prestadores Juntos</option>
+                {Object.values(tenants).map((t) => (
+                  <option key={t.slug} value={t.slug}>
+                    {t.name} ({t.role})
+                  </option>
+                ))}
+                {Object.values(tenants).length > 1 && (
+                  <option value="todos">Ver Todos os Prestadores</option>
+                )}
+                {Object.values(tenants).length === 0 && (
+                  <option value="">Nenhum Prestador Cadastrado</option>
+                )}
               </select>
 
               <button
@@ -442,34 +445,46 @@ function DashboardContent() {
             <div className="flex items-center gap-2 text-slate-300">
               <span className="text-slate-400">Link da sua agenda para enviar aos clientes:</span>
               <strong className="text-blue-400">
-                agendafacil.app/{currentProvider?.slug || 'lucas-beachtennis'}
+                agendafacil.app/{currentProvider?.slug || 'sua-agenda'}
               </strong>
             </div>
             <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={handleCopyPublicLink}
-                className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold flex items-center gap-1.5 transition"
-              >
-                {copiedLink ? (
-                  <>
-                    <Check className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>Link Copiado</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-3.5 h-3.5 text-blue-400" />
-                    <span>Copiar Link</span>
-                  </>
-                )}
-              </button>
-              <NextLink
-                href={`/${currentProvider?.slug || 'lucas-beachtennis'}`}
-                className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold flex items-center gap-1.5 transition"
-              >
-                <span>Abrir Página como Cliente</span>
-                <ExternalLink className="w-3.5 h-3.5 text-blue-400" />
-              </NextLink>
+              {currentProvider ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={handleCopyPublicLink}
+                    className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold flex items-center gap-1.5 transition"
+                  >
+                    {copiedLink ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 text-emerald-400" />
+                        <span>Link Copiado</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5 text-blue-400" />
+                        <span>Copiar Link</span>
+                      </>
+                    )}
+                  </button>
+                  <NextLink
+                    href={`/${currentProvider.slug}`}
+                    className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold flex items-center gap-1.5 transition"
+                  >
+                    <span>Abrir Página como Cliente</span>
+                    <ExternalLink className="w-3.5 h-3.5 text-blue-400" />
+                  </NextLink>
+                </>
+              ) : (
+                <NextLink
+                  href="/cadastro"
+                  className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold flex items-center gap-1.5 transition"
+                >
+                  <span>Cadastrar Prestador</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </NextLink>
+              )}
             </div>
           </div>
         </div>

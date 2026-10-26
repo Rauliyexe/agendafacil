@@ -28,13 +28,14 @@ import {
   Eye,
   Check,
 } from 'lucide-react';
-import { ProviderStory, StorySlide } from '@/lib/types';
+import { ProviderStory, StorySlide, Tenant } from '@/lib/types';
 import { INITIAL_STORIES } from '@/lib/data';
 import {
   getStoredStories,
   saveStories,
   getStoredConversations,
   saveConversations,
+  getStoredTenants,
 } from '@/lib/store';
 
 interface ProviderStoriesBarProps {
@@ -96,8 +97,9 @@ export default function ProviderStoriesBar({ highlightSlug }: ProviderStoriesBar
 
   // Create Story Modal states
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [newStorySlug, setNewStorySlug] = useState('lucas-beachtennis');
-  const [newStoryBadge, setNewStoryBadge] = useState('HORÁRIO VAGO HOJE ÀS 17:00');
+  const [availableTenants, setAvailableTenants] = useState<Tenant[]>([]);
+  const [newStorySlug, setNewStorySlug] = useState('');
+  const [newStoryBadge, setNewStoryBadge] = useState('HORÁRIO VAGO HOJE');
   const [newStoryCaption, setNewStoryCaption] = useState('');
   const [newStoryPhoto, setNewStoryPhoto] = useState(PHOTO_PRESETS[0].url);
   const [newStoryPrice, setNewStoryPrice] = useState('90');
@@ -106,6 +108,12 @@ export default function ProviderStoriesBar({ highlightSlug }: ProviderStoriesBar
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
+    const loadedTenants = Object.values(getStoredTenants());
+    setAvailableTenants(loadedTenants);
+    if (loadedTenants.length > 0) {
+      setNewStorySlug(loadedTenants[0].slug);
+    }
+
     const loaded = getStoredStories();
     if (highlightSlug) {
       const sorted = [...loaded].sort((a, b) =>
@@ -406,7 +414,7 @@ export default function ProviderStoriesBar({ highlightSlug }: ProviderStoriesBar
       {/* =====================================================================
           2. DESKTOP STORIES BAR (lg:): MODERN VERTICAL 9:16 PREVIEW CARDS
          ===================================================================== */}
-      <div className="hidden lg:grid lg:grid-cols-6 gap-3.5">
+      <div className={`hidden lg:grid ${stories.length === 0 ? 'lg:grid-cols-3' : 'lg:grid-cols-6'} gap-3.5`}>
         {/* Create Story Card on Desktop */}
         <button
           type="button"
@@ -428,6 +436,15 @@ export default function ProviderStoriesBar({ highlightSlug }: ProviderStoriesBar
             + Nova Publicação
           </span>
         </button>
+
+        {stories.length === 0 && (
+          <div className="lg:col-span-2 h-56 rounded-2xl border border-slate-200 bg-white p-6 flex flex-col items-center justify-center text-center gap-2">
+            <span className="text-xs font-extrabold text-slate-800">Nenhum story ativo</span>
+            <p className="text-xs text-slate-500 max-w-sm">
+              Prestadores cadastrados podem publicar stories para divulgar vagas e trabalhos recentes.
+            </p>
+          </div>
+        )}
 
         {/* Provider Story Cards on Desktop */}
         {stories.map((story, idx) => {
@@ -819,13 +836,14 @@ export default function ProviderStoriesBar({ highlightSlug }: ProviderStoriesBar
                   onChange={(e) => setNewStorySlug(e.target.value)}
                   className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white font-semibold outline-none focus:border-blue-600"
                 >
-                  <option value="lucas-beachtennis">
-                    Prof. Lucas Becker (Beach Tennis)
-                  </option>
-                  <option value="carlos-mendes">Carlos Mendes (Climatização)</option>
-                  <option value="joao-silva">João Silva (Elétrica)</option>
-                  <option value="equipe-aqua">Equipe Aqua (Piscina)</option>
-                  <option value="lara-santos">Lara Santos (Limpeza)</option>
+                  {availableTenants.map((t) => (
+                    <option key={t.slug} value={t.slug}>
+                      {t.name} ({t.role})
+                    </option>
+                  ))}
+                  {availableTenants.length === 0 && (
+                    <option value="">Nenhum prestador cadastrado</option>
+                  )}
                 </select>
               </div>
 

@@ -43,13 +43,6 @@
       "description": "Contratar trabalhos com preço fechado",
       "url": "/explorar",
       "icons": [{ "src": "/icons/icon-192.svg", "sizes": "192x192" }]
-    },
-    {
-      "name": "Prof. Lucas Becker",
-      "short_name": "Beach Tennis",
-      "description": "Agenda pública do Prof. Lucas Becker",
-      "url": "/lucas-beachtennis",
-      "icons": [{ "src": "/icons/icon-192.svg", "sizes": "192x192" }]
     }
   ],
   "categories": ["business", "productivity", "lifestyle"]

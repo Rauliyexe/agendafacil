@@ -16,11 +16,11 @@ import {
 import { isSupabaseConfigured } from './supabase/client';
 
 const STORAGE_KEYS = {
-  TENANTS: 'agendafacil_tenants_v4_pix',
-  BOOKINGS: 'agendafacil_bookings_v4_roles',
-  CONVERSATIONS: 'agendafacil_conversations_v3_design',
-  PROVIDER_CONVERSATIONS: 'agendafacil_provider_conversations_v1',
-  STORIES: 'agendafacil_stories_v3_design',
+  TENANTS: 'agendafacil_tenants_v5_clean',
+  BOOKINGS: 'agendafacil_bookings_v5_clean',
+  CONVERSATIONS: 'agendafacil_conversations_v5_clean',
+  PROVIDER_CONVERSATIONS: 'agendafacil_provider_conversations_v5_clean',
+  STORIES: 'agendafacil_stories_v5_clean',
   USER_ROLE: 'agendafacil_user_role_mode',
 };
 
@@ -46,16 +46,9 @@ export function getStoredTenants(): Record<string, Tenant> {
   try {
     const raw = localStorage.getItem(STORAGE_KEYS.TENANTS);
     if (!raw) {
-      localStorage.setItem(STORAGE_KEYS.TENANTS, JSON.stringify(INITIAL_TENANTS));
       return INITIAL_TENANTS;
     }
-    const parsed = JSON.parse(raw);
-    if (!parsed['lucas-beachtennis'] || !parsed['carlos-mendes']) {
-      const merged = { ...INITIAL_TENANTS, ...parsed };
-      localStorage.setItem(STORAGE_KEYS.TENANTS, JSON.stringify(merged));
-      return merged;
-    }
-    return parsed;
+    return JSON.parse(raw);
   } catch {
     return INITIAL_TENANTS;
   }

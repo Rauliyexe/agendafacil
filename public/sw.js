@@ -1,10 +1,9 @@
-const CACHE_NAME = 'agendafacil-pwa-v2';
+const CACHE_NAME = 'agendafacil-pwa-v3';
 const ASSETS_TO_CACHE = [
   '/',
   '/dashboard',
   '/explorar',
   '/chat',
-  '/lucas-beachtennis',
   '/manifest.json',
   '/icons/icon-192.svg',
   '/icons/icon-512.svg'

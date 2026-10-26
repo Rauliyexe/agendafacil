@@ -47,6 +47,24 @@ import {
   updateBookingStatus,
 } from '@/lib/store';
 
+const EMPTY_TENANT: Tenant = {
+  id: '',
+  slug: '',
+  name: 'Prestador',
+  role: 'Profissional',
+  specialty: '',
+  rating: 5.0,
+  reviews: 0,
+  avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800',
+  address: 'Atendimento',
+  experience: '',
+  phone: '',
+  whatsapp: '',
+  services: [],
+  plan: 'pro',
+  openingHours: { start: '08:00', end: '18:00', days: [1, 2, 3, 4, 5, 6], slotIntervalMinutes: 60 },
+};
+
 interface ChatWorkspaceProps {
   initialTenantSlug?: string;
   forcedRole?: 'cliente' | 'prestador';
@@ -69,10 +87,10 @@ export default function ChatWorkspace({
   const [tenants, setTenants] = useState<Record<string, Tenant>>(INITIAL_TENANTS);
 
   const [activeClientConvId, setActiveClientConvId] = useState<string>(
-    INITIAL_CONVERSATIONS[0].id
+    INITIAL_CONVERSATIONS[0]?.id || ''
   );
   const [activeProviderConvId, setActiveProviderConvId] = useState<string>(
-    INITIAL_PROVIDER_CONVERSATIONS[0].id
+    INITIAL_PROVIDER_CONVERSATIONS[0]?.id || ''
   );
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -148,15 +166,16 @@ export default function ChatWorkspace({
   }, [conversations, onUnreadChange]);
 
   const activeConversation = useMemo(
-    () => conversations.find((c) => c.id === activeConvId) || conversations[0],
+    () => conversations.find((c) => c.id === activeConvId) || conversations[0] || null,
     [conversations, activeConvId]
   );
 
-  const activeTenant = useMemo(() => {
-    if (!activeConversation) return INITIAL_TENANTS['lucas-beachtennis'];
+  const activeTenant: Tenant = useMemo(() => {
+    if (!activeConversation) return Object.values(tenants)[0] || EMPTY_TENANT;
     return (
       tenants[activeConversation.tenantSlug] ||
-      INITIAL_TENANTS['lucas-beachtennis']
+      Object.values(tenants)[0] ||
+      EMPTY_TENANT
     );
   }, [activeConversation, tenants]);
 
@@ -622,7 +641,21 @@ export default function ChatWorkspace({
             mobileScreen === 'chat' ? 'flex' : 'hidden lg:flex'
           }`}
         >
-          {activeConversation && (
+          {!activeConversation ? (
+            <div className="flex-1 flex flex-col items-center justify-center p-8 text-center space-y-3">
+              <div className="w-14 h-14 rounded-2xl bg-white border border-slate-200 text-slate-400 flex items-center justify-center">
+                <MessageCircle className="w-7 h-7 text-blue-600" />
+              </div>
+              <h3 className="text-base font-extrabold text-slate-800">
+                Nenhuma conversa no momento
+              </h3>
+              <p className="text-xs text-slate-500 max-w-xs leading-relaxed">
+                {chatRole === 'prestador'
+                  ? 'Quando os clientes entrarem em contato para agendar ou tirar dúvidas, as mensagens aparecerão aqui.'
+                  : 'Inicie uma conversa ao explorar os profissionais para combinar horários ou tirar dúvidas.'}
+              </p>
+            </div>
+          ) : (
             <>
               {/* Top Conversation Header */}
               <div className="px-3.5 py-3 bg-white border-b border-slate-200 flex items-center justify-between gap-2 shrink-0">
@@ -1033,7 +1066,7 @@ export default function ChatWorkspace({
                 </button>
               </div>
             </div>
-          ) : (
+          ) : activeTenant && activeTenant.slug ? (
             /* CLIENT MODE RIGHT PANE: PROVIDER DETAILS & SERVICES */
             <div className="space-y-5">
               <div className="flex items-center gap-3">
@@ -1112,6 +1145,16 @@ export default function ChatWorkspace({
                 <Calendar className="w-4 h-4" />
                 <span>Abrir Agenda Completa</span>
               </NextLink>
+            </div>
+          ) : (
+            <div className="flex-1 flex flex-col items-center justify-center p-6 text-center space-y-3">
+              <div className="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center">
+                <User className="w-6 h-6" />
+              </div>
+              <p className="text-xs font-bold text-slate-700">Ficha do Prestador</p>
+              <p className="text-[11px] text-slate-500">
+                Selecione uma conversa com um profissional para ver serviços e horários.
+              </p>
             </div>
           )}
         </div>
