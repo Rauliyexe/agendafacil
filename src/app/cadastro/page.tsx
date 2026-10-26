@@ -28,9 +28,12 @@ import {
   Trophy,
   BadgeCheck,
   Check,
+  Database,
 } from 'lucide-react';
 import AppSidebar from '@/components/layout/AppSidebar';
-import { saveTenant } from '@/lib/store';
+import { saveTenant, saveStoredUserRole } from '@/lib/store';
+import { getSupabase, isSupabaseConfigured } from '@/lib/supabase/client';
+import { saveTenantToSupabase } from '@/lib/supabase/api';
 import { Tenant } from '@/lib/types';
 
 type AccountRole = 'cliente' | 'prestador';
@@ -144,6 +147,7 @@ export default function CadastroPage() {
   const [accountRole, setAccountRole] = useState<AccountRole>('prestador');
   const [step, setStep] = useState<number>(1);
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // =========================================================================
   // CLIENTE STATES
@@ -264,15 +268,52 @@ export default function CadastroPage() {
     setProServices(proServices.filter((_, i) => i !== idx));
   };
 
-  const handleFinishClientSignup = () => {
+  const handleFinishClientSignup = async () => {
+    setIsSubmitting(true);
+
+    const supabase = getSupabase();
+    if (supabase && clientEmail && clientPassword) {
+      try {
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+          email: clientEmail,
+          password: clientPassword,
+          options: {
+            data: {
+              full_name: clientName || 'Cliente',
+              phone: clientPhone,
+              role: 'cliente',
+            },
+          },
+        });
+
+        if (authData?.user) {
+          await supabase.from('profiles').upsert({
+            id: authData.user.id,
+            email: clientEmail,
+            full_name: clientName || 'Cliente',
+            phone: clientPhone,
+            role: 'cliente',
+          });
+        }
+      } catch (err) {
+        console.warn('Supabase client registration notice:', err);
+      }
+    }
+
+    saveStoredUserRole('cliente');
+    setIsSubmitting(false);
     setRegistrationSuccess(true);
     setTimeout(() => {
       router.push('/explorar');
     }, 1500);
   };
 
-  const handleFinishProSignup = () => {
-    const finalSlug = proSlug || `prestador-${Date.now().toString().slice(-4)}`;
+  const handleFinishProSignup = async () => {
+    setIsSubmitting(true);
+
+    const rawSlug = proSlug || proName.toLowerCase().replace(/[^a-z0-9]/g, '-') || `prestador-${Date.now().toString().slice(-4)}`;
+    const finalSlug = rawSlug.replace(/--+/g, '-').replace(/^-|-$/g, '');
+
     const newTenant: Tenant = {
       id: finalSlug,
       slug: finalSlug,
@@ -280,9 +321,9 @@ export default function CadastroPage() {
       role: proRole,
       specialty: proRole,
       rating: 5.0,
-      reviews: 12,
+      reviews: 0,
       avatar:
-        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&auto=format&fit=crop&q=80',
+        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&auto=format&fit=crop&q=80',
       address: proAddress || 'Atendimento no local e domicílio',
       experience: proExperience,
       phone: proPhone || '(11) 98765-4321',
@@ -311,7 +352,43 @@ export default function CadastroPage() {
       })),
     };
 
+    const supabase = getSupabase();
+    if (supabase && proEmail && proPassword) {
+      try {
+        const { data: authData } = await supabase.auth.signUp({
+          email: proEmail,
+          password: proPassword,
+          options: {
+            data: {
+              full_name: proName || 'Prestador',
+              phone: proPhone,
+              role: 'prestador',
+            },
+          },
+        });
+
+        if (authData?.user) {
+          await supabase.from('profiles').upsert({
+            id: authData.user.id,
+            email: proEmail,
+            full_name: proName || 'Prestador',
+            phone: proPhone,
+            role: 'prestador',
+          });
+        }
+      } catch (err) {
+        console.warn('Supabase auth signup notice:', err);
+      }
+    }
+
+    // Save directly to Supabase table
+    await saveTenantToSupabase(newTenant);
+
+    // Save to local cache
     saveTenant(newTenant);
+    saveStoredUserRole('prestador');
+
+    setIsSubmitting(false);
     setRegistrationSuccess(true);
     setTimeout(() => {
       router.push(`/${finalSlug}`);
@@ -352,14 +429,22 @@ export default function CadastroPage() {
               </p>
             </div>
 
-            <div className="flex items-center gap-2 text-xs font-bold text-slate-600">
-              <span>Já possui uma conta?</span>
-              <NextLink
-                href="/login"
-                className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-900 font-extrabold transition"
-              >
-                Entrar na Conta
-              </NextLink>
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 border border-slate-200 text-xs">
+                <Database className="w-3.5 h-3.5 text-blue-600" />
+                <span className="font-bold text-slate-700">
+                  {isSupabaseConfigured() ? 'Supabase Nuvem Ativo' : 'Supabase (Pronto p/ Conectar)'}
+                </span>
+              </div>
+              <div className="flex items-center gap-2 text-xs font-bold text-slate-600">
+                <span>Já possui uma conta?</span>
+                <NextLink
+                  href="/login"
+                  className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-900 font-extrabold transition"
+                >
+                  Entrar
+                </NextLink>
+              </div>
             </div>
           </div>
 
@@ -1006,10 +1091,15 @@ export default function CadastroPage() {
                       <button
                         type="button"
                         onClick={handleFinishProSignup}
-                        className="flex-1 py-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-sm flex items-center justify-center gap-2 transition"
+                        disabled={isSubmitting}
+                        className="flex-1 py-4 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-extrabold text-sm flex items-center justify-center gap-2 transition"
                       >
                         <CheckCircle2 className="w-5 h-5" />
-                        <span>Finalizar Cadastro e Publicar Minha Agenda</span>
+                        <span>
+                          {isSubmitting
+                            ? 'Salvando no Supabase...'
+                            : 'Finalizar Cadastro e Publicar Minha Agenda'}
+                        </span>
                       </button>
                     </div>
                   </div>
@@ -1234,10 +1324,15 @@ export default function CadastroPage() {
                       <button
                         type="button"
                         onClick={handleFinishClientSignup}
-                        className="flex-1 py-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm flex items-center justify-center gap-2 transition"
+                        disabled={isSubmitting}
+                        className="flex-1 py-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-extrabold text-sm flex items-center justify-center gap-2 transition"
                       >
                         <CheckCircle2 className="w-5 h-5" />
-                        <span>Concluir Cadastro Gratuito de Cliente</span>
+                        <span>
+                          {isSubmitting
+                            ? 'Salvando no Supabase...'
+                            : 'Concluir Cadastro Gratuito de Cliente'}
+                        </span>
                       </button>
                     </div>
                   </div>

@@ -168,9 +168,11 @@ CREATE POLICY "Criação de itens de agendamento" ON public.booking_services FOR
 CREATE POLICY "Acesso a conversas de chat" ON public.chat_conversations FOR ALL USING (true);
 CREATE POLICY "Acesso a mensagens de chat" ON public.chat_messages FOR ALL USING (true);
 
--- Permissões para prestador atualizar seu próprio tenant e serviços
+-- Permissões para prestador criar e atualizar seu tenant e serviços
+CREATE POLICY "Criação pública de prestadores" ON public.tenants FOR INSERT WITH CHECK (true);
 CREATE POLICY "Prestadores atualizam seu tenant" ON public.tenants FOR UPDATE USING (true);
 CREATE POLICY "Prestadores gerenciam seus serviços" ON public.services FOR ALL USING (true);
+CREATE POLICY "Acesso e criação de perfis" ON public.profiles FOR ALL USING (true);
 
 -- =====================================================================
 -- 11. BASE LIMPA PARA PRODUÇÃO
