@@ -175,6 +175,18 @@ CREATE POLICY "Prestadores gerenciam seus serviços" ON public.services FOR ALL 
 CREATE POLICY "Acesso e criação de perfis" ON public.profiles FOR ALL USING (true);
 
 -- =====================================================================
+-- 11. CONCESSÃO DE PERMISSÕES PARA AS ROLES DO SUPABASE (anon e authenticated)
+-- =====================================================================
+GRANT USAGE ON SCHEMA public TO anon, authenticated, service_role;
+GRANT ALL ON ALL TABLES IN SCHEMA public TO anon, authenticated, service_role;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated, service_role;
+GRANT ALL ON ALL ROUTINES IN SCHEMA public TO anon, authenticated, service_role;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO anon, authenticated, service_role;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO anon, authenticated, service_role;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON ROUTINES TO anon, authenticated, service_role;
+
+-- =====================================================================
 -- 11. BASE LIMPA PARA PRODUÇÃO
 -- Os prestadores e serviços são criados diretamente pelo cadastro do site ou inseridos no Supabase.
 -- =====================================================================
