@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import NextLink from 'next/link';
+import Image from 'next/image';
 import {
   CheckCircle2,
   Sparkles,
@@ -37,12 +38,23 @@ export default function PlanosPage() {
     <AppSidebar>
       <main className="flex-1 max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-6 sm:py-12 pb-28 lg:pb-12">
         <div className="text-center max-w-3xl mx-auto mb-14">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-50 border border-brand-200 text-brand-700 text-xs font-bold uppercase tracking-wider mb-4">
-            <Sparkles className="w-3.5 h-3.5" />
-            Preços Populares & Acessíveis
+          <div className="flex items-center justify-center gap-2 mb-3">
+            <div className="relative w-8 h-8 shrink-0">
+              <Image
+                src="/logo.png"
+                alt="AgendaFácil"
+                width={32}
+                height={32}
+                className="w-full h-full object-contain"
+              />
+            </div>
+            <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-violet-50 border border-violet-200/80 text-violet-700 text-xs font-bold uppercase tracking-wider">
+              <Sparkles className="w-3.5 h-3.5 text-violet-600" />
+              Planos Oficiais AgendaFácil
+            </span>
           </div>
           <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">
-            Valores Claros para Clientes e Prestadores
+            Valores Transparentes no Agenda<span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 via-blue-600 to-cyan-500">Fácil</span>
           </h1>
           <p className="mt-4 text-base sm:text-lg text-slate-600">
             Gratuito para seus clientes agendarem e planos super econômicos para você nunca mais ter horários ociosos ou faltas.
@@ -85,12 +97,12 @@ export default function PlanosPage() {
               key={plan.id}
               className={`relative rounded-3xl p-8 flex flex-col justify-between transition hover:shadow-2xl ${
                 plan.recommended
-                  ? 'bg-white border-2 border-brand-600 shadow-xl ring-4 ring-brand-500/10'
+                  ? 'bg-white border-2 border-violet-600 shadow-xl ring-4 ring-violet-500/10'
                   : 'bg-white border border-slate-200 shadow-sm'
               }`}
             >
               {plan.recommended && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-brand-600 text-white font-bold text-xs uppercase tracking-wider shadow-md flex items-center gap-1">
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-bold text-xs uppercase tracking-wider shadow-md flex items-center gap-1">
                   <Flame className="w-3.5 h-3.5 fill-amber-300 text-amber-300" />
                   Mais Popular (R$ 19,90)
                 </div>
@@ -111,7 +123,7 @@ export default function PlanosPage() {
                 <div className="mt-8 space-y-3 border-t border-slate-100 pt-6">
                   {plan.features.map((feat, idx) => (
                     <div key={idx} className="flex items-start gap-2.5 text-xs font-medium text-slate-700">
-                      <CheckCircle2 className="w-4 h-4 text-brand-600 shrink-0 mt-0.5" />
+                      <CheckCircle2 className="w-4 h-4 text-violet-600 shrink-0 mt-0.5" />
                       <span>{feat}</span>
                     </div>
                   ))}
@@ -121,7 +133,7 @@ export default function PlanosPage() {
               <div className="mt-8 pt-6 border-t border-slate-100">
                 {plan.price === 0 ? (
                   <NextLink
-                    href="/onboarding"
+                    href="/dashboard"
                     className="w-full py-3.5 px-4 rounded-xl font-bold text-sm transition shadow-sm text-center block bg-slate-900 hover:bg-slate-800 text-white"
                   >
                     Começar no Plano Gratuito
@@ -129,7 +141,7 @@ export default function PlanosPage() {
                 ) : (
                   <button
                     onClick={() => handleOpenCheckout(plan)}
-                    className="w-full py-3.5 px-4 rounded-xl font-bold text-sm transition shadow-sm bg-brand-600 hover:bg-brand-700 text-white shadow-brand-600/30"
+                    className="w-full py-3.5 px-4 rounded-xl font-bold text-sm transition shadow-sm bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-700 hover:to-blue-700 text-white shadow-violet-600/30"
                   >
                     Assinar por R$ {plan.price.toFixed(2).replace('.', ',')}/mês
                   </button>

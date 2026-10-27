@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import NextLink from 'next/link';
+import Image from 'next/image';
 import {
   Calendar,
   User,
@@ -418,11 +419,22 @@ export default function CadastroPage() {
         <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-2xs space-y-6">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-xs font-extrabold uppercase tracking-wider">
-                Cadastro Oficial AgendaFácil
-              </span>
+              <div className="flex items-center gap-2 mb-2">
+                <div className="relative w-7 h-7 shrink-0">
+                  <Image
+                    src="/logo.png"
+                    alt="AgendaFácil"
+                    width={28}
+                    height={28}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-violet-50 text-violet-700 border border-violet-200 text-xs font-extrabold uppercase tracking-wider">
+                  Cadastro Oficial AgendaFácil
+                </span>
+              </div>
               <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-2">
-                Como você deseja utilizar o AgendaFácil?
+                Como você deseja utilizar o Agenda<span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 via-blue-600 to-cyan-500">Fácil</span>?
               </h1>
               <p className="text-xs sm:text-sm text-slate-500 mt-1">
                 Escolha abaixo se você quer <strong>contratar trabalhos/serviços</strong> ou se quer <strong>divulgar sua agenda profissional</strong>.

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import NextLink from 'next/link';
+import Image from 'next/image';
 import {
   Calendar,
   ArrowRight,
@@ -44,11 +45,22 @@ export default function LoginPage() {
           <div className="lg:col-span-6 bg-white rounded-3xl border border-slate-200 p-6 sm:p-10 shadow-2xs flex flex-col justify-between space-y-6">
             <div className="space-y-6">
               <div>
-                <span className="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-xs font-extrabold uppercase tracking-wider">
-                  Acesso à Plataforma
-                </span>
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="relative w-8 h-8 shrink-0">
+                    <Image
+                      src="/logo.png"
+                      alt="AgendaFácil"
+                      width={32}
+                      height={32}
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                  <span className="inline-block px-3 py-1 rounded-full bg-violet-50 text-violet-700 border border-violet-200 text-xs font-extrabold uppercase tracking-wider">
+                    Acesso à Plataforma
+                  </span>
+                </div>
                 <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-2">
-                  Entrar no AgendaFácil
+                  Entrar no Agenda<span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 via-blue-600 to-cyan-500">Fácil</span>
                 </h1>
                 <p className="text-xs sm:text-sm text-slate-500 mt-1">
                   Acesse seus agendamentos de trabalhos, sua agenda profissional ou o chat ao vivo.
@@ -67,7 +79,7 @@ export default function LoginPage() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="seu@email.com ou (11) 99999-9999"
-                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 text-sm outline-none focus:border-blue-600"
+                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 text-sm outline-none focus:border-violet-600"
                     />
                   </div>
                 </div>
@@ -78,7 +90,7 @@ export default function LoginPage() {
                     <button
                       type="button"
                       onClick={() => alert('Link de recuperação enviado para seu e-mail/WhatsApp!')}
-                      className="text-xs font-bold text-blue-600 hover:underline"
+                      className="text-xs font-bold text-violet-600 hover:underline"
                     >
                       Esqueceu a senha?
                     </button>
@@ -90,14 +102,14 @@ export default function LoginPage() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 text-sm outline-none focus:border-blue-600"
+                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 text-sm outline-none focus:border-violet-600"
                     />
                   </div>
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-sm flex items-center justify-center gap-2 transition"
+                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-700 hover:to-blue-700 text-white font-extrabold text-sm flex items-center justify-center gap-2 transition shadow-xs"
                 >
                   <span>Entrar no Painel</span>
                   <ArrowRight className="w-4 h-4" />

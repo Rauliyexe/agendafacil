@@ -12,13 +12,13 @@ export const metadata: Metadata = {
     title: 'AgendaFácil',
   },
   icons: {
-    icon: '/icons/icon-192.svg',
-    apple: '/icons/icon-192.svg',
+    icon: '/logo-64.png',
+    apple: '/logo-192.png',
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: '#2563eb',
+  themeColor: '#7c3aed',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,

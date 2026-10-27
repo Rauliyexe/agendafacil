@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import NextLink from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   Home,
@@ -207,12 +208,19 @@ export default function AppSidebar({
         <div className="p-5 space-y-5">
           {/* Brand Logo */}
           <NextLink href="/" className="flex items-center gap-2.5 px-1 group">
-            <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white group-hover:scale-105 transition">
-              <Calendar className="w-5 h-5" />
+            <div className="relative w-9 h-9 shrink-0 group-hover:scale-105 transition-transform">
+              <Image
+                src="/logo.png"
+                alt="AgendaFácil"
+                width={36}
+                height={36}
+                className="w-full h-full object-contain"
+                priority
+              />
             </div>
             <div>
               <span className="text-lg font-extrabold tracking-tight text-slate-900 block leading-none">
-                Agenda<span className="text-blue-600">Fácil</span>
+                Agenda<span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 via-blue-600 to-cyan-500">Fácil</span>
               </span>
               <span className="text-[10px] font-bold text-slate-400">
                 {roleMode === 'cliente' ? 'Visão do Cliente' : 'Painel do Prestador'}
@@ -496,11 +504,17 @@ export default function AppSidebar({
            =================================================================== */}
         <header className="lg:hidden sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-3.5 h-14 flex items-center justify-between gap-2">
           <NextLink href="/" className="flex items-center gap-2 min-w-0 shrink-0">
-            <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white shrink-0">
-              <Calendar className="w-4 h-4" />
+            <div className="relative w-7 h-7 shrink-0">
+              <Image
+                src="/logo.png"
+                alt="AgendaFácil"
+                width={28}
+                height={28}
+                className="w-full h-full object-contain"
+              />
             </div>
             <span className="text-sm font-extrabold text-slate-900 tracking-tight">
-              Agenda<span className="text-blue-600">Fácil</span>
+              Agenda<span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 via-blue-600 to-cyan-500">Fácil</span>
             </span>
           </NextLink>
 

@@ -20,6 +20,9 @@ export default {
           800: '#1e40af',
           900: '#1e3a8a',
           950: '#172554',
+          violet: '#7c3aed',
+          cyan: '#06b6d4',
+          indigo: '#4f46e5',
         },
         accent: {
           50: '#faf5ff',

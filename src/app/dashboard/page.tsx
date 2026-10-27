@@ -394,7 +394,7 @@ function DashboardContent() {
               )}
               <div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="px-2.5 py-0.5 rounded-full bg-blue-600 text-white text-[10px] font-extrabold uppercase tracking-wider">
+                  <span className="px-2.5 py-0.5 rounded-full bg-gradient-to-r from-violet-600 to-blue-600 text-white text-[10px] font-extrabold uppercase tracking-wider">
                     Painel do Prestador
                   </span>
                   <span className="text-xs text-slate-400">
@@ -432,7 +432,7 @@ function DashboardContent() {
               <button
                 type="button"
                 onClick={() => setShowManualModal(true)}
-                className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-extrabold flex items-center gap-1.5 transition"
+                className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-700 hover:to-blue-700 text-white text-xs font-extrabold flex items-center gap-1.5 transition shadow-xs"
               >
                 <Plus className="w-4 h-4" />
                 <span>Encaixar Cliente</span>

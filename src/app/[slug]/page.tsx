@@ -816,7 +816,7 @@ export default function TenantBookingDesktopPage() {
                   <button
                     onClick={handleConfirmBooking}
                     disabled={!selectedTime}
-                    className="w-full py-4 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-sm flex items-center justify-center gap-2 transition"
+                    className="w-full py-4 rounded-2xl bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-700 hover:to-blue-700 text-white font-extrabold text-sm flex items-center justify-center gap-2 transition shadow-md shadow-violet-600/20"
                   >
                     <span>Confirmar Contratação & Horário</span>
                     <ArrowRight className="w-4 h-4" />

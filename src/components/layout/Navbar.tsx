@@ -1,9 +1,10 @@
 'use client';
 
 import NextLink from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { Calendar, User, LayoutDashboard, Menu, X, MessageSquare, Compass, ShieldCheck } from 'lucide-react';
+import { User, LayoutDashboard, Menu, X, MessageSquare, Compass, ShieldCheck } from 'lucide-react';
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -15,11 +16,18 @@ export default function Navbar() {
         
         {/* Brand Logo */}
         <NextLink href="/" className="flex items-center gap-2.5 group">
-          <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-sm shadow-blue-600/25 group-hover:scale-105 transition-transform">
-            <Calendar className="w-5 h-5" />
+          <div className="relative w-9 h-9 shrink-0 group-hover:scale-105 transition-transform">
+            <Image
+              src="/logo.png"
+              alt="AgendaFácil"
+              width={36}
+              height={36}
+              className="w-full h-full object-contain"
+              priority
+            />
           </div>
           <span className="text-xl font-extrabold tracking-tight text-slate-900">
-            Agenda<span className="text-blue-600">Fácil</span>
+            Agenda<span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 via-blue-600 to-cyan-500">Fácil</span>
           </span>
         </NextLink>
 
@@ -29,7 +37,7 @@ export default function Navbar() {
             href="/"
             className={`transition ${
               pathname === '/'
-                ? 'text-blue-600 font-bold'
+                ? 'text-violet-600 font-bold'
                 : 'hover:text-slate-900'
             }`}
           >
@@ -40,7 +48,7 @@ export default function Navbar() {
             href="/explorar"
             className={`transition flex items-center gap-1.5 ${
               pathname?.startsWith('/explorar') || pathname?.startsWith('/meus-agendamentos')
-                ? 'text-blue-600 font-bold'
+                ? 'text-violet-600 font-bold'
                 : 'hover:text-slate-900'
             }`}
           >
@@ -52,11 +60,11 @@ export default function Navbar() {
             href="/chat"
             className={`transition flex items-center gap-1.5 ${
               pathname?.startsWith('/chat')
-                ? 'text-blue-600 font-bold'
+                ? 'text-violet-600 font-bold'
                 : 'hover:text-slate-900'
             }`}
           >
-            <MessageSquare className="w-4 h-4 text-blue-600" />
+            <MessageSquare className="w-4 h-4 text-violet-600" />
             Chat
           </NextLink>
 
@@ -64,7 +72,7 @@ export default function Navbar() {
             href="/planos"
             className={`transition ${
               pathname?.startsWith('/planos')
-                ? 'text-blue-600 font-bold'
+                ? 'text-violet-600 font-bold'
                 : 'hover:text-slate-900'
             }`}
           >
@@ -76,16 +84,16 @@ export default function Navbar() {
         <div className="hidden md:flex items-center gap-2.5">
           <NextLink
             href="/explorar"
-            className="inline-flex items-center gap-1.5 text-xs font-extrabold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 px-3.5 py-2 rounded-xl transition"
+            className="inline-flex items-center gap-1.5 text-xs font-extrabold text-violet-700 bg-violet-50 hover:bg-violet-100 border border-violet-200 px-3.5 py-2 rounded-xl transition"
           >
-            <User className="w-3.5 h-3.5 text-blue-600" />
+            <User className="w-3.5 h-3.5 text-violet-600" />
             <span>Sou Cliente</span>
           </NextLink>
           <NextLink
             href="/dashboard"
-            className="inline-flex items-center gap-1.5 text-xs font-extrabold text-white bg-slate-900 hover:bg-slate-800 px-4 py-2 rounded-xl transition shadow-xs"
+            className="inline-flex items-center gap-1.5 text-xs font-extrabold text-white bg-slate-900 hover:bg-slate-800 px-4 py-2 rounded-xl transition shadow-xs border border-slate-800 hover:border-slate-700"
           >
-            <LayoutDashboard className="w-3.5 h-3.5 text-blue-400" />
+            <LayoutDashboard className="w-3.5 h-3.5 text-cyan-400" />
             <span>Sou Prestador</span>
           </NextLink>
         </div>

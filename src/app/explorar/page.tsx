@@ -149,7 +149,7 @@ export default function ExplorarClientePage() {
                   onClick={() => setSelectedCategory(cat.id)}
                   className={`px-3.5 py-2 rounded-xl text-xs font-extrabold flex items-center gap-1.5 whitespace-nowrap shrink-0 transition ${
                     isSelected
-                      ? 'bg-blue-600 text-white shadow-xs'
+                      ? 'bg-gradient-to-r from-violet-600 to-blue-600 text-white shadow-xs'
                       : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                   }`}
                 >
@@ -294,7 +294,7 @@ export default function ExplorarClientePage() {
 
                     <NextLink
                       href={`/${pro.slug}`}
-                      className="flex-1 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-extrabold flex items-center justify-center gap-1.5 transition"
+                      className="flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-700 hover:to-blue-700 text-white text-xs font-extrabold flex items-center justify-center gap-1.5 transition shadow-xs"
                     >
                       <span>Ver Horários e Agendar</span>
                       <ArrowRight className="w-3.5 h-3.5" />
