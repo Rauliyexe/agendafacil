@@ -62,8 +62,10 @@ async function typeSmoothly(page, locator, text) {
 }
 
 async function runTour() {
-  console.log('--- INICIANDO GRAVAÇÃO DO VÍDEO COMPLETO DO AGENDAFÁCIL ---');
+  console.log('--- INICIANDO GRAVAÇÃO DO VÍDEO COMPLETO DO AGENDAFÁCIL (NOVA LOGO E DESIGN) ---');
   
+  const startTime = Date.now();
+
   const browser = await chromium.launch({
     channel: 'msedge',
     headless: true,
@@ -77,20 +79,21 @@ async function runTour() {
     },
   });
 
-  // Inject visual cursor for mouse clicks and movements
+  // Inject visual cursor with violet brand styling
   await context.addInitScript(() => {
     window.addEventListener('DOMContentLoaded', () => {
       const cursor = document.createElement('div');
       cursor.id = 'demo-cursor';
       cursor.style.width = '22px';
       cursor.style.height = '22px';
-      cursor.style.border = '2px solid #2563eb';
+      cursor.style.border = '2px solid #7c3aed';
       cursor.style.borderRadius = '50%';
       cursor.style.position = 'fixed';
       cursor.style.pointerEvents = 'none';
       cursor.style.zIndex = '999999';
       cursor.style.transition = 'transform 0.08s ease, background-color 0.15s ease';
-      cursor.style.backgroundColor = 'rgba(37, 99, 235, 0.25)';
+      cursor.style.backgroundColor = 'rgba(124, 58, 237, 0.25)';
+      cursor.style.boxShadow = '0 0 10px rgba(124, 58, 237, 0.4)';
       cursor.style.transform = 'translate(-50%, -50%)';
       cursor.style.display = 'none';
       document.body.appendChild(cursor);
@@ -103,12 +106,12 @@ async function runTour() {
 
       window.addEventListener('mousedown', () => {
         cursor.style.transform = 'translate(-50%, -50%) scale(0.7)';
-        cursor.style.backgroundColor = 'rgba(37, 99, 235, 0.7)';
+        cursor.style.backgroundColor = 'rgba(124, 58, 237, 0.8)';
       });
 
       window.addEventListener('mouseup', () => {
         cursor.style.transform = 'translate(-50%, -50%) scale(1)';
-        cursor.style.backgroundColor = 'rgba(37, 99, 235, 0.25)';
+        cursor.style.backgroundColor = 'rgba(124, 58, 237, 0.25)';
       });
     });
   });
@@ -116,29 +119,30 @@ async function runTour() {
   const page = await context.newPage();
 
   // =========================================================================
-  // CENA 1: LANDING PAGE & APRESENTAÇÃO GERAL
+  // CENA 1: LANDING PAGE & APRESENTAÇÃO GERAL COM A NOVA LOGO
   // =========================================================================
-  console.log('Cena 1: Landing Page');
+  console.log('Cena 1: Landing Page com Nova Logo e Design');
   await page.goto('http://localhost:3000', { waitUntil: 'networkidle' });
-  await sleep(1500);
+  await sleep(1800);
 
-  // Scroll suave pela Home
-  await smoothScroll(page, 400, 1000);
-  await sleep(1200);
-
-  // Mostrar como funciona
-  await smoothScroll(page, 950, 1000);
+  // Scroll suave pela Home mostrando Hero, Nova Logo, e Cards
+  await smoothScroll(page, 450, 1000);
   await sleep(1400);
 
-  // Mostrar seção de planos (grátis vs pro - sem duplicidade)
-  await smoothScroll(page, 1500, 1000);
+  // Mostrar seção "Como Funciona"
+  await smoothScroll(page, 1000, 1000);
+  await sleep(1400);
+
+  // Mostrar seção de planos com o novo card violeta/ciano
+  await smoothScroll(page, 1550, 1000);
   await sleep(1600);
 
-  // Voltar ao topo e clicar para Cadastrar
+  // Voltar ao topo suavemente
   await smoothScroll(page, 0, 800);
   await sleep(800);
 
-  const cadastreTopBtn = page.locator('nav a:has-text("Cadastre-se"), nav a:has-text("Começar")').first();
+  // Clicar para Cadastrar
+  const cadastreTopBtn = page.locator('nav a:has-text("Cadastre-se"), a:has-text("Sou Prestador"), nav a:has-text("Começar")').first();
   if (await cadastreTopBtn.isVisible()) {
     await smoothMoveAndClick(page, cadastreTopBtn);
   } else {
@@ -146,14 +150,20 @@ async function runTour() {
   }
   await sleep(1500);
 
+  // Se foi para o dashboard, ir para /cadastro
+  if (page.url().includes('/dashboard')) {
+    await page.goto('http://localhost:3000/cadastro', { waitUntil: 'networkidle' });
+    await sleep(1200);
+  }
+
   // =========================================================================
   // CENA 2: O PRIMEIRO CADASTRO DE PRESTADOR
   // =========================================================================
-  console.log('Cena 2: Cadastro de Prestador');
-  await smoothScroll(page, 200, 800);
+  console.log('Cena 2: Cadastro de Prestador Oficial');
+  await smoothScroll(page, 180, 800);
   await sleep(1000);
 
-  // Preencher modelo ou dados do Prestador
+  // Preencher modelo rápido de Climatização / Ar
   const templateBtn = page.locator('button:has-text("Climatização / Ar")').first();
   if (await templateBtn.isVisible()) {
     await smoothMoveAndClick(page, templateBtn);
@@ -268,7 +278,6 @@ async function runTour() {
   // CENA 3: PÁGINA PÚBLICA EXCLUSIVA DO PRESTADOR + AGENDAMENTO COM PIX
   // =========================================================================
   console.log('Cena 3: Página Pública do Prestador');
-  // Se não tiver redirecionado automaticamente, navegar
   const currentUrl = page.url();
   if (!currentUrl.includes('marcos-climatizacao')) {
     await page.goto('http://localhost:3000/marcos-climatizacao-eletrica', { waitUntil: 'networkidle' });
@@ -276,7 +285,7 @@ async function runTour() {
   await sleep(1500);
 
   // Mostrar página pública do prestador
-  await smoothScroll(page, 200, 800);
+  await smoothScroll(page, 220, 800);
   await sleep(1200);
 
   // Selecionar o serviço de R$ 180 adicionado
@@ -287,7 +296,7 @@ async function runTour() {
   }
 
   // Selecionar data e horário
-  await smoothScroll(page, 500, 600);
+  await smoothScroll(page, 520, 600);
   await sleep(800);
 
   // Clicar no dia seguinte no carrossel de datas
@@ -323,7 +332,7 @@ async function runTour() {
     await sleep(400);
   }
 
-  await smoothScroll(page, 800, 600);
+  await smoothScroll(page, 820, 600);
   await sleep(800);
 
   // Confirmar agendamento
@@ -355,14 +364,14 @@ async function runTour() {
   }
 
   // =========================================================================
-  // CENA 4: DASHBOARD / PAINEL DE CONTROLE DO PRESTADOR
+  // CENA 4: DASHBOARD / PAINEL DE CONTROLE DO PRESTADOR COM A NOVA LOGO
   // =========================================================================
-  console.log('Cena 4: Dashboard do Prestador');
+  console.log('Cena 4: Dashboard do Prestador com Novo Design');
   await page.goto('http://localhost:3000/dashboard', { waitUntil: 'networkidle' });
   await sleep(1500);
 
   // Mostrar Tab "Quem Agendou" com o agendamento da Mariana
-  await smoothScroll(page, 250, 700);
+  await smoothScroll(page, 260, 700);
   await sleep(1400);
 
   // Tab "Meus Serviços"
@@ -391,7 +400,7 @@ async function runTour() {
   // =========================================================================
   // CENA 5: DIRETÓRIO DE EXPLORAR PRESTADORES
   // =========================================================================
-  console.log('Cena 5: Explorar Prestadores');
+  console.log('Cena 5: Explorar Prestadores com Novo Design');
   await page.goto('http://localhost:3000/explorar', { waitUntil: 'networkidle' });
   await sleep(1500);
 
@@ -406,14 +415,37 @@ async function runTour() {
   }
 
   await smoothScroll(page, 350, 700);
-  await sleep(2000);
+  await sleep(2200);
 
   // Finalizar gravação
   console.log('Concluindo gravação de vídeo...');
   await page.close();
   await context.close();
   await browser.close();
-  console.log('Gravação finalizada com sucesso!');
+
+  // Find the newly recorded video file
+  await sleep(1500);
+  const files = fs.readdirSync(ARTIFACT_DIR)
+    .filter((f) => f.endsWith('.webm') && f.startsWith('page@'))
+    .map((f) => ({
+      name: f,
+      time: fs.statSync(path.join(ARTIFACT_DIR, f)).mtimeMs,
+    }))
+    .sort((a, b) => b.time - a.time);
+
+  if (files.length > 0) {
+    const latestVideo = path.join(ARTIFACT_DIR, files[0].name);
+    const targetArtifact = path.join(ARTIFACT_DIR, 'video_tour_completo_agendafacil.webm');
+    const targetPublic = path.join(PUBLIC_DIR, 'video_tour_completo.webm');
+
+    fs.copyFileSync(latestVideo, targetArtifact);
+    fs.copyFileSync(latestVideo, targetPublic);
+    console.log(`Vídeo copiado com sucesso para:`);
+    console.log(`- ${targetArtifact}`);
+    console.log(`- ${targetPublic}`);
+  }
+
+  console.log(`Gravação finalizada com sucesso em ${((Date.now() - startTime) / 1000).toFixed(1)}s!`);
 }
 
 runTour().catch((err) => {
