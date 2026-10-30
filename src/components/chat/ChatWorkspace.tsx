@@ -355,7 +355,7 @@ export default function ChatWorkspace({
       }). Te espero lá!`,
       {
         serviceName: activeConversation.serviceName || 'Serviço Confirmado',
-        date: activeConversation.scheduledDate || 'Hoje, 26 de outubro',
+        date: activeConversation.scheduledDate || 'Hoje',
         time: activeConversation.scheduledTime || '10:00',
         price: activeConversation.servicePrice || 90,
         status: 'confirmado',
@@ -368,8 +368,8 @@ export default function ChatWorkspace({
     if (!activeConversation) return;
     const price = activeConversation.servicePrice || 90;
     const srvName = activeConversation.serviceName || 'Atendimento';
-    const pixKey = activeTenant.pixKey || 'lucas.becker@arenasunset.com.br';
-    const pixKeyType = activeTenant.pixKeyType || 'email';
+    const pixKey = activeTenant.pixKey || activeTenant.phone || 'pix@profissional.com';
+    const pixKeyType = activeTenant.pixKeyType || 'telefone';
     const beneficiary = activeTenant.pixBeneficiary || activeTenant.name;
 
     const brCode = generatePixBRCode({
@@ -961,7 +961,7 @@ export default function ChatWorkspace({
                 <div className="space-y-1 text-xs text-slate-300 pt-1 border-t border-slate-800">
                   <p className="flex items-center gap-1.5">
                     <Calendar className="w-3.5 h-3.5 text-blue-400" />
-                    <span>{activeConversation.scheduledDate || 'Hoje, 26 Out'}</span>
+                    <span>{activeConversation.scheduledDate || 'Hoje'}</span>
                   </p>
                   <p className="flex items-center gap-1.5">
                     <Clock className="w-3.5 h-3.5 text-blue-400" />
@@ -1219,8 +1219,8 @@ export default function ChatWorkspace({
           isOpen={showPixModal}
           onClose={() => setShowPixModal(false)}
           providerName={activeTenant.name}
-          pixKey={activeTenant.pixKey || 'lucas.becker@arenasunset.com.br'}
-          pixKeyType={activeTenant.pixKeyType || 'email'}
+          pixKey={activeTenant.pixKey || activeTenant.phone || ''}
+          pixKeyType={activeTenant.pixKeyType || 'telefone'}
           pixBeneficiary={activeTenant.pixBeneficiary || activeTenant.name}
           serviceName={
             activeConversation.serviceName ||

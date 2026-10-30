@@ -19,18 +19,18 @@ import {
   CheckCircle2,
   User,
   Compass,
+  Clock,
 } from 'lucide-react';
 import { getStoredTenants, getStoredBookings, syncWithSupabase } from '@/lib/store';
 import { Tenant, Booking } from '@/lib/types';
-import ProviderStoriesBar from '@/components/stories/ProviderStoriesBar';
-import AppSidebar from '@/components/layout/AppSidebar';
+import Navbar from '@/components/layout/Navbar';
 import { useSession } from '@/lib/auth';
 
 const CATEGORIES = [
-  { id: 'todos', label: 'Todos', icon: Sparkles },
-  { id: 'esportes', label: 'Beach Tennis', icon: Trophy },
-  { id: 'climatizacao', label: 'Ar-condicionado', icon: Wind },
-  { id: 'eletrica', label: 'Elétrica', icon: Zap },
+  { id: 'todos', label: 'Todos os Serviços', icon: Sparkles },
+  { id: 'esportes', label: 'Esportes & Aulas', icon: Trophy },
+  { id: 'climatizacao', label: 'Climatização & Ar', icon: Wind },
+  { id: 'eletrica', label: 'Elétrica & Reparos', icon: Zap },
   { id: 'piscina', label: 'Piscina & Limpeza', icon: Waves },
 ];
 
@@ -60,10 +60,8 @@ export default function ExplorarClientePage() {
   }, []);
 
   const tenantList = useMemo(() => Object.values(tenants), [tenants]);
-
   const session = useSession();
 
-  // Agendamentos do próprio cliente logado
   const myBookings = useMemo(() => {
     if (session.status !== 'authenticated') return [];
     const name = (session.name || '').toLowerCase();
@@ -91,7 +89,11 @@ export default function ExplorarClientePage() {
 
       if (selectedCategory === 'todos') return true;
       if (selectedCategory === 'esportes') {
-        return t.role.toLowerCase().includes('beach') || t.specialty.toLowerCase().includes('beach');
+        return (
+          t.role.toLowerCase().includes('beach') ||
+          t.specialty.toLowerCase().includes('beach') ||
+          t.role.toLowerCase().includes('professor')
+        );
       }
       if (selectedCategory === 'climatizacao') {
         return t.role.toLowerCase().includes('clima') || t.specialty.toLowerCase().includes('ar');
@@ -111,30 +113,37 @@ export default function ExplorarClientePage() {
   }, [tenantList, searchQuery, selectedCategory]);
 
   return (
-    <AppSidebar>
-      <main className="flex-1 p-3.5 sm:p-6 lg:p-8 pb-28 lg:pb-10 w-full max-w-6xl mx-auto space-y-5">
+    <div className="min-h-screen bg-[#F4F7FB] flex flex-col text-slate-900">
+      <Navbar />
+
+      <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6">
         {/* ===================================================================
-            1. CABEÇALHO SIMPLES E DIRETO DO CLIENTE + BUSCA
+            1. CABEÇALHO DE BUSCA E FILTROS
            =================================================================== */}
-        <div className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200 shadow-2xs space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-2xs space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[11px] font-extrabold">
-                <Compass className="w-3 h-3 text-blue-600" />
-                Explorar Prestadores
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-[11px] font-extrabold uppercase tracking-wider">
+                <Compass className="w-3.5 h-3.5 text-blue-600" />
+                Diretório de Profissionais
               </span>
-              <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 mt-1">
-                O que você quer agendar hoje?
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-2">
+                Encontre um profissional e agende online
               </h1>
+              <p className="text-xs sm:text-sm text-slate-500 mt-1">
+                Consulte o catálogo de preços fixos e escolha o melhor horário diretamente na agenda do prestador.
+              </p>
             </div>
 
-            <NextLink
-              href="/meus-agendamentos"
-              className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-extrabold flex items-center gap-2 w-fit transition"
-            >
-              <Calendar className="w-4 h-4 text-blue-600" />
-              <span>Meus Horários ({myBookings.length})</span>
-            </NextLink>
+            {session.status === 'authenticated' && session.role === 'cliente' && (
+              <NextLink
+                href="/cliente/agendamentos"
+                className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-extrabold flex items-center gap-2 w-fit shrink-0 transition"
+              >
+                <Calendar className="w-4 h-4 text-blue-600" />
+                <span>Meus Agendamentos ({myBookings.length})</span>
+              </NextLink>
+            )}
           </div>
 
           {/* Search Input */}
@@ -144,12 +153,12 @@ export default function ExplorarClientePage() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Buscar profissional ou serviço (Ex: Beach Tennis, Ar-condicionado, Elétrica)..."
-              className="w-full pl-11 pr-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-sm outline-none focus:border-blue-600 focus:bg-white transition"
+              placeholder="Buscar por nome do profissional, especialidade ou serviço..."
+              className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-sm outline-none focus:border-blue-600 focus:bg-white transition"
             />
           </div>
 
-          {/* Simple Filter Pills */}
+          {/* Category Filter Pills */}
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
             {CATEGORIES.map((cat) => {
               const isSelected = selectedCategory === cat.id;
@@ -159,13 +168,13 @@ export default function ExplorarClientePage() {
                   key={cat.id}
                   type="button"
                   onClick={() => setSelectedCategory(cat.id)}
-                  className={`px-3.5 py-2 rounded-xl text-xs font-extrabold flex items-center gap-1.5 whitespace-nowrap shrink-0 transition ${
+                  className={`px-4 py-2 rounded-xl text-xs font-extrabold flex items-center gap-1.5 whitespace-nowrap shrink-0 transition ${
                     isSelected
-                      ? 'bg-gradient-to-r from-violet-600 to-blue-600 text-white shadow-xs'
-                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                      ? 'bg-[#0B132B] text-white shadow-xs'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200/80 hover:text-slate-900'
                   }`}
                 >
-                  <Icon className="w-3.5 h-3.5" />
+                  <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-cyan-400' : 'text-slate-500'}`} />
                   <span>{cat.label}</span>
                 </button>
               );
@@ -177,13 +186,13 @@ export default function ExplorarClientePage() {
             2. FAIXA COMPACTA DO PRÓXIMO HORÁRIO DO CLIENTE (SE HOUVER)
            =================================================================== */}
         {nextBooking && (
-          <div className="bg-slate-900 text-white rounded-2xl p-4 sm:px-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="bg-[#0B132B] text-white rounded-2xl p-4 sm:px-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border border-slate-800">
             <div className="flex items-center gap-3 min-w-0">
               <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shrink-0">
                 <Calendar className="w-5 h-5 text-white" />
               </div>
               <div className="min-w-0">
-                <p className="text-[11px] font-bold text-blue-400">
+                <p className="text-[11px] font-bold text-cyan-400">
                   Seu próximo serviço agendado:
                 </p>
                 <p className="text-xs sm:text-sm font-extrabold text-white truncate">
@@ -193,7 +202,7 @@ export default function ExplorarClientePage() {
             </div>
 
             <NextLink
-              href="/meus-agendamentos"
+              href="/cliente/agendamentos"
               className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-extrabold flex items-center gap-1.5 shrink-0 w-fit transition"
             >
               <span>Ver detalhes</span>
@@ -203,20 +212,15 @@ export default function ExplorarClientePage() {
         )}
 
         {/* ===================================================================
-            3. STORIES RÁPIDOS DOS PROFISSIONAIS
+            3. LISTA DE PROFISSIONAIS DISPONÍVEIS
            =================================================================== */}
-        <ProviderStoriesBar />
-
-        {/* ===================================================================
-            4. LISTA LIMPA E SIMPLES DE PROFISSIONAIS PARA AGENDAR
-           =================================================================== */}
-        <div className="space-y-3">
+        <div className="space-y-4">
           <div className="flex items-center justify-between px-1">
             <h2 className="text-base sm:text-lg font-extrabold text-slate-900">
-              Escolha um Profissional para Agendar ({filteredTenants.length})
+              Profissionais Disponíveis ({filteredTenants.length})
             </h2>
-            <span className="text-xs text-slate-500 hidden sm:inline">
-              Preços fixos • Sem esperar orçamento
+            <span className="text-xs font-semibold text-slate-500 hidden sm:inline">
+              Preços transparentes • Agendamento imediato
             </span>
           </div>
 
@@ -226,34 +230,48 @@ export default function ExplorarClientePage() {
                 <User className="w-7 h-7" />
               </div>
               <div>
-                <h3 className="text-lg font-black text-slate-900">
-                  Nenhum prestador cadastrado no momento
+                <h3 className="text-lg font-extrabold text-slate-900">
+                  Nenhum profissional encontrado
                 </h3>
                 <p className="text-xs text-slate-500 mt-1 max-w-md mx-auto leading-relaxed">
-                  Todos os prestadores de teste foram removidos. Cadastre um novo prestador pela página de cadastro ou insira diretamente no seu banco Supabase.
+                  {searchQuery || selectedCategory !== 'todos'
+                    ? 'Tente ajustar sua busca ou selecionar outra categoria de serviço.'
+                    : 'Seja o primeiro profissional a publicar sua agenda online e receber clientes pela plataforma.'}
                 </p>
               </div>
-              <div className="pt-2">
+              <div className="pt-1 flex items-center justify-center gap-3">
+                {(searchQuery || selectedCategory !== 'todos') && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSearchQuery('');
+                      setSelectedCategory('todos');
+                    }}
+                    className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-extrabold transition"
+                  >
+                    Limpar Filtros
+                  </button>
+                )}
                 <NextLink
-                  href="/cadastro"
-                  className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-extrabold shadow-sm transition"
+                  href="/cadastro?role=prestador"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#0B132B] hover:bg-slate-800 text-white text-xs font-extrabold shadow-xs transition"
                 >
-                  <User className="w-4 h-4" />
-                  <span>Cadastrar Novo Prestador</span>
+                  <span>Sou Prestador: Criar Minha Agenda</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </NextLink>
               </div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {filteredTenants.map((pro) => (
                 <div
                   key={pro.slug}
-                  className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs hover:border-blue-400 transition flex flex-col justify-between"
+                  className="bg-white rounded-3xl p-6 border border-slate-200 shadow-2xs hover:border-blue-500 hover:shadow-md transition flex flex-col justify-between"
                 >
                   <div>
                     {/* Provider Header */}
                     <div className="flex items-center gap-3.5">
-                      <div className="relative w-14 h-14 rounded-2xl overflow-hidden border border-slate-200 shrink-0">
+                      <div className="relative w-14 h-14 rounded-2xl overflow-hidden border border-slate-200 shrink-0 bg-slate-100">
                         <Image src={pro.avatar} alt={pro.name} fill className="object-cover" />
                       </div>
                       <div className="min-w-0 flex-1">
@@ -264,26 +282,35 @@ export default function ExplorarClientePage() {
                           <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0" />
                         </div>
                         <p className="text-xs font-bold text-blue-600 truncate">{pro.role}</p>
-                        <div className="flex items-center gap-1 mt-0.5 text-xs font-bold text-slate-700">
-                          <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                          <span>{pro.rating}</span>
-                          <span className="text-slate-400 font-normal">({pro.reviews})</span>
+                        <div className="flex items-center gap-2 mt-1 text-xs font-bold text-slate-700">
+                          <span className="flex items-center gap-1">
+                            <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                            {pro.rating}
+                          </span>
+                          <span className="text-slate-300">•</span>
+                          <span className="text-slate-500 font-medium flex items-center gap-1">
+                            <Clock className="w-3 h-3 text-slate-400" />
+                            {pro.openingHours.start} às {pro.openingHours.end}
+                          </span>
                         </div>
                       </div>
                     </div>
 
                     {/* Location */}
-                    <p className="mt-3 text-xs text-slate-500 flex items-center gap-1.5">
+                    <p className="mt-3.5 text-xs text-slate-500 flex items-center gap-1.5">
                       <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                       <span className="truncate">{pro.address}</span>
                     </p>
 
-                    {/* Simple Price Table */}
-                    <div className="mt-3.5 pt-3.5 border-t border-slate-100 space-y-1.5">
+                    {/* Price Table */}
+                    <div className="mt-4 pt-3.5 border-t border-slate-100 space-y-1.5">
+                      <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-2">
+                        Serviços e Valores
+                      </p>
                       {pro.services.slice(0, 3).map((serv) => (
                         <div
                           key={serv.id}
-                          className="flex items-center justify-between text-xs py-1.5 px-2.5 rounded-xl bg-slate-50"
+                          className="flex items-center justify-between text-xs py-2 px-3 rounded-xl bg-slate-50 border border-slate-100"
                         >
                           <span className="font-semibold text-slate-700 truncate pr-2">
                             {serv.name}
@@ -294,22 +321,22 @@ export default function ExplorarClientePage() {
                     </div>
                   </div>
 
-                  {/* Clear Action Buttons */}
-                  <div className="mt-4 pt-3.5 border-t border-slate-100 flex items-center gap-2">
+                  {/* Action Buttons */}
+                  <div className="mt-5 pt-4 border-t border-slate-100 flex items-center gap-2">
                     <NextLink
                       href={`/cliente/chat?prestador=${pro.slug}`}
                       className="px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-extrabold flex items-center gap-1.5 transition"
                     >
                       <MessageCircle className="w-3.5 h-3.5 text-blue-600" />
-                      <span>Chat</span>
+                      <span>Dúvidas</span>
                     </NextLink>
 
                     <NextLink
                       href={`/${pro.slug}`}
-                      className="flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-700 hover:to-blue-700 text-white text-xs font-extrabold flex items-center justify-center gap-1.5 transition shadow-xs"
+                      className="flex-1 py-2.5 px-4 rounded-xl bg-[#0B132B] hover:bg-slate-800 text-white text-xs font-extrabold flex items-center justify-center gap-1.5 transition shadow-xs"
                     >
                       <span>Ver Horários e Agendar</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
+                      <ArrowRight className="w-3.5 h-3.5 text-cyan-400" />
                     </NextLink>
                   </div>
                 </div>
@@ -318,6 +345,6 @@ export default function ExplorarClientePage() {
           )}
         </div>
       </main>
-    </AppSidebar>
+    </div>
   );
 }

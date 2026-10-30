@@ -5,20 +5,16 @@ import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import NextLink from 'next/link';
 import {
-  Calendar as CalendarIcon,
   Clock,
   MapPin,
   Star,
   Check,
-  ChevronLeft,
   Share2,
   MessageCircle,
   Sparkles,
   CheckCircle2,
   ShieldCheck,
-  Award,
   ArrowRight,
-  Wrench,
   Wind,
   Zap,
   Waves,
@@ -29,34 +25,80 @@ import {
   FileCheck2,
   QrCode,
   User,
+  Copy,
 } from 'lucide-react';
-import AppSidebar from '@/components/layout/AppSidebar';
+import Navbar from '@/components/layout/Navbar';
 import { getStoredTenants, getStoredBookings, saveNewBooking, syncWithSupabase } from '@/lib/store';
 import { Tenant, Service, Booking } from '@/lib/types';
 import { generateAvailableSlots } from '@/lib/slot-engine';
-import ProviderStoriesBar from '@/components/stories/ProviderStoriesBar';
 import PixPaymentModal from '@/components/pix/PixPaymentModal';
 import { useSession } from '@/lib/auth';
+
+const DAY_NAMES_SHORT = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+const MONTH_NAMES_SHORT = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+const MONTH_NAMES_FULL = [
+  'janeiro',
+  'fevereiro',
+  'março',
+  'abril',
+  'maio',
+  'junho',
+  'julho',
+  'agosto',
+  'setembro',
+  'outubro',
+  'novembro',
+  'dezembro',
+];
+
+function buildUpcomingDays(count = 6) {
+  const base = new Date();
+  const list: Array<{
+    iso: string;
+    dayName: string;
+    dayNumber: number;
+    month: string;
+    fullFormatted: string;
+  }> = [];
+
+  for (let i = 0; i < count; i++) {
+    const d = new Date(base);
+    d.setDate(base.getDate() + i);
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    const iso = `${yyyy}-${mm}-${dd}`;
+    list.push({
+      iso,
+      dayName: i === 0 ? 'Hoje' : DAY_NAMES_SHORT[d.getDay()],
+      dayNumber: d.getDate(),
+      month: MONTH_NAMES_SHORT[d.getMonth()],
+      fullFormatted: `${d.getDate()} de ${MONTH_NAMES_FULL[d.getMonth()]} de ${yyyy}`,
+    });
+  }
+  return list;
+}
 
 export default function TenantBookingDesktopPage() {
   const params = useParams();
   const slug = (params?.slug as string) || '';
 
-  const [tenants, setTenants] = useState<Record<string, Tenant>>({});
+  const upcomingDays = useMemo(() => buildUpcomingDays(6), []);
+
   const [tenant, setTenant] = useState<Tenant | null>(null);
   const [selectedServices, setSelectedServices] = useState<Service[]>([]);
   const [activeCategory, setActiveCategory] = useState<string>('Todos');
-  const [selectedDate, setSelectedDate] = useState<string>('2026-10-26');
+  const [selectedDate, setSelectedDate] = useState<string>(() => buildUpcomingDays(1)[0].iso);
   const [selectedTime, setSelectedTime] = useState<string>('09:00');
   const [locationType, setLocationType] = useState<'local_prestador' | 'domicilio'>('domicilio');
-  const [customAddress, setCustomAddress] = useState('Av. Paulista, 1578 - Bela Vista');
+  const [customAddress, setCustomAddress] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
   const [createdBooking, setCreatedBooking] = useState<Booking | null>(null);
   const [showPixModal, setShowPixModal] = useState(false);
+  const [copiedShare, setCopiedShare] = useState(false);
 
   const session = useSession();
 
-  // Client Form states
   const [clientName, setClientName] = useState('');
   const [clientPhone, setClientPhone] = useState('');
   const [clientNotes, setClientNotes] = useState('');
@@ -66,11 +108,10 @@ export default function TenantBookingDesktopPage() {
       if (session.name && !clientName) setClientName(session.name);
       if (session.phone && !clientPhone) setClientPhone(session.phone);
     }
-  }, [session]);
+  }, [session, clientName, clientPhone]);
 
   useEffect(() => {
     const loaded = getStoredTenants();
-    setTenants(loaded);
     if (slug && loaded[slug]) {
       const found = loaded[slug];
       setTenant(found);
@@ -82,7 +123,6 @@ export default function TenantBookingDesktopPage() {
     } else if (slug) {
       syncWithSupabase().then(() => {
         const fresh = getStoredTenants();
-        setTenants(fresh);
         if (fresh[slug]) {
           const found = fresh[slug];
           setTenant(found);
@@ -110,17 +150,6 @@ export default function TenantBookingDesktopPage() {
     return (tenant.services || []).filter((s) => s.category === activeCategory);
   }, [tenant, activeCategory]);
 
-  const upcomingDays = useMemo(() => {
-    return [
-      { iso: '2026-10-26', dayName: 'Seg', dayNumber: 26, month: 'Out', fullFormatted: '26 de outubro de 2026' },
-      { iso: '2026-10-27', dayName: 'Ter', dayNumber: 27, month: 'Out', fullFormatted: '27 de outubro de 2026' },
-      { iso: '2026-10-28', dayName: 'Qua', dayNumber: 28, month: 'Out', fullFormatted: '28 de outubro de 2026' },
-      { iso: '2026-10-29', dayName: 'Qui', dayNumber: 29, month: 'Out', fullFormatted: '29 de outubro de 2026' },
-      { iso: '2026-10-30', dayName: 'Sex', dayNumber: 30, month: 'Out', fullFormatted: '30 de outubro de 2026' },
-      { iso: '2026-10-31', dayName: 'Sáb', dayNumber: 31, month: 'Out', fullFormatted: '31 de outubro de 2026' },
-    ];
-  }, []);
-
   const totalDurationMinutes = useMemo(() => {
     return selectedServices.reduce((acc, s) => acc + (s.durationMinutes || 60), 0);
   }, [selectedServices]);
@@ -146,80 +175,102 @@ export default function TenantBookingDesktopPage() {
     }
   };
 
-  const getWorkCategoryMeta = (tenantSlug: string) => {
-    if (tenantSlug === 'lucas-beachtennis') {
+  const getWorkCategoryMeta = (pro: Tenant) => {
+    const roleLower = (pro.role || '').toLowerCase();
+    if (roleLower.includes('beach') || roleLower.includes('esporte') || roleLower.includes('professor')) {
       return {
         icon: Trophy,
         tag: 'Esportes & Aulas',
-        workType: 'Aulas & Locação de Quadra',
-        includes: ['Equipamentos (raquetes e bolinhas) inclusos', 'Quadra de areia oficial reservada', 'Confirmação imediata na agenda'],
+        workType: pro.role || 'Aulas e Treinamento',
+        includes: [
+          'Horário reservado exclusivamente na agenda',
+          'Atendimento com valor tabelado sem taxas extras',
+          'Confirmação imediata do agendamento',
+        ],
       };
     }
-    if (tenantSlug === 'carlos-mendes') {
+    if (roleLower.includes('clima') || roleLower.includes('ar')) {
       return {
         icon: Wind,
-        tag: 'Trabalho Técnico • Climatização',
-        workType: 'Instalação e Manutenção de Ar-Condicionado',
-        includes: ['Ferramental e manômetro digital inclusos', 'Higienização bactericida completa', 'Garantia de 90 dias no serviço executado'],
+        tag: 'Climatização & Refrigeração',
+        workType: pro.role || 'Manutenção e Instalação de Ar-Condicionado',
+        includes: [
+          'Atendimento técnico com ferramental adequado',
+          'Orçamento e preço fechado antes da visita',
+          'Garantia técnica do serviço executado',
+        ],
       };
     }
-    if (tenantSlug === 'joao-silva') {
+    if (roleLower.includes('elétr') || roleLower.includes('eletr')) {
       return {
         icon: Zap,
-        tag: 'Trabalho Técnico • Elétrica',
-        workType: 'Reparos Elétricos, Quadros e Disjuntores',
-        includes: ['Diagnóstico de carga com multímetro', 'Atendimento residencial ou comercial', 'Laudo e garantia de segurança elétrica'],
+        tag: 'Serviços Elétricos',
+        workType: pro.role || 'Instalações e Reparos Elétricos',
+        includes: [
+          'Diagnóstico técnico seguro',
+          'Atendimento residencial ou comercial',
+          'Preço transparente conforme tabela',
+        ],
       };
     }
-    if (tenantSlug === 'equipe-aqua') {
+    if (roleLower.includes('piscina') || roleLower.includes('hidr')) {
       return {
         icon: Waves,
-        tag: 'Trabalho Técnico • Piscinas',
-        workType: 'Limpeza, Aspiração e Controle de pH',
-        includes: ['Produtos químicos e medição de cloro/pH', 'Aspiração de fundo e limpeza de bordas', 'Revisão da bomba e filtro'],
+        tag: 'Manutenção & Tratamento',
+        workType: pro.role || 'Especialista em Piscinas',
+        includes: [
+          'Atendimento no horário agendado',
+          'Procedimento completo conforme descrição',
+          'Pagamento direto ao profissional',
+        ],
       };
     }
     return {
       icon: Sparkles,
-      tag: 'Trabalho Técnico • Limpeza',
-      workType: 'Limpeza Técnica e Pós-Obra',
-      includes: ['Produtos biodegradáveis e maquinário inclusos', 'Equipe uniformizada e verificada', 'Checklist completo por ambiente'],
+      tag: 'Atendimento Profissional',
+      workType: pro.role || 'Serviços Profissionais',
+      includes: [
+        'Preços tabelados com transparência',
+        'Horário confirmado na agenda do profissional',
+        'Pagamento via Pix direto sem taxas extras',
+      ],
     };
   };
 
   if (!tenant) {
     return (
-      <AppSidebar>
-        <main className="flex-1 p-6 flex items-center justify-center min-h-[60vh]">
-          <div className="bg-white rounded-3xl p-8 sm:p-12 border border-slate-200 text-center max-w-md space-y-4">
+      <div className="min-h-screen bg-[#F4F7FB] flex flex-col text-slate-900">
+        <Navbar />
+        <main className="flex-1 p-6 flex items-center justify-center">
+          <div className="bg-white rounded-3xl p-8 sm:p-12 border border-slate-200 text-center max-w-md space-y-4 shadow-2xs">
             <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto">
               <User className="w-7 h-7" />
             </div>
-            <h1 className="text-xl font-black text-slate-900">Prestador não encontrado</h1>
-            <p className="text-xs text-slate-500">
-              O link <code className="font-mono text-blue-600">/{slug}</code> ainda não foi registrado na plataforma.
+            <h1 className="text-xl font-black text-slate-900">Agenda não encontrada</h1>
+            <p className="text-xs text-slate-500 leading-relaxed">
+              O endereço <code className="font-mono text-blue-600">/{slug}</code> não corresponde a um prestador ativo no momento.
             </p>
             <div className="flex items-center justify-center gap-3 pt-2">
               <NextLink
                 href="/explorar"
-                className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-extrabold"
+                className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-extrabold transition"
               >
-                Ver Prestadores
+                Ver Profissionais
               </NextLink>
               <NextLink
-                href="/cadastro"
-                className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-extrabold"
+                href="/cadastro?role=prestador"
+                className="px-4 py-2.5 rounded-xl bg-[#0B132B] hover:bg-slate-800 text-white text-xs font-extrabold transition"
               >
-                Cadastrar este Link
+                Criar Minha Agenda
               </NextLink>
             </div>
           </div>
         </main>
-      </AppSidebar>
+      </div>
     );
   }
 
-  const currentMeta = getWorkCategoryMeta(tenant.slug);
+  const currentMeta = getWorkCategoryMeta(tenant);
 
   const handleConfirmBooking = () => {
     if (!tenant || !selectedDate || !selectedTime || !clientName || !clientPhone) return;
@@ -239,6 +290,7 @@ export default function TenantBookingDesktopPage() {
       tenantReviews: tenant.reviews,
       clientName,
       clientPhone,
+      clientEmail: session.email,
       services: selectedServices.map((s) => ({
         id: s.id,
         name: s.name,
@@ -261,83 +313,26 @@ export default function TenantBookingDesktopPage() {
     setIsSuccess(true);
   };
 
+  const handleCopyShareLink = () => {
+    if (typeof window === 'undefined') return;
+    navigator.clipboard.writeText(window.location.href);
+    setCopiedShare(true);
+    setTimeout(() => setCopiedShare(false), 2500);
+  };
+
   return (
-    <AppSidebar>
-      <main className="flex-1 max-w-7xl w-full mx-auto px-3.5 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 pb-28 lg:pb-10 space-y-6">
+    <div className="min-h-screen bg-[#F4F7FB] flex flex-col text-slate-900">
+      <Navbar />
+
+      <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
         {/* ===================================================================
-            1. TOP EXPLANATORY BANNER: WHAT IS AGENDAFÁCIL & WORK SWITCHER
-           =================================================================== */}
-        <div className="bg-[#0B132B] text-white rounded-3xl p-6 sm:p-7 border border-slate-800 shadow-sm space-y-5">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-            <div className="space-y-1.5">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-600 text-white text-[11px] font-extrabold uppercase tracking-wider">
-                <Wrench className="w-3.5 h-3.5" />
-                <span>Plataforma de Agendamento Rápido de Trabalhos & Serviços</span>
-              </div>
-              <h2 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
-                Contrate um trabalho ou aula em 3 passos — sem esperar orçamento no WhatsApp
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-300 max-w-3xl">
-                No <strong>AgendaFácil</strong>, você escolhe o serviço com <strong>preço fechado</strong>, vê os <strong>horários livres reais</strong> do prestador e confirma o trabalho na hora. Alterne abaixo para testar diferentes áreas de trabalho:
-              </p>
-            </div>
-
-            <NextLink
-              href="/explorar"
-              className="px-4 py-2.5 rounded-xl bg-white text-slate-900 hover:bg-slate-100 text-xs font-extrabold flex items-center gap-2 shrink-0 w-fit transition"
-            >
-              <span>Ver Todos os Prestadores</span>
-              <ArrowRight className="w-4 h-4 text-blue-600" />
-            </NextLink>
-          </div>
-
-          {/* Interactive Work Type / Provider Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 pt-1">
-            {Object.values(tenants).map((t) => {
-              const isCurrent = t.slug === tenant.slug;
-              const meta = getWorkCategoryMeta(t.slug);
-              const Icon = meta.icon;
-              return (
-                <NextLink
-                  key={t.slug}
-                  href={`/${t.slug}`}
-                  className={`p-3 rounded-2xl border text-left transition flex items-center gap-3 ${
-                    isCurrent
-                      ? 'bg-blue-600 border-blue-500 text-white shadow-sm'
-                      : 'bg-slate-900 border-slate-800 text-slate-300 hover:bg-slate-800 hover:text-white'
-                  }`}
-                >
-                  <div
-                    className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
-                      isCurrent ? 'bg-white text-blue-600' : 'bg-slate-800 text-blue-400'
-                    }`}
-                  >
-                    <Icon className="w-4 h-4" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-xs font-extrabold truncate">{t.name}</p>
-                    <p
-                      className={`text-[11px] truncate ${
-                        isCurrent ? 'text-blue-100' : 'text-slate-400'
-                      }`}
-                    >
-                      {t.role}
-                    </p>
-                  </div>
-                </NextLink>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* ===================================================================
-            2. HIGH-CONTRAST PROFESSIONAL PROFILE CARD (ZERO OVERLAP BUG)
+            1. PROFESSIONAL PROFILE HEADER CARD
            =================================================================== */}
         <div className="bg-white rounded-3xl border border-slate-200 shadow-2xs p-6 sm:p-8">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-            {/* Left: Avatar + Clear Professional Info */}
+            {/* Left: Avatar + Professional Info */}
             <div className="flex flex-col sm:flex-row sm:items-center gap-5">
-              <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-3xl overflow-hidden border-2 border-slate-200 bg-slate-100 shrink-0">
+              <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-3xl overflow-hidden border border-slate-200 bg-slate-100 shrink-0">
                 <Image
                   src={tenant.avatar}
                   alt={tenant.name}
@@ -353,7 +348,7 @@ export default function TenantBookingDesktopPage() {
                     {currentMeta.tag}
                   </span>
                   <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    <span className="w-2 h-2 rounded-full bg-emerald-500" />
                     Agenda Online Aberta
                   </span>
                 </div>
@@ -365,16 +360,14 @@ export default function TenantBookingDesktopPage() {
                   <BadgeCheck className="w-6 h-6 text-blue-600 shrink-0" />
                 </div>
 
-                <p className="text-sm font-bold text-slate-700">
-                  Especialidade: <span className="text-blue-600">{currentMeta.workType}</span>
-                </p>
+                <p className="text-sm font-bold text-slate-600">{currentMeta.workType}</p>
 
                 <div className="flex flex-wrap items-center gap-4 text-xs text-slate-600 pt-1">
                   <span className="flex items-center gap-1.5 font-extrabold text-slate-900 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-lg">
-                    <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                    <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
                     {tenant.rating}{' '}
                     <span className="text-slate-600 font-semibold">
-                      ({tenant.reviews} trabalhos avaliados)
+                      ({tenant.reviews} avaliações)
                     </span>
                   </span>
 
@@ -385,7 +378,7 @@ export default function TenantBookingDesktopPage() {
 
                   <span className="flex items-center gap-1.5 font-medium">
                     <Clock className="w-4 h-4 text-blue-600" />
-                    Atendimento: {tenant.openingHours.start} às {tenant.openingHours.end}
+                    Expediente: {tenant.openingHours.start} às {tenant.openingHours.end}
                   </span>
                 </div>
               </div>
@@ -395,126 +388,89 @@ export default function TenantBookingDesktopPage() {
             <div className="flex flex-wrap sm:flex-col lg:items-end gap-2.5 shrink-0 border-t lg:border-t-0 pt-4 lg:pt-0 border-slate-100">
               <div className="flex flex-wrap items-center gap-2.5">
                 <NextLink
-                  href={`/chat?prestador=${tenant.slug}`}
-                  className="px-4 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-extrabold flex items-center gap-2 shadow-xs transition"
+                  href={`/cliente/chat?prestador=${tenant.slug}`}
+                  className="px-4 py-2.5 rounded-xl bg-[#0B132B] hover:bg-slate-800 text-white text-xs font-extrabold flex items-center gap-2 shadow-xs transition"
                 >
-                  <MessageCircle className="w-4 h-4" />
-                  <span>Tirar Dúvida no Chat</span>
+                  <MessageCircle className="w-4 h-4 text-cyan-400" />
+                  <span>Conversar no Chat</span>
                 </NextLink>
 
-                <a
-                  href={`https://wa.me/${tenant.whatsapp}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-4 py-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-extrabold flex items-center gap-2 transition"
-                >
-                  <MessageCircle className="w-4 h-4 text-emerald-600" />
-                  <span>WhatsApp Direto</span>
-                </a>
+                {tenant.whatsapp && (
+                  <a
+                    href={`https://wa.me/${tenant.whatsapp}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-extrabold flex items-center gap-2 transition"
+                  >
+                    <MessageCircle className="w-4 h-4 text-emerald-600" />
+                    <span>WhatsApp</span>
+                  </a>
+                )}
               </div>
 
               <button
-                onClick={() => {
-                  navigator.clipboard.writeText(window.location.href);
-                  alert('Link de agendamento copiado!');
-                }}
+                type="button"
+                onClick={handleCopyShareLink}
                 className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition"
               >
-                <Share2 className="w-3.5 h-3.5" />
-                <span>Copiar Link desta Agenda</span>
+                {copiedShare ? (
+                  <>
+                    <Check className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Link Copiado!</span>
+                  </>
+                ) : (
+                  <>
+                    <Share2 className="w-3.5 h-3.5" />
+                    <span>Compartilhar Agenda</span>
+                  </>
+                )}
               </button>
-            </div>
-          </div>
-
-          {/* 3-Step Explicit Visual Guide Strip */}
-          <div className="mt-6 pt-5 border-t border-slate-100 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-blue-600 text-white font-extrabold text-xs flex items-center justify-center shrink-0">
-                1
-              </div>
-              <div>
-                <p className="text-xs font-extrabold text-slate-900">
-                  Escolha o Trabalho Tabelado
-                </p>
-                <p className="text-[11px] text-slate-500">
-                  Veja o preço fechado e o tempo estimado na lista abaixo
-                </p>
-              </div>
-            </div>
-
-            <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-blue-600 text-white font-extrabold text-xs flex items-center justify-center shrink-0">
-                2
-              </div>
-              <div>
-                <p className="text-xs font-extrabold text-slate-900">
-                  Defina Dia, Horário e Local
-                </p>
-                <p className="text-[11px] text-slate-500">
-                  Escolha um horário livre no painel ao lado sem burocracia
-                </p>
-              </div>
-            </div>
-
-            <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-emerald-600 text-white font-extrabold text-xs flex items-center justify-center shrink-0">
-                3
-              </div>
-              <div>
-                <p className="text-xs font-extrabold text-slate-900">
-                  Trabalho Agendado na Hora
-                </p>
-                <p className="text-[11px] text-slate-500">
-                  Ordem de serviço gerada automaticamente (100% grátis p/ cliente)
-                </p>
-              </div>
             </div>
           </div>
         </div>
 
-        {/* STORIES DOS PRESTADORES (Destaques de Trabalhos do Dia) */}
-        <ProviderStoriesBar highlightSlug={tenant.slug} />
-
         {/* ===================================================================
-            3. MAIN 12-COLUMN DESKTOP WORKBOOKING SPLIT LAYOUT
+            2. MAIN 12-COLUMN BOOKING SPLIT LAYOUT
            =================================================================== */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* LEFT COLUMN (7 COLS): WORK / SERVICE PACKAGES */}
+          {/* LEFT COLUMN (7 COLS): SERVICE CATALOG */}
           <div className="lg:col-span-7 space-y-6">
             <div className="bg-white rounded-3xl border border-slate-200 shadow-2xs p-6 sm:p-8 space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
                 <div>
                   <span className="text-[11px] font-extrabold uppercase tracking-wider text-blue-600">
-                    Passo 1 de 3 • Catálogo de Preços Fechados
+                    Passo 1 • Catálogo de Serviços
                   </span>
                   <h2 className="text-xl font-extrabold text-slate-900 mt-0.5">
-                    Qual trabalho ou serviço você precisa?
+                    Selecione o serviço desejado
                   </h2>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    Clique para marcar 1 ou mais itens que deseja contratar neste atendimento
+                    Clique para selecionar um ou mais serviços para o seu atendimento
                   </p>
                 </div>
 
                 {/* Category Filter Pills */}
-                <div className="flex flex-wrap gap-1.5">
-                  {categories.map((cat) => (
-                    <button
-                      key={cat}
-                      onClick={() => setActiveCategory(cat)}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition ${
-                        activeCategory === cat
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                      }`}
-                    >
-                      {cat}
-                    </button>
-                  ))}
-                </div>
+                {categories.length > 1 && (
+                  <div className="flex flex-wrap gap-1.5">
+                    {categories.map((cat) => (
+                      <button
+                        key={cat}
+                        onClick={() => setActiveCategory(cat)}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition ${
+                          activeCategory === cat
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                        }`}
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
 
-              {/* Service / Work Cards List */}
-              <div className="space-y-4">
+              {/* Service Cards List */}
+              <div className="space-y-3.5">
                 {filteredServices.map((service) => {
                   const isSelected = selectedServices.some((s) => s.id === service.id);
                   return (
@@ -523,13 +479,13 @@ export default function TenantBookingDesktopPage() {
                       onClick={() => toggleService(service)}
                       className={`p-5 rounded-2xl border-2 transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
                         isSelected
-                          ? 'bg-blue-50/60 border-blue-600'
+                          ? 'bg-blue-50/50 border-blue-600'
                           : 'bg-white border-slate-200 hover:border-slate-300'
                       }`}
                     >
-                      <div className="flex items-start gap-4">
+                      <div className="flex items-start gap-3.5">
                         <div
-                          className={`w-6 h-6 rounded-lg mt-1 flex items-center justify-center shrink-0 transition ${
+                          className={`w-6 h-6 rounded-lg mt-0.5 flex items-center justify-center shrink-0 transition ${
                             isSelected
                               ? 'bg-blue-600 text-white'
                               : 'border-2 border-slate-300 bg-white'
@@ -538,13 +494,13 @@ export default function TenantBookingDesktopPage() {
                           {isSelected && <Check className="w-4 h-4 stroke-[3]" />}
                         </div>
 
-                        <div className="space-y-1.5">
+                        <div className="space-y-1">
                           <div className="flex flex-wrap items-center gap-2">
                             <h3 className="text-base font-extrabold text-slate-900">
                               {service.name}
                             </h3>
                             {service.category && (
-                              <span className="text-[10px] font-bold bg-blue-100 text-blue-800 px-2.5 py-0.5 rounded-md">
+                              <span className="text-[10px] font-bold bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md">
                                 {service.category}
                               </span>
                             )}
@@ -552,17 +508,17 @@ export default function TenantBookingDesktopPage() {
 
                           <p className="text-xs text-slate-600 leading-relaxed max-w-xl">
                             {service.description ||
-                              'Serviço executado por profissional verificado com horário marcado e preço fixo.'}
+                              'Atendimento com horário marcado e preço fixo.'}
                           </p>
 
                           <div className="flex flex-wrap items-center gap-4 pt-1 text-xs font-semibold text-slate-600">
                             <span className="flex items-center gap-1.5 text-slate-700">
                               <Clock className="w-3.5 h-3.5 text-blue-600" />
-                              Tempo médio: <strong>{service.duration}</strong>
+                              Duração: <strong>{service.duration}</strong>
                             </span>
                             <span className="flex items-center gap-1.5 text-emerald-700">
                               <FileCheck2 className="w-3.5 h-3.5 text-emerald-600" />
-                              Preço fechado sem taxa extra
+                              Valor tabelado
                             </span>
                           </div>
                         </div>
@@ -571,20 +527,20 @@ export default function TenantBookingDesktopPage() {
                       <div className="flex sm:flex-col items-center sm:items-end justify-between border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-100 shrink-0">
                         <div className="text-left sm:text-right">
                           <span className="block text-[10px] font-bold uppercase text-slate-400">
-                            Valor do serviço
+                            Valor
                           </span>
                           <span className="text-2xl font-black text-slate-900">
                             R$ {service.price}
                           </span>
                         </div>
                         <span
-                          className={`text-xs font-extrabold mt-2 px-3.5 py-1.5 rounded-xl transition ${
+                          className={`text-xs font-extrabold mt-2 px-3 py-1 rounded-xl transition ${
                             isSelected
                               ? 'bg-blue-600 text-white'
                               : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                           }`}
                         >
-                          {isSelected ? 'Trabalho Selecionado' : '+ Selecionar Trabalho'}
+                          {isSelected ? 'Selecionado' : 'Selecionar'}
                         </span>
                       </div>
                     </div>
@@ -592,11 +548,11 @@ export default function TenantBookingDesktopPage() {
                 })}
               </div>
 
-              {/* What's Included in this Professional's Work */}
-              <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+              {/* Guarantees */}
+              <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
                 <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-700 flex items-center gap-2">
                   <ShieldCheck className="w-4 h-4 text-blue-600" />
-                  O que está garantido na contratação de {tenant.name}:
+                  Incluso no agendamento com {tenant.name}:
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   {currentMeta.includes.map((item, i) => (
@@ -613,29 +569,29 @@ export default function TenantBookingDesktopPage() {
             </div>
           </div>
 
-          {/* RIGHT COLUMN (5 COLS): STICKY DESKTOP WORK BOOKING ENGINE */}
+          {/* RIGHT COLUMN (5 COLS): STICKY BOOKING ENGINE */}
           <div id="checkout-mobile-anchor" className="lg:col-span-5 lg:sticky lg:top-24 scroll-mt-20">
-            <div className="bg-white rounded-3xl border border-slate-200 shadow-lg p-6 sm:p-7 space-y-6">
+            <div className="bg-white rounded-3xl border border-slate-200 shadow-md p-6 sm:p-7 space-y-6">
               {!isSuccess ? (
                 <>
                   <div className="flex items-center justify-between border-b border-slate-100 pb-4">
                     <div>
                       <span className="text-[11px] font-extrabold uppercase tracking-wider text-blue-600">
-                        Passo 2 e 3 • Finalização Rápida
+                        Passo 2 e 3 • Reserva de Horário
                       </span>
                       <h2 className="text-lg font-extrabold text-slate-900 mt-0.5">
-                        Agendar Dia, Horário e Local
+                        Escolha Dia, Horário e Local
                       </h2>
                     </div>
-                    <span className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">
-                      Sem Taxa (R$ 0)
+                    <span className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full">
+                      Taxa R$ 0
                     </span>
                   </div>
 
-                  {/* Step 2A: Where will the work be performed? */}
+                  {/* Step 2A: Where will the service be performed? */}
                   <div>
                     <label className="block text-xs font-extrabold text-slate-800 mb-2">
-                      1. Onde o trabalho/serviço será realizado?
+                      1. Local do atendimento:
                     </label>
                     <div className="grid grid-cols-2 gap-2.5">
                       <button
@@ -650,7 +606,7 @@ export default function TenantBookingDesktopPage() {
                         <Home className="w-4 h-4 text-blue-600 shrink-0" />
                         <div>
                           <p className="text-xs font-extrabold">No meu endereço</p>
-                          <p className="text-[10px] text-slate-500">Visita técnica / Domicílio</p>
+                          <p className="text-[10px] text-slate-500">Em domicílio</p>
                         </div>
                       </button>
 
@@ -679,17 +635,17 @@ export default function TenantBookingDesktopPage() {
                           type="text"
                           value={customAddress}
                           onChange={(e) => setCustomAddress(e.target.value)}
-                          placeholder="Digite o endereço onde o trabalho será feito..."
+                          placeholder="Informe seu endereço completo (Rua, número, bairro)..."
                           className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium outline-none focus:bg-white focus:border-blue-600"
                         />
                       </div>
                     )}
                   </div>
 
-                  {/* Step 2B: Date Picker Grid */}
+                  {/* Step 2B: Dynamic Date Picker Grid */}
                   <div>
                     <label className="block text-xs font-extrabold text-slate-800 mb-2">
-                      2. Escolha o dia do trabalho (Outubro 2026):
+                      2. Escolha o dia:
                     </label>
                     <div className="grid grid-cols-6 gap-2">
                       {upcomingDays.map((day) => {
@@ -700,7 +656,7 @@ export default function TenantBookingDesktopPage() {
                             onClick={() => setSelectedDate(day.iso)}
                             className={`py-2.5 rounded-2xl flex flex-col items-center justify-center border transition ${
                               isSelected
-                                ? 'bg-blue-600 border-blue-600 text-white font-bold'
+                                ? 'bg-blue-600 border-blue-600 text-white font-bold shadow-xs'
                                 : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
                             }`}
                           >
@@ -729,7 +685,7 @@ export default function TenantBookingDesktopPage() {
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <label className="text-xs font-extrabold text-slate-800">
-                        3. Escolha o horário disponível:
+                        3. Horários disponíveis:
                       </label>
                       <span className="text-[11px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-full">
                         {availableSlots.filter((s) => s.available).length} horários livres
@@ -755,7 +711,7 @@ export default function TenantBookingDesktopPage() {
                             onClick={() => setSelectedTime(slot.time)}
                             className={`py-2 rounded-xl text-xs font-bold border transition ${
                               isSelected
-                                ? 'bg-slate-900 border-slate-900 text-white'
+                                ? 'bg-[#0B132B] border-[#0B132B] text-white'
                                 : 'bg-white border-slate-200 text-slate-700 hover:border-blue-600 hover:text-blue-600'
                             }`}
                           >
@@ -769,21 +725,21 @@ export default function TenantBookingDesktopPage() {
                   {/* Step 3: Client Identification Fields */}
                   <div className="space-y-3 pt-2 border-t border-slate-100">
                     <label className="block text-xs font-extrabold text-slate-800">
-                      4. Seus dados para emissão da Ordem de Serviço:
+                      4. Seus dados para confirmação:
                     </label>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <input
                         type="text"
                         value={clientName}
                         onChange={(e) => setClientName(e.target.value)}
-                        placeholder="Seu nome completo"
+                        placeholder="Seu nome completo *"
                         className="px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium outline-none focus:border-blue-600"
                       />
                       <input
                         type="text"
                         value={clientPhone}
                         onChange={(e) => setClientPhone(e.target.value)}
-                        placeholder="WhatsApp (11) 99999-9999"
+                        placeholder="Seu WhatsApp (11) 99999-9999 *"
                         className="px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium outline-none focus:border-blue-600"
                       />
                     </div>
@@ -791,7 +747,7 @@ export default function TenantBookingDesktopPage() {
                       type="text"
                       value={clientNotes}
                       onChange={(e) => setClientNotes(e.target.value)}
-                      placeholder="Detalhes do trabalho (ex: marca do aparelho, andar, observações...)"
+                      placeholder="Observações opcionais sobre o serviço..."
                       className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium outline-none focus:border-blue-600"
                     />
                   </div>
@@ -803,7 +759,7 @@ export default function TenantBookingDesktopPage() {
                       <strong className="text-slate-900">{tenant.name}</strong>
                     </div>
                     <div className="flex justify-between text-xs text-slate-600">
-                      <span>Trabalho(s) ({selectedServices.length}):</span>
+                      <span>Serviço(s) ({selectedServices.length}):</span>
                       <strong className="text-slate-900 truncate max-w-[210px]">
                         {selectedServices.map((s) => s.name).join(', ')}
                       </strong>
@@ -816,29 +772,27 @@ export default function TenantBookingDesktopPage() {
                       </strong>
                     </div>
                     <div className="pt-2 border-t border-slate-200 flex justify-between items-baseline">
-                      <span className="text-xs font-bold text-slate-700">
-                        Valor Total Tabelado:
-                      </span>
+                      <span className="text-xs font-bold text-slate-700">Valor Total:</span>
                       <span className="text-2xl font-black text-slate-900">R$ {totalPrice}</span>
                     </div>
                   </div>
 
                   <button
                     onClick={handleConfirmBooking}
-                    disabled={!selectedTime}
-                    className="w-full py-4 rounded-2xl bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-700 hover:to-blue-700 text-white font-extrabold text-sm flex items-center justify-center gap-2 transition shadow-md shadow-violet-600/20"
+                    disabled={!selectedTime || !clientName.trim() || !clientPhone.trim()}
+                    className="w-full py-4 rounded-2xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-extrabold text-sm flex items-center justify-center gap-2 transition shadow-sm"
                   >
-                    <span>Confirmar Contratação & Horário</span>
+                    <span>Confirmar Agendamento</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setShowPixModal(true)}
-                    className="w-full py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs flex items-center justify-center gap-2 transition"
+                    className="w-full py-3 rounded-2xl bg-[#0B132B] hover:bg-slate-800 text-white font-extrabold text-xs flex items-center justify-center gap-2 transition"
                   >
                     <QrCode className="w-4 h-4 text-emerald-400" />
-                    <span>Ver QR Code Pix (R$ {totalPrice}) ou Pagar com Cartão</span>
+                    <span>Ver QR Code Pix (R$ {totalPrice})</span>
                   </button>
                 </>
               ) : (
@@ -848,13 +802,13 @@ export default function TenantBookingDesktopPage() {
                     <CheckCircle2 className="w-9 h-9" />
                   </div>
                   <span className="inline-block px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-extrabold">
-                    Ordem de Serviço #{createdBooking?.id.slice(-4)} Emitida
+                    Agendamento #{createdBooking?.id.slice(-4)} Confirmado
                   </span>
                   <h3 className="text-xl font-extrabold text-slate-900">
-                    Trabalho Agendado com Sucesso!
+                    Horário Reservado com Sucesso!
                   </h3>
                   <p className="text-xs text-slate-600 leading-relaxed">
-                    O profissional <strong>{tenant.name}</strong> recebeu seu pedido para{' '}
+                    O profissional <strong>{tenant.name}</strong> recebeu seu agendamento para{' '}
                     <strong>
                       {createdBooking?.formattedDate} às {createdBooking?.time}
                     </strong>
@@ -863,14 +817,14 @@ export default function TenantBookingDesktopPage() {
 
                   <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-left text-xs space-y-1.5">
                     <p>
-                      <strong>Trabalho contratado:</strong>{' '}
+                      <strong>Serviço:</strong>{' '}
                       {createdBooking?.services.map((s) => s.name).join(', ')}
                     </p>
                     <p>
-                      <strong>Local do atendimento:</strong> {createdBooking?.address}
+                      <strong>Local:</strong> {createdBooking?.address}
                     </p>
                     <p>
-                      <strong>Valor fechado:</strong> R$ {createdBooking?.totalPrice}
+                      <strong>Valor:</strong> R$ {createdBooking?.totalPrice}
                     </p>
                   </div>
 
@@ -878,46 +832,48 @@ export default function TenantBookingDesktopPage() {
                     <button
                       type="button"
                       onClick={() => setShowPixModal(true)}
-                      className="w-full py-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs flex items-center justify-center gap-2 transition"
+                      className="w-full py-3.5 rounded-xl bg-[#0B132B] hover:bg-slate-800 text-white font-extrabold text-xs flex items-center justify-center gap-2 transition"
                     >
                       <QrCode className="w-4 h-4 text-emerald-400" />
-                      <span>Gerar QR Code Pix (R$ {createdBooking?.totalPrice || totalPrice}) ou Cartão</span>
+                      <span>Pagar com QR Code Pix (R$ {createdBooking?.totalPrice || totalPrice})</span>
                     </button>
 
                     <NextLink
-                      href={`/chat?prestador=${tenant.slug}`}
+                      href={`/cliente/chat?prestador=${tenant.slug}`}
                       className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs flex items-center justify-center gap-2 transition"
                     >
                       <MessageCircle className="w-4 h-4" />
-                      Combinar Detalhes no Chat Interno
+                      Falar com o Profissional no Chat
                     </NextLink>
 
-                    <a
-                      href={`https://wa.me/${tenant.whatsapp}?text=Olá%20${encodeURIComponent(
-                        tenant.name
-                      )},%20confirmei%20meu%20agendamento%20para%20${encodeURIComponent(
-                        createdBooking?.formattedDate || ''
-                      )}%20às%20${createdBooking?.time}!`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-2"
-                    >
-                      <MessageCircle className="w-4 h-4" />
-                      Enviar Comprovante no WhatsApp
-                    </a>
+                    {tenant.whatsapp && (
+                      <a
+                        href={`https://wa.me/${tenant.whatsapp}?text=Olá%20${encodeURIComponent(
+                          tenant.name
+                        )},%20confirmei%20meu%20agendamento%20para%20${encodeURIComponent(
+                          createdBooking?.formattedDate || ''
+                        )}%20às%20${createdBooking?.time}!`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-2"
+                      >
+                        <MessageCircle className="w-4 h-4" />
+                        Enviar Comprovante no WhatsApp
+                      </a>
+                    )}
 
                     <div className="grid grid-cols-2 gap-2">
                       <NextLink
-                        href="/dashboard"
+                        href="/cliente/agendamentos"
                         className="py-2.5 rounded-xl bg-slate-100 text-slate-800 font-bold text-xs text-center hover:bg-slate-200 transition"
                       >
-                        Ver no Painel
+                        Meus Agendamentos
                       </NextLink>
                       <button
                         onClick={() => setIsSuccess(false)}
                         className="py-2.5 rounded-xl border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-50 transition"
                       >
-                        Agendar Outro
+                        Novo Horário
                       </button>
                     </div>
                   </div>
@@ -932,8 +888,8 @@ export default function TenantBookingDesktopPage() {
         isOpen={showPixModal}
         onClose={() => setShowPixModal(false)}
         providerName={tenant.name}
-        pixKey={tenant.pixKey || 'lucas.becker@arenasunset.com.br'}
-        pixKeyType={tenant.pixKeyType || 'email'}
+        pixKey={tenant.pixKey || tenant.phone || ''}
+        pixKeyType={tenant.pixKeyType || 'telefone'}
         pixBeneficiary={tenant.pixBeneficiary || tenant.name}
         serviceName={
           (createdBooking?.services || selectedServices)
@@ -942,6 +898,6 @@ export default function TenantBookingDesktopPage() {
         }
         amount={createdBooking?.totalPrice || totalPrice}
       />
-    </AppSidebar>
+    </div>
   );
 }

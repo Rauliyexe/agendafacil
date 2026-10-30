@@ -16,7 +16,7 @@ import {
   AlertCircle,
   Calendar,
 } from 'lucide-react';
-import AppSidebar from '@/components/layout/AppSidebar';
+import Navbar from '@/components/layout/Navbar';
 import { getSupabase } from '@/lib/supabase/client';
 import {
   refreshSession,
@@ -74,7 +74,6 @@ function LoginContent() {
         return;
       }
 
-      // Autenticação real no Supabase
       const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
         email: cleanEmail,
         password: password,
@@ -86,7 +85,6 @@ function LoginContent() {
         return;
       }
 
-      // Atualiza a sessão central
       const session = await refreshSession();
 
       const userRole = session.role || role;
@@ -95,13 +93,13 @@ function LoginContent() {
 
       setSuccessMessage(
         userRole === 'prestador'
-          ? 'Login de prestador realizado com sucesso! Abrindo seu painel...'
+          ? 'Login de prestador confirmado! Abrindo seu painel...'
           : 'Login realizado com sucesso! Abrindo sua área...'
       );
 
       setTimeout(() => {
         router.push(destination);
-      }, 700);
+      }, 600);
     } catch (err: any) {
       setErrorMessage(translateAuthError(err?.message));
       setIsLoading(false);
@@ -109,12 +107,10 @@ function LoginContent() {
   };
 
   return (
-    <AppSidebar
-      activePage="login"
-      headerTitle="Entrar na Plataforma"
-      headerSubtitle="Acesse seu painel profissional de prestador ou sua área de cliente"
-    >
-      <div className="flex-1 max-w-[1600px] w-full mx-auto p-3.5 sm:p-6 lg:p-8 pb-28 lg:pb-8 flex items-center">
+    <div className="min-h-screen bg-[#F4F7FB] flex flex-col text-slate-900">
+      <Navbar />
+
+      <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 flex items-center">
         <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
           {/* =================================================================
               LEFT 6 COLUMNS: LOGIN FORM
@@ -133,15 +129,18 @@ function LoginContent() {
                       className="w-full h-full object-contain"
                     />
                   </div>
-                  <span className="inline-block px-3 py-1 rounded-full bg-violet-50 text-violet-700 border border-violet-200 text-xs font-extrabold uppercase tracking-wider">
-                    Acesso Seguro
+                  <span className="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-xs font-extrabold uppercase tracking-wider">
+                    Acesso à Conta
                   </span>
                 </div>
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-2">
-                  Entrar no Agenda<span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 via-blue-600 to-cyan-500">Fácil</span>
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
+                  Entrar no Agenda
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 via-blue-600 to-cyan-500">
+                    Fácil
+                  </span>
                 </h1>
                 <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                  Selecione como deseja acessar sua conta:
+                  Escolha seu perfil de acesso e informe suas credenciais:
                 </p>
               </div>
 
@@ -152,11 +151,11 @@ function LoginContent() {
                   onClick={() => handleSelectRole('prestador')}
                   className={`py-3 px-4 rounded-xl text-xs sm:text-sm font-extrabold flex items-center justify-center gap-2 transition ${
                     role === 'prestador'
-                      ? 'bg-slate-900 text-white shadow-xs'
+                      ? 'bg-[#0B132B] text-white shadow-xs'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
                   }`}
                 >
-                  <Briefcase className="w-4 h-4 text-cyan-400" />
+                  <Briefcase className={`w-4 h-4 ${role === 'prestador' ? 'text-cyan-400' : 'text-slate-500'}`} />
                   <span>Sou Prestador</span>
                 </button>
 
@@ -169,21 +168,21 @@ function LoginContent() {
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
                   }`}
                 >
-                  <User className="w-4 h-4 text-white" />
+                  <User className={`w-4 h-4 ${role === 'cliente' ? 'text-white' : 'text-slate-500'}`} />
                   <span>Sou Cliente</span>
                 </button>
               </div>
 
-              {/* Badge indicativo do perfil selecionado */}
+              {/* Context Banner */}
               <div
-                className={`p-3 rounded-2xl border text-xs flex items-center gap-2.5 ${
+                className={`p-3.5 rounded-2xl border text-xs flex items-center gap-3 ${
                   role === 'prestador'
-                    ? 'bg-slate-900 text-white border-slate-800'
+                    ? 'bg-[#0B132B] text-white border-slate-800'
                     : 'bg-blue-50 text-blue-900 border-blue-200'
                 }`}
               >
                 <div
-                  className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
+                  className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${
                     role === 'prestador' ? 'bg-cyan-500/20 text-cyan-400' : 'bg-blue-600 text-white'
                   }`}
                 >
@@ -191,14 +190,12 @@ function LoginContent() {
                 </div>
                 <div className="min-w-0">
                   <p className="font-extrabold">
-                    {role === 'prestador'
-                      ? 'Acesso ao Painel do Prestador'
-                      : 'Acesso à Área do Cliente'}
+                    {role === 'prestador' ? 'Painel do Prestador' : 'Área do Cliente'}
                   </p>
-                  <p className={role === 'prestador' ? 'text-slate-400 text-[11px]' : 'text-blue-700 text-[11px]'}>
+                  <p className={role === 'prestador' ? 'text-slate-300 text-[11px]' : 'text-blue-700 text-[11px]'}>
                     {role === 'prestador'
-                      ? 'Gerencie quem agendou, seus horários, serviços cadastrados e recebimentos Pix.'
-                      : 'Consulte seus horários marcados com profissionais e converse no chat.'}
+                      ? 'Gerencie agendamentos, horários disponíveis, catálogo de preços e Pix.'
+                      : 'Acompanhe seus serviços agendados e converse direto com o profissional.'}
                   </p>
                 </div>
               </div>
@@ -232,7 +229,7 @@ function LoginContent() {
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder={
                         role === 'prestador'
-                          ? 'seu-email-profissional@exemplo.com'
+                          ? 'voce@profissional.com.br'
                           : 'seu-email@exemplo.com'
                       }
                       className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 text-sm outline-none focus:border-blue-600 bg-slate-50 focus:bg-white transition"
@@ -243,13 +240,6 @@ function LoginContent() {
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
                     <label className="text-xs font-bold text-slate-700">Senha de Acesso</label>
-                    <button
-                      type="button"
-                      onClick={() => alert('Para redefinir sua senha, solicite suporte ou use o e-mail cadastrado.')}
-                      className="text-xs font-bold text-blue-600 hover:underline"
-                    >
-                      Esqueceu a senha?
-                    </button>
                   </div>
                   <div className="relative">
                     <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -269,16 +259,16 @@ function LoginContent() {
                   disabled={isLoading}
                   className={`w-full py-3.5 rounded-xl font-extrabold text-sm flex items-center justify-center gap-2 transition shadow-xs ${
                     role === 'prestador'
-                      ? 'bg-slate-900 hover:bg-slate-800 text-white disabled:opacity-50'
-                      : 'bg-blue-600 hover:bg-blue-500 text-white disabled:opacity-50'
+                      ? 'bg-[#0B132B] hover:bg-slate-800 text-white disabled:opacity-50'
+                      : 'bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50'
                   }`}
                 >
                   <span>
                     {isLoading
                       ? 'Verificando credenciais...'
                       : role === 'prestador'
-                      ? 'Entrar no Painel do Prestador'
-                      : 'Entrar como Cliente'}
+                      ? 'Acessar Painel do Prestador'
+                      : 'Entrar na Área do Cliente'}
                   </span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
@@ -286,7 +276,7 @@ function LoginContent() {
             </div>
 
             <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
-              <span className="text-slate-500 font-medium">Ainda não tem conta?</span>
+              <span className="text-slate-500 font-medium">Ainda não possui uma conta?</span>
               <NextLink
                 href={`/cadastro?role=${role}`}
                 className="font-extrabold text-blue-600 hover:underline flex items-center gap-1"
@@ -300,79 +290,87 @@ function LoginContent() {
           {/* =================================================================
               RIGHT 6 COLUMNS: SOLID NAVY EXPLANATION PANEL
              ================================================================= */}
-          <div className="lg:col-span-6 bg-[#0B132B] text-white rounded-3xl p-8 sm:p-10 flex flex-col justify-between space-y-8">
+          <div className="lg:col-span-6 bg-[#0B132B] text-white rounded-3xl p-8 sm:p-10 flex flex-col justify-between space-y-8 border border-slate-800">
             <div className="space-y-6">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-600 text-white text-xs font-extrabold">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-800 text-cyan-400 text-xs font-extrabold">
                 <Wrench className="w-3.5 h-3.5" />
-                <span>Agendamento Facilitado de Trabalhos & Serviços</span>
+                <span>Plataforma de Agendamento e Gestão</span>
               </div>
 
-              <h2 className="text-3xl font-extrabold tracking-tight leading-tight">
+              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight">
                 {role === 'prestador'
-                  ? 'Sua agenda organizada, clientes no horário e Pix direto na sua conta.'
-                  : 'Encontre profissionais de confiança e marque seu horário em 30 segundos.'}
+                  ? 'Sua agenda organizada, clientes confirmados e Pix direto na sua conta.'
+                  : 'Encontre profissionais qualificados e agende seu horário em segundos.'}
               </h2>
 
               <p className="text-sm text-slate-300 leading-relaxed">
                 {role === 'prestador'
-                  ? 'Cada prestador possui seu próprio link de agendamento e seu painel exclusivo para gerenciar serviços, horários e pagamentos.'
-                  : 'Acompanhe seus horários marcados, consulte os dados do profissional e confirme detalhes no chat direto.'}
+                  ? 'Cada profissional conta com seu próprio link público de agendamento e um painel exclusivo para gerenciar catálogo, expediente e recebimentos.'
+                  : 'Consulte preços transparentes antes de contratar, escolha o melhor dia e horário e acompanhe tudo pela sua conta gratuita.'}
               </p>
 
               <div className="space-y-3.5 pt-2">
-                <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 flex items-start gap-3.5">
+                <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 flex items-start gap-3.5">
                   <CheckCircle2 className="w-5 h-5 text-cyan-400 shrink-0 mt-0.5" />
                   <div>
                     <h3 className="text-sm font-extrabold text-white">
-                      Áreas Totalmente Separadas
+                      Ambientes Independentes para Prestador e Cliente
                     </h3>
-                    <p className="text-xs text-slate-400 mt-0.5">
-                      Prestadores gerenciam sua própria página em <code className="text-cyan-300 font-bold">/prestador</code> com total sigilo dos agendamentos de clientes.
+                    <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">
+                      O painel de gestão é restrito ao profissional responsável, garantindo privacidade total dos clientes e horários.
                     </p>
                   </div>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 flex items-start gap-3.5">
+                <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 flex items-start gap-3.5">
                   <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
                   <div>
                     <h3 className="text-sm font-extrabold text-white">
-                      Pix Direto sem Intermediários
+                      Recebimento Pix com 0% de Taxa
                     </h3>
-                    <p className="text-xs text-slate-400 mt-0.5">
-                      O pagamento cai direto na sua conta cadastrada com 0% de comissão retida.
+                    <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">
+                      O pagamento com QR Code é gerado direto para a chave Pix do prestador, sem intermediação.
                     </p>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <p className="text-xs font-extrabold text-white">
-                  Quer cadastrar seus serviços profissionais?
+                  {role === 'prestador'
+                    ? 'Deseja divulgar seus serviços no AgendaFácil?'
+                    : 'Primeira vez agendando pela plataforma?'}
                 </p>
-                <p className="text-[11px] text-slate-400">
-                  Leva menos de 1 minuto para criar sua conta.
+                <p className="text-[11px] text-slate-400 mt-0.5">
+                  Crie sua conta em menos de 1 minuto.
                 </p>
               </div>
               <NextLink
-                href="/cadastro?role=prestador"
-                className="px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-extrabold flex items-center gap-2 shrink-0 transition"
+                href={`/cadastro?role=${role}`}
+                className="px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-extrabold flex items-center justify-center gap-2 shrink-0 transition"
               >
                 <UserPlus className="w-4 h-4" />
-                <span>Criar Conta de Prestador</span>
+                <span>Criar Conta Agora</span>
               </NextLink>
             </div>
           </div>
         </div>
-      </div>
-    </AppSidebar>
+      </main>
+    </div>
   );
 }
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#F4F7FB] flex items-center justify-center text-sm text-slate-500">Carregando login...</div>}>
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#F4F7FB] flex items-center justify-center text-sm text-slate-500">
+          Carregando login...
+        </div>
+      }
+    >
       <LoginContent />
     </Suspense>
   );
