@@ -10,6 +10,15 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  // Endereços antigos -> nova organização (público / cliente / prestador)
+  async redirects() {
+    return [
+      { source: '/dashboard', destination: '/prestador', permanent: true },
+      { source: '/meus-agendamentos', destination: '/cliente/agendamentos', permanent: true },
+      { source: '/chat', destination: '/cliente/chat', permanent: true },
+      { source: '/onboarding', destination: '/cadastro', permanent: true },
+    ];
+  },
   images: {
     remotePatterns: [
       {

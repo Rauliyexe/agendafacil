@@ -4,6 +4,7 @@ import { Suspense, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import ChatWorkspace from '@/components/chat/ChatWorkspace';
 import AppSidebar from '@/components/layout/AppSidebar';
+import { RequireRole } from '@/lib/auth';
 
 function ChatPageContent() {
   const searchParams = useSearchParams();
@@ -14,6 +15,7 @@ function ChatPageContent() {
     <AppSidebar activeDashboardTab="chat" chatUnreadCount={unreadCount}>
       <main className="flex-1 p-2.5 sm:p-4 lg:p-6 pb-20 lg:pb-6 max-w-[1440px] w-full mx-auto">
         <ChatWorkspace
+          forcedRole="cliente"
           initialTenantSlug={prestadorSlug}
           onUnreadChange={(count) => setUnreadCount(count)}
         />
@@ -24,12 +26,14 @@ function ChatPageContent() {
 
 export default function ChatPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="p-8 text-center text-sm text-slate-500">Carregando chat...</div>
-      }
-    >
-      <ChatPageContent />
-    </Suspense>
+    <RequireRole role="cliente">
+      <Suspense
+        fallback={
+          <div className="p-8 text-center text-sm text-slate-500">Carregando chat...</div>
+        }
+      >
+        <ChatPageContent />
+      </Suspense>
+    </RequireRole>
   );
 }

@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import NextLink from 'next/link';
 import Image from 'next/image';
 import {
@@ -36,6 +36,7 @@ import { saveTenant, saveStoredUserRole, saveActiveTenantSlug, saveStoredLoggedU
 import { getSupabase, isSupabaseConfigured } from '@/lib/supabase/client';
 import { saveTenantToSupabase } from '@/lib/supabase/api';
 import { Tenant } from '@/lib/types';
+import { refreshSession } from '@/lib/auth';
 
 type AccountRole = 'cliente' | 'prestador';
 
@@ -143,12 +144,20 @@ const PROFESSION_TEMPLATES = [
   },
 ];
 
-export default function CadastroPage() {
+function CadastroPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [accountRole, setAccountRole] = useState<AccountRole>('prestador');
   const [step, setStep] = useState<number>(1);
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    const roleParam = searchParams.get('role');
+    if (roleParam === 'cliente' || roleParam === 'prestador') {
+      setAccountRole(roleParam);
+    }
+  }, [searchParams]);
 
   // =========================================================================
   // CLIENTE STATES
@@ -301,6 +310,7 @@ export default function CadastroPage() {
       }
     }
 
+    await refreshSession();
     saveStoredUserRole('cliente');
     saveStoredLoggedUser({
       email: clientEmail,
@@ -381,6 +391,7 @@ export default function CadastroPage() {
             phone: proPhone,
             role: 'prestador',
           });
+          newTenant.userId = authData.user.id;
         }
       } catch (err) {
         console.warn('Supabase auth signup notice:', err);
@@ -400,11 +411,12 @@ export default function CadastroPage() {
       role: 'prestador',
       slug: finalSlug,
     });
+    await refreshSession();
 
     setIsSubmitting(false);
     setRegistrationSuccess(true);
     setTimeout(() => {
-      router.push(`/${finalSlug}`);
+      router.push('/prestador');
     }, 1500);
   };
 
@@ -1488,5 +1500,13 @@ export default function CadastroPage() {
         </div>
       </div>
     </AppSidebar>
+  );
+}
+
+export default function CadastroPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#F4F7FB] flex items-center justify-center text-sm text-slate-500">Carregando cadastro...</div>}>
+      <CadastroPageContent />
+    </Suspense>
   );
 }

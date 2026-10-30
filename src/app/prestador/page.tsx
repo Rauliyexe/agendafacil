@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import NextLink from 'next/link';
 import Image from 'next/image';
 import {
@@ -52,17 +52,18 @@ import PixPaymentModal, { PixQrCodeSvg } from '@/components/pix/PixPaymentModal'
 import ChatWorkspace from '@/components/chat/ChatWorkspace';
 import ProviderStoriesBar from '@/components/stories/ProviderStoriesBar';
 import AppSidebar, { DashboardTabId } from '@/components/layout/AppSidebar';
+import { useSession, RequireRole } from '@/lib/auth';
 
 function DashboardContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
+  const session = useSession();
   const [activeTab, setActiveTab] = useState<DashboardTabId>('inicio');
   const [tenants, setTenants] = useState<Record<string, Tenant>>({});
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [notifications, setNotifications] = useState<AppNotification[]>(INITIAL_NOTIFICATIONS);
   const [chatUnreadCount, setChatUnreadCount] = useState<number>(2);
 
-  // Provider Account Filter ("todos" by default, or specific slug)
-  const [selectedProviderSlug, setSelectedProviderSlug] = useState<string>('todos');
   const [whenFilter, setWhenFilter] = useState<'todos' | 'hoje' | 'proximos' | 'pendentes'>('todos');
   const [clientSearch, setClientSearch] = useState('');
   const [copiedLink, setCopiedLink] = useState(false);
@@ -160,21 +161,35 @@ function DashboardContent() {
   const currentProvider: Tenant | undefined = useMemo(() => {
     const list = Object.values(tenants);
     if (list.length === 0) return undefined;
-    const activeSlug = getActiveTenantSlug();
-    if (activeSlug && tenants[activeSlug]) {
-      if (selectedProviderSlug === 'todos' || selectedProviderSlug === activeSlug) {
-        return tenants[activeSlug];
+
+    // 1. Procurar pelo tenantSlug da sessão autenticada
+    if (session.tenantSlug && tenants[session.tenantSlug]) {
+      return tenants[session.tenantSlug];
+    }
+    // 2. Procurar por user_id vinculado no tenant
+    if (session.userId) {
+      const match = list.find((t) => t.userId === session.userId);
+      if (match) return match;
+    }
+    // 3. Procurar por telefone do perfil
+    if (session.phone) {
+      const cleanPhone = session.phone.replace(/\D/g, '');
+      if (cleanPhone) {
+        const matchPhone = list.find((t) => t.phone?.replace(/\D/g, '') === cleanPhone);
+        if (matchPhone) return matchPhone;
       }
     }
-    if (selectedProviderSlug === 'todos') {
-      return list[0];
+    // 4. Fallback pelo activeTenantSlug local
+    const activeSlug = getActiveTenantSlug();
+    if (activeSlug && tenants[activeSlug]) {
+      return tenants[activeSlug];
     }
-    return tenants[selectedProviderSlug] || list[0];
-  }, [tenants, selectedProviderSlug]);
+    return list[0];
+  }, [tenants, session]);
 
   useEffect(() => {
     if (currentProvider) {
-      setPixKeyInput(currentProvider.pixKey || 'lucas.becker@arenasunset.com.br');
+      setPixKeyInput(currentProvider.pixKey || currentProvider.phone || '');
       setPixKeyTypeInput(currentProvider.pixKeyType || 'email');
       setPixBeneficiaryInput(
         currentProvider.pixBeneficiary || currentProvider.name.toUpperCase()
@@ -203,7 +218,7 @@ function DashboardContent() {
   const livePreviewBrCode = useMemo(
     () =>
       generatePixBRCode({
-        pixKey: pixKeyInput || 'lucas.becker@arenasunset.com.br',
+        pixKey: pixKeyInput || currentProvider?.pixKey || 'pix@empresa.com',
         pixKeyType: pixKeyTypeInput,
         merchantName: pixBeneficiaryInput || currentProvider?.name || 'PRESTADOR',
         merchantCity: 'SAO PAULO',
@@ -213,11 +228,12 @@ function DashboardContent() {
     [pixKeyInput, pixKeyTypeInput, pixBeneficiaryInput, pixTestAmount, currentProvider]
   );
 
-  // Filter bookings belonging to the active provider (or all if 'todos')
+  // Filtra agendamentos pertencentes unicamente a este prestador
   const providerBookings = useMemo(() => {
+    if (!currentProvider) return [];
     return bookings
       .filter((b) => {
-        if (selectedProviderSlug !== 'todos' && b.tenantId !== selectedProviderSlug) {
+        if (b.tenantId !== currentProvider.slug) {
           return false;
         }
         if (whenFilter === 'hoje' && b.date !== '2026-10-26') return false;
@@ -237,16 +253,15 @@ function DashboardContent() {
         if (a.date !== b.date) return a.date.localeCompare(b.date);
         return a.time.localeCompare(b.time);
       });
-  }, [bookings, selectedProviderSlug, whenFilter, clientSearch]);
+  }, [bookings, currentProvider, whenFilter, clientSearch]);
 
   // Provider KPIs
   const allProviderBookings = useMemo(() => {
+    if (!currentProvider) return [];
     return bookings.filter(
-      (b) =>
-        b.status !== 'cancelado' &&
-        (selectedProviderSlug === 'todos' || b.tenantId === selectedProviderSlug)
+      (b) => b.status !== 'cancelado' && b.tenantId === currentProvider.slug
     );
-  }, [bookings, selectedProviderSlug]);
+  }, [bookings, currentProvider]);
 
   const todayBookingsCount = useMemo(
     () => allProviderBookings.filter((b) => b.date === '2026-10-26').length,
@@ -411,32 +426,20 @@ function DashboardContent() {
                   </span>
                 </div>
                 <h1 className="text-xl sm:text-2xl font-extrabold text-white mt-1">
-                  {selectedProviderSlug === 'todos'
-                    ? 'Visão Geral — Todos os Prestadores'
-                    : `${currentProvider?.name} (${currentProvider?.role})`}
+                  {currentProvider?.name || session.name || 'Seu Painel de Prestador'}
                 </h1>
+                {currentProvider?.role && (
+                  <p className="text-xs text-slate-300 mt-0.5">{currentProvider.role}</p>
+                )}
               </div>
             </div>
 
-            {/* Provider Account Switcher + Add Manual Booking */}
+            {/* Provider Actions */}
             <div className="flex flex-wrap items-center gap-2.5">
-              <select
-                value={selectedProviderSlug}
-                onChange={(e) => setSelectedProviderSlug(e.target.value)}
-                className="px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs font-extrabold outline-none focus:border-blue-500"
-              >
-                {Object.values(tenants).map((t) => (
-                  <option key={t.slug} value={t.slug}>
-                    {t.name} ({t.role})
-                  </option>
-                ))}
-                {Object.values(tenants).length > 1 && (
-                  <option value="todos">Ver Todos os Prestadores</option>
-                )}
-                {Object.values(tenants).length === 0 && (
-                  <option value="">Nenhum Prestador Cadastrado</option>
-                )}
-              </select>
+              <div className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-800/80 border border-slate-700/80 text-xs text-slate-300">
+                <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                <span className="font-semibold">{currentProvider?.name || session.name || 'Prestador'}</span>
+              </div>
 
               <button
                 type="button"
@@ -726,11 +729,6 @@ function DashboardContent() {
                                 <MapPin className="w-3.5 h-3.5 text-slate-400" />
                                 {booking.address}
                               </span>
-                              {selectedProviderSlug === 'todos' && (
-                                <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[11px] font-bold">
-                                  Profissional: {booking.tenantName}
-                                </span>
-                              )}
                             </div>
 
                             {booking.notes && (
@@ -1423,14 +1421,16 @@ function DashboardContent() {
 
 export default function SaaSDashboardApp() {
   return (
-    <Suspense
-      fallback={
-        <div className="p-8 text-center text-sm text-slate-500">
-          Carregando painel do prestador...
-        </div>
-      }
-    >
-      <DashboardContent />
-    </Suspense>
+    <RequireRole role="prestador">
+      <Suspense
+        fallback={
+          <div className="p-8 text-center text-sm text-slate-500">
+            Carregando painel do prestador...
+          </div>
+        }
+      >
+        <DashboardContent />
+      </Suspense>
+    </RequireRole>
   );
 }

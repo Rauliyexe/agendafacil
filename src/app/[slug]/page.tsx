@@ -36,6 +36,7 @@ import { Tenant, Service, Booking } from '@/lib/types';
 import { generateAvailableSlots } from '@/lib/slot-engine';
 import ProviderStoriesBar from '@/components/stories/ProviderStoriesBar';
 import PixPaymentModal from '@/components/pix/PixPaymentModal';
+import { useSession } from '@/lib/auth';
 
 export default function TenantBookingDesktopPage() {
   const params = useParams();
@@ -53,10 +54,19 @@ export default function TenantBookingDesktopPage() {
   const [createdBooking, setCreatedBooking] = useState<Booking | null>(null);
   const [showPixModal, setShowPixModal] = useState(false);
 
+  const session = useSession();
+
   // Client Form states
-  const [clientName, setClientName] = useState('Raul Freitas');
-  const [clientPhone, setClientPhone] = useState('(11) 98765-4321');
+  const [clientName, setClientName] = useState('');
+  const [clientPhone, setClientPhone] = useState('');
   const [clientNotes, setClientNotes] = useState('');
+
+  useEffect(() => {
+    if (session.status === 'authenticated') {
+      if (session.name && !clientName) setClientName(session.name);
+      if (session.phone && !clientPhone) setClientPhone(session.phone);
+    }
+  }, [session]);
 
   useEffect(() => {
     const loaded = getStoredTenants();

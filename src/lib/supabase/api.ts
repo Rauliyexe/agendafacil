@@ -8,10 +8,15 @@ import {
   INITIAL_STORIES,
 } from '../data';
 
+// O app usa 'free' | 'pro' | 'arena'; o banco aceita 'gratis' | 'pro' | 'equipe'
+const PLAN_TO_DB: Record<string, string> = { free: 'gratis', pro: 'pro', arena: 'equipe' };
+const PLAN_FROM_DB: Record<string, Tenant['plan']> = { gratis: 'free', pro: 'pro', equipe: 'arena' };
+
 // Helper to map Supabase row to Tenant
 function mapTenantRow(row: any, services: Service[] = []): Tenant {
   return {
     id: row.id || row.slug,
+    userId: row.user_id ?? null,
     slug: row.slug,
     name: row.name,
     role: row.role,
@@ -26,7 +31,7 @@ function mapTenantRow(row: any, services: Service[] = []): Tenant {
     whatsapp: row.whatsapp || '',
     instagram: row.instagram || '',
     active: row.active ?? true,
-    plan: row.plan || 'pro',
+    plan: PLAN_FROM_DB[row.plan] || 'pro',
     pixKey: row.pix_key || '',
     pixKeyType: row.pix_key_type || 'email',
     pixBeneficiary: row.pix_beneficiary || '',
@@ -106,7 +111,8 @@ export async function saveTenantToSupabase(tenant: Tenant): Promise<boolean> {
         experience: tenant.experience || '',
         distance: tenant.distance || '1,0 km',
         active: tenant.active ?? true,
-        plan: tenant.plan || 'pro',
+        plan: PLAN_TO_DB[tenant.plan] || 'pro',
+        ...(tenant.userId ? { user_id: tenant.userId } : {}),
         phone: tenant.phone,
         whatsapp: tenant.whatsapp,
         instagram: tenant.instagram,

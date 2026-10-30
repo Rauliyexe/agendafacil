@@ -22,6 +22,7 @@ import {
 import { getStoredBookings, updateBookingStatus } from '@/lib/store';
 import { Booking } from '@/lib/types';
 import AppSidebar from '@/components/layout/AppSidebar';
+import { RequireRole } from '@/lib/auth';
 
 export default function MeusAgendamentosDesktopPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -59,7 +60,8 @@ export default function MeusAgendamentosDesktopPage() {
   const displayedList = activeTab === 'proximos' ? upcomingBookings : pastBookings;
 
   return (
-    <AppSidebar>
+    <RequireRole role="cliente">
+      <AppSidebar>
       {/* MAIN DESKTOP CONTENT AREA */}
       <main className="flex-1 p-3.5 sm:p-6 lg:p-8 pb-28 lg:pb-10 w-full max-w-7xl mx-auto space-y-6">
         
@@ -310,5 +312,6 @@ export default function MeusAgendamentosDesktopPage() {
         </div>
       </main>
     </AppSidebar>
+  </RequireRole>
   );
 }

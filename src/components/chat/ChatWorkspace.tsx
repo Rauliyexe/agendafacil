@@ -42,8 +42,6 @@ import {
   getStoredProviderConversations,
   saveProviderConversations,
   getStoredTenants,
-  getStoredUserRole,
-  saveStoredUserRole,
   updateBookingStatus,
 } from '@/lib/store';
 
@@ -116,7 +114,7 @@ export default function ChatWorkspace({
     setProviderConversations(storedProvConvs);
     setTenants(storedTenants);
 
-    const activeRole = forcedRole || getStoredUserRole();
+    const activeRole = forcedRole || 'cliente';
     setChatRole(activeRole);
 
     if (initialTenantSlug) {
@@ -138,19 +136,6 @@ export default function ChatWorkspace({
       }
     }
   }, [initialTenantSlug, forcedRole]);
-
-  // Listen for global role switch from AppSidebar
-  useEffect(() => {
-    const handleRoleEvent = (e: Event) => {
-      const custom = e as CustomEvent<'cliente' | 'prestador'>;
-      if (custom.detail) {
-        setChatRole(custom.detail);
-      }
-    };
-    window.addEventListener('agendafacil-role-changed', handleRoleEvent);
-    return () =>
-      window.removeEventListener('agendafacil-role-changed', handleRoleEvent);
-  }, []);
 
   const conversations =
     chatRole === 'prestador' ? providerConversations : clientConversations;
@@ -178,12 +163,6 @@ export default function ChatWorkspace({
       EMPTY_TENANT
     );
   }, [activeConversation, tenants]);
-
-  const handleSwitchChatRole = (newRole: 'cliente' | 'prestador') => {
-    setChatRole(newRole);
-    saveStoredUserRole(newRole);
-    setMobileScreen('list');
-  };
 
   const handleSelectConversation = (convId: string) => {
     if (chatRole === 'prestador') {
@@ -486,32 +465,6 @@ export default function ChatWorkspace({
                     ? 'Clientes que Agendaram'
                     : 'Meus Prestadores'}
                 </h2>
-              </div>
-
-              {/* Quick Toggle to test Client vs Provider Chat */}
-              <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200">
-                <button
-                  type="button"
-                  onClick={() => handleSwitchChatRole('cliente')}
-                  className={`px-2.5 py-1 rounded-lg text-[10px] font-extrabold transition ${
-                    chatRole === 'cliente'
-                      ? 'bg-blue-600 text-white'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  Cliente
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleSwitchChatRole('prestador')}
-                  className={`px-2.5 py-1 rounded-lg text-[10px] font-extrabold transition ${
-                    chatRole === 'prestador'
-                      ? 'bg-slate-900 text-white'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  Prestador
-                </button>
               </div>
             </div>
 

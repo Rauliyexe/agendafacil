@@ -24,6 +24,7 @@ import { getStoredTenants, getStoredBookings, syncWithSupabase } from '@/lib/sto
 import { Tenant, Booking } from '@/lib/types';
 import ProviderStoriesBar from '@/components/stories/ProviderStoriesBar';
 import AppSidebar from '@/components/layout/AppSidebar';
+import { useSession } from '@/lib/auth';
 
 const CATEGORIES = [
   { id: 'todos', label: 'Todos', icon: Sparkles },
@@ -60,11 +61,22 @@ export default function ExplorarClientePage() {
 
   const tenantList = useMemo(() => Object.values(tenants), [tenants]);
 
-  // Client's own bookings (Raul Freitas)
-  const myBookings = useMemo(
-    () => bookings.filter((b) => b.clientName === 'Raul Freitas' && b.status !== 'cancelado'),
-    [bookings]
-  );
+  const session = useSession();
+
+  // Agendamentos do próprio cliente logado
+  const myBookings = useMemo(() => {
+    if (session.status !== 'authenticated') return [];
+    const name = (session.name || '').toLowerCase();
+    const mail = (session.email || '').toLowerCase();
+    const phone = (session.phone || '').replace(/\D/g, '');
+    return bookings.filter((b) => {
+      if (b.status === 'cancelado') return false;
+      if (mail && b.clientEmail?.toLowerCase() === mail) return true;
+      if (phone && b.clientPhone?.replace(/\D/g, '') === phone) return true;
+      if (name && b.clientName?.toLowerCase().includes(name)) return true;
+      return false;
+    });
+  }, [bookings, session]);
 
   const nextBooking = myBookings[0];
 
@@ -285,7 +297,7 @@ export default function ExplorarClientePage() {
                   {/* Clear Action Buttons */}
                   <div className="mt-4 pt-3.5 border-t border-slate-100 flex items-center gap-2">
                     <NextLink
-                      href={`/chat?prestador=${pro.slug}`}
+                      href={`/cliente/chat?prestador=${pro.slug}`}
                       className="px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-extrabold flex items-center gap-1.5 transition"
                     >
                       <MessageCircle className="w-3.5 h-3.5 text-blue-600" />

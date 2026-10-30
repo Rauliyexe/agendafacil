@@ -14,6 +14,7 @@ export interface Service {
 
 export interface Tenant {
   id: string;
+  userId?: string | null; // auth.users.id do dono da página
   slug: string; // ex: 'lucas-beachtennis'
   name: string;
   role: string; // ex: 'Professor de Beach Tennis', 'Climatização'

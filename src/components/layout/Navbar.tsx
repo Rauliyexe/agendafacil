@@ -47,7 +47,7 @@ export default function Navbar() {
           <NextLink
             href="/explorar"
             className={`transition flex items-center gap-1.5 ${
-              pathname?.startsWith('/explorar') || pathname?.startsWith('/meus-agendamentos')
+              pathname?.startsWith('/explorar') || pathname?.startsWith('/cliente')
                 ? 'text-violet-600 font-bold'
                 : 'hover:text-slate-900'
             }`}
@@ -57,9 +57,9 @@ export default function Navbar() {
           </NextLink>
 
           <NextLink
-            href="/chat"
+            href="/cliente/chat"
             className={`transition flex items-center gap-1.5 ${
-              pathname?.startsWith('/chat')
+              pathname?.startsWith('/cliente/chat')
                 ? 'text-violet-600 font-bold'
                 : 'hover:text-slate-900'
             }`}
@@ -133,7 +133,7 @@ export default function Navbar() {
             Entrar como Prestador
           </NextLink>
           <NextLink
-            href="/chat"
+            href="/cliente/chat"
             onClick={() => setMobileMenuOpen(false)}
             className="block px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 rounded-xl"
           >
