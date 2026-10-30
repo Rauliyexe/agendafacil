@@ -52,8 +52,16 @@ async function loadSession(): Promise<SessionInfo> {
     .eq('id', user.id)
     .maybeSingle();
 
+  // Permite ao usuário alternar ativamente entre prestador e cliente com a mesma conta (mesmo e-mail/senha)
+  const storedRole =
+    typeof window !== 'undefined'
+      ? (localStorage.getItem('agendafacil_user_role_mode') as UserRole)
+      : null;
+
   const role: UserRole =
-    (profile?.role as UserRole) || (user.user_metadata?.role as UserRole) || 'cliente';
+    storedRole === 'prestador' || storedRole === 'cliente'
+      ? storedRole
+      : (profile?.role as UserRole) || (user.user_metadata?.role as UserRole) || 'cliente';
 
   let tenantSlug: string | null = null;
   if (role === 'prestador') {
@@ -74,6 +82,12 @@ async function loadSession(): Promise<SessionInfo> {
         (t: any) => onlyDigits(t.phone) === onlyDigits(profile?.phone)
       );
       tenantSlug = match?.slug ?? null;
+      if (tenantSlug) {
+        await supabase
+          .from('tenants')
+          .update({ user_id: user.id })
+          .eq('slug', tenantSlug);
+      }
     }
   }
 
@@ -132,11 +146,33 @@ export function useSession(): SessionInfo {
 export async function signOut(): Promise<void> {
   const supabase = getSupabase();
   if (supabase) await supabase.auth.signOut();
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('agendafacil_user_role_mode');
+    localStorage.removeItem('agendafacil_logged_user');
+  }
   publish(ANON);
 }
 
+export async function switchRole(newRole: UserRole): Promise<SessionInfo> {
+  const supabase = getSupabase();
+  if (supabase) {
+    const { data } = await supabase.auth.getSession();
+    if (data.session?.user) {
+      await supabase
+        .from('profiles')
+        .update({ role: newRole })
+        .eq('id', data.session.user.id);
+    }
+  }
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('agendafacil_user_role_mode', newRole);
+    window.dispatchEvent(new CustomEvent('agendafacil-role-changed', { detail: newRole }));
+  }
+  return refreshSession();
+}
+
 export function homeForRole(role?: UserRole): string {
-  return role === 'prestador' ? '/prestador' : '/explorar';
+  return role === 'prestador' ? '/prestador' : '/cliente/agendamentos';
 }
 
 /** Traduz as mensagens de erro mais comuns do Supabase Auth. */

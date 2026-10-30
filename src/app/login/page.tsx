@@ -15,6 +15,8 @@ import {
   Briefcase,
   AlertCircle,
   Calendar,
+  ShieldCheck,
+  RefreshCw,
 } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
 import { getSupabase } from '@/lib/supabase/client';
@@ -24,6 +26,11 @@ import {
   homeForRole,
   UserRole,
 } from '@/lib/auth';
+import {
+  saveStoredUserRole,
+  saveStoredLoggedUser,
+  saveActiveTenantSlug,
+} from '@/lib/store';
 
 function LoginContent() {
   const router = useRouter();
@@ -85,21 +92,74 @@ function LoginContent() {
         return;
       }
 
-      const session = await refreshSession();
+      // 1. Atualiza explicitamente o papel ativo no perfil do Supabase
+      try {
+        await supabase
+          .from('profiles')
+          .update({ role })
+          .eq('id', authData.user.id);
+      } catch (err) {
+        console.warn('Supabase profile role update notice:', err);
+      }
 
-      const userRole = session.role || role;
+      // 2. Salva localmente a escolha de perfil do usuário
+      saveStoredUserRole(role);
+      saveStoredLoggedUser({
+        email: cleanEmail,
+        name: authData.user.user_metadata?.full_name || cleanEmail,
+        role,
+      });
+
+      // 3. Se logou como prestador, garante vínculo do tenant
+      if (role === 'prestador') {
+        try {
+          const { data: owned } = await supabase
+            .from('tenants')
+            .select('slug')
+            .eq('user_id', authData.user.id)
+            .limit(1);
+
+          if (!owned || owned.length === 0) {
+            const cleanPhone = (authData.user.user_metadata?.phone || '').replace(/\D/g, '');
+            if (cleanPhone) {
+              const { data: orphans } = await supabase
+                .from('tenants')
+                .select('slug, phone')
+                .is('user_id', null);
+              const match = (orphans || []).find(
+                (t: any) => (t.phone || '').replace(/\D/g, '') === cleanPhone
+              );
+              if (match?.slug) {
+                await supabase
+                  .from('tenants')
+                  .update({ user_id: authData.user.id })
+                  .eq('slug', match.slug);
+                saveActiveTenantSlug(match.slug);
+              }
+            }
+          } else if (owned[0]?.slug) {
+            saveActiveTenantSlug(owned[0].slug);
+          }
+        } catch (err) {
+          console.warn('Erro ao checar tenant do prestador:', err);
+        }
+      }
+
+      // 4. Atualiza a sessão da aplicação com o papel escolhido
+      await refreshSession();
+
       const targetNext = searchParams.get('next');
-      const destination = targetNext || homeForRole(userRole);
+      const destination = targetNext || homeForRole(role);
 
       setSuccessMessage(
-        userRole === 'prestador'
-          ? 'Login de prestador confirmado! Abrindo seu painel...'
-          : 'Login realizado com sucesso! Abrindo sua área...'
+        role === 'prestador'
+          ? 'Login de Prestador confirmado! Abrindo seu painel...'
+          : 'Login de Cliente confirmado! Abrindo seus agendamentos...'
       );
 
       setTimeout(() => {
         router.push(destination);
-      }, 600);
+      }, 500);
     } catch (err: any) {
       setErrorMessage(translateAuthError(err?.message));
       setIsLoading(false);
@@ -130,17 +190,16 @@ function LoginContent() {
                     />
                   </div>
                   <span className="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-xs font-extrabold uppercase tracking-wider">
-                    Acesso à Conta
+                    {role === 'prestador' ? 'Portal do Prestador' : 'Área do Cliente'}
                   </span>
                 </div>
                 <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
-                  Entrar no Agenda
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 via-blue-600 to-cyan-500">
-                    Fácil
-                  </span>
+                  {role === 'prestador' ? 'Login do Prestador' : 'Login do Cliente'}
                 </h1>
                 <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                  Escolha seu perfil de acesso e informe suas credenciais:
+                  {role === 'prestador'
+                    ? 'Acesse seu painel profissional, gestão de horários e Pix direto.'
+                    : 'Acesse seus agendamentos marcados e converse com profissionais.'}
                 </p>
               </div>
 
@@ -149,9 +208,9 @@ function LoginContent() {
                 <button
                   type="button"
                   onClick={() => handleSelectRole('prestador')}
-                  className={`py-3 px-4 rounded-xl text-xs sm:text-sm font-extrabold flex items-center justify-center gap-2 transition ${
+                  className={`py-3 px-4 rounded-xl text-xs sm:text-sm font-extrabold flex items-center justify-center gap-2 transition cursor-pointer ${
                     role === 'prestador'
-                      ? 'bg-[#0B132B] text-white shadow-xs'
+                      ? 'bg-[#0B132B] text-white shadow-md'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
                   }`}
                 >
@@ -162,9 +221,9 @@ function LoginContent() {
                 <button
                   type="button"
                   onClick={() => handleSelectRole('cliente')}
-                  className={`py-3 px-4 rounded-xl text-xs sm:text-sm font-extrabold flex items-center justify-center gap-2 transition ${
+                  className={`py-3 px-4 rounded-xl text-xs sm:text-sm font-extrabold flex items-center justify-center gap-2 transition cursor-pointer ${
                     role === 'cliente'
-                      ? 'bg-blue-600 text-white shadow-xs'
+                      ? 'bg-blue-600 text-white shadow-md'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
                   }`}
                 >
@@ -190,7 +249,7 @@ function LoginContent() {
                 </div>
                 <div className="min-w-0">
                   <p className="font-extrabold">
-                    {role === 'prestador' ? 'Painel do Prestador' : 'Área do Cliente'}
+                    {role === 'prestador' ? 'Painel de Gestão do Prestador' : 'Área do Cliente'}
                   </p>
                   <p className={role === 'prestador' ? 'text-slate-300 text-[11px]' : 'text-blue-700 text-[11px]'}>
                     {role === 'prestador'
@@ -198,6 +257,14 @@ function LoginContent() {
                       : 'Acompanhe seus serviços agendados e converse direto com o profissional.'}
                   </p>
                 </div>
+              </div>
+
+              {/* Aviso explicativo de mesma conta */}
+              <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 text-[11px] text-slate-600 flex items-start gap-2.5">
+                <ShieldCheck className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+                <p>
+                  <strong>Mesmo e-mail e senha:</strong> Você pode usar as mesmas credenciais para acessar como <strong>Cliente</strong> ou como <strong>Prestador</strong>. Basta alternar na aba acima para entrar no modo desejado.
+                </p>
               </div>
 
               {errorMessage && (

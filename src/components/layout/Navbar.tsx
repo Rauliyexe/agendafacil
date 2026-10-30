@@ -18,7 +18,7 @@ import {
   CreditCard,
   Briefcase,
 } from 'lucide-react';
-import { useSession, signOut } from '@/lib/auth';
+import { useSession, signOut, switchRole } from '@/lib/auth';
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -146,14 +146,43 @@ export default function Navbar() {
           {session.status === 'loading' ? (
             <div className="w-40 h-9 rounded-xl bg-slate-100 animate-pulse" />
           ) : isAuth ? (
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-2">
+              {/* Botão de alternância de modo (Mesma conta pode ser Prestador ou Cliente) */}
+              {isProvider ? (
+                <button
+                  type="button"
+                  onClick={async () => {
+                    await switchRole('cliente');
+                    router.push('/cliente/agendamentos');
+                  }}
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-blue-600 bg-slate-100 hover:bg-blue-50 px-3 py-2 rounded-xl transition cursor-pointer"
+                  title="Alternar para o Modo Cliente (ver seus agendamentos)"
+                >
+                  <User className="w-3.5 h-3.5 text-blue-600" />
+                  <span className="hidden xl:inline">Modo Cliente</span>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={async () => {
+                    await switchRole('prestador');
+                    router.push('/prestador');
+                  }}
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-cyan-400 bg-slate-100 hover:bg-slate-900 hover:text-white px-3 py-2 rounded-xl transition cursor-pointer"
+                  title="Alternar para o Painel do Prestador"
+                >
+                  <Briefcase className="w-3.5 h-3.5 text-cyan-500" />
+                  <span className="hidden xl:inline">Painel Prestador</span>
+                </button>
+              )}
+
               {isProvider && (
                 <NextLink
                   href="/prestador"
-                  className="inline-flex items-center gap-1.5 text-xs font-extrabold text-white bg-slate-900 hover:bg-slate-800 px-4 py-2.5 rounded-xl transition shadow-xs"
+                  className="inline-flex items-center gap-1.5 text-xs font-extrabold text-white bg-slate-900 hover:bg-slate-800 px-3.5 py-2 rounded-xl transition shadow-xs"
                 >
                   <LayoutDashboard className="w-3.5 h-3.5 text-cyan-400" />
-                  <span>Meu Painel</span>
+                  <span>Painel</span>
                 </NextLink>
               )}
 
@@ -165,7 +194,7 @@ export default function Navbar() {
                 >
                   {(session.name || session.email || 'U').slice(0, 1).toUpperCase()}
                 </div>
-                <div className="pr-1 max-w-[140px]">
+                <div className="pr-1 max-w-[130px]">
                   <p className="text-xs font-extrabold text-slate-900 truncate leading-tight">
                     {session.name || session.email}
                   </p>
@@ -176,7 +205,7 @@ export default function Navbar() {
                 <button
                   type="button"
                   onClick={handleSignOut}
-                  className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition"
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition cursor-pointer"
                   title="Sair da conta"
                 >
                   <LogOut className="w-3.5 h-3.5" />
@@ -184,22 +213,31 @@ export default function Navbar() {
               </div>
             </div>
           ) : (
-            <>
+            <div className="flex items-center gap-2">
               <NextLink
-                href="/login"
-                className="inline-flex items-center gap-1.5 text-xs font-extrabold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200/80 px-4 py-2.5 rounded-xl transition"
+                href="/login?role=cliente"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-blue-600 bg-slate-100 hover:bg-slate-200/80 px-3.5 py-2.5 rounded-xl transition"
               >
-                <LogIn className="w-3.5 h-3.5 text-slate-600" />
-                <span>Entrar</span>
+                <User className="w-3.5 h-3.5 text-slate-500" />
+                <span>Entrar (Cliente)</span>
               </NextLink>
+
+              <NextLink
+                href="/login?role=prestador"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-cyan-300 bg-[#0B132B] hover:bg-slate-800 px-3.5 py-2.5 rounded-xl transition shadow-xs"
+              >
+                <Briefcase className="w-3.5 h-3.5 text-cyan-400" />
+                <span>Área do Prestador</span>
+              </NextLink>
+
               <NextLink
                 href="/cadastro"
-                className="inline-flex items-center gap-1.5 text-xs font-extrabold text-white bg-slate-900 hover:bg-slate-800 px-4 py-2.5 rounded-xl transition shadow-xs"
+                className="inline-flex items-center gap-1.5 text-xs font-extrabold text-white bg-blue-600 hover:bg-blue-500 px-3.5 py-2.5 rounded-xl transition shadow-xs"
               >
-                <UserPlus className="w-3.5 h-3.5 text-cyan-400" />
+                <UserPlus className="w-3.5 h-3.5" />
                 <span>Criar Conta</span>
               </NextLink>
-            </>
+            </div>
           )}
         </div>
 
@@ -265,6 +303,35 @@ export default function Navbar() {
           <div className="pt-2 border-t border-slate-100 space-y-2">
             {isAuth ? (
               <>
+                {/* Alternância rápida de modo no celular */}
+                {isProvider ? (
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      setMobileMenuOpen(false);
+                      await switchRole('cliente');
+                      router.push('/cliente/agendamentos');
+                    }}
+                    className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl bg-blue-50 text-blue-700 text-xs font-extrabold border border-blue-200"
+                  >
+                    <User className="w-4 h-4 text-blue-600" />
+                    <span>Alternar para Modo Cliente</span>
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      setMobileMenuOpen(false);
+                      await switchRole('prestador');
+                      router.push('/prestador');
+                    }}
+                    className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl bg-slate-900 text-cyan-300 text-xs font-extrabold"
+                  >
+                    <Briefcase className="w-4 h-4 text-cyan-400" />
+                    <span>Alternar para Painel do Prestador</span>
+                  </button>
+                )}
+
                 {isProvider && (
                   <NextLink
                     href="/prestador"
@@ -281,7 +348,7 @@ export default function Navbar() {
                       {session.name || session.email}
                     </p>
                     <p className="text-[10px] text-slate-500">
-                      {isProvider ? 'Conta de Prestador' : 'Conta de Cliente'}
+                      {isProvider ? 'Modo Prestador Ativo' : 'Modo Cliente Ativo'}
                     </p>
                   </div>
                   <button
@@ -295,18 +362,27 @@ export default function Navbar() {
                 </div>
               </>
             ) : (
-              <div className="grid grid-cols-2 gap-2">
-                <NextLink
-                  href="/login"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="py-2.5 px-3 text-center text-xs font-extrabold text-slate-800 bg-slate-100 rounded-xl"
-                >
-                  Entrar
-                </NextLink>
+              <div className="space-y-2">
+                <div className="grid grid-cols-2 gap-2">
+                  <NextLink
+                    href="/login?role=cliente"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="py-2.5 px-3 text-center text-xs font-extrabold text-slate-800 bg-slate-100 rounded-xl"
+                  >
+                    Entrar (Cliente)
+                  </NextLink>
+                  <NextLink
+                    href="/login?role=prestador"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="py-2.5 px-3 text-center text-xs font-extrabold text-cyan-300 bg-[#0B132B] rounded-xl"
+                  >
+                    Área do Prestador
+                  </NextLink>
+                </div>
                 <NextLink
                   href="/cadastro"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="py-2.5 px-3 text-center text-xs font-extrabold text-white bg-slate-900 rounded-xl"
+                  className="block w-full py-2.5 px-3 text-center text-xs font-extrabold text-white bg-blue-600 rounded-xl"
                 >
                   Criar Conta
                 </NextLink>
