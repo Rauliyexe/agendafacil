@@ -32,7 +32,7 @@ import {
   Database,
 } from 'lucide-react';
 import AppSidebar from '@/components/layout/AppSidebar';
-import { saveTenant, saveStoredUserRole } from '@/lib/store';
+import { saveTenant, saveStoredUserRole, saveActiveTenantSlug, saveStoredLoggedUser } from '@/lib/store';
 import { getSupabase, isSupabaseConfigured } from '@/lib/supabase/client';
 import { saveTenantToSupabase } from '@/lib/supabase/api';
 import { Tenant } from '@/lib/types';
@@ -302,6 +302,11 @@ export default function CadastroPage() {
     }
 
     saveStoredUserRole('cliente');
+    saveStoredLoggedUser({
+      email: clientEmail,
+      name: clientName || 'Cliente',
+      role: 'cliente',
+    });
     setIsSubmitting(false);
     setRegistrationSuccess(true);
     setTimeout(() => {
@@ -388,6 +393,13 @@ export default function CadastroPage() {
     // Save to local cache
     saveTenant(newTenant);
     saveStoredUserRole('prestador');
+    saveActiveTenantSlug(finalSlug);
+    saveStoredLoggedUser({
+      email: proEmail,
+      name: proName || 'Prestador',
+      role: 'prestador',
+      slug: finalSlug,
+    });
 
     setIsSubmitting(false);
     setRegistrationSuccess(true);

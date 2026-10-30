@@ -103,6 +103,10 @@ export async function saveTenantToSupabase(tenant: Tenant): Promise<boolean> {
         reviews: tenant.reviews,
         avatar: tenant.avatar,
         address: tenant.address,
+        experience: tenant.experience || '',
+        distance: tenant.distance || '1,0 km',
+        active: tenant.active ?? true,
+        plan: tenant.plan || 'pro',
         phone: tenant.phone,
         whatsapp: tenant.whatsapp,
         instagram: tenant.instagram,
@@ -132,7 +136,10 @@ export async function saveTenantToSupabase(tenant: Tenant): Promise<boolean> {
         description: s.description || '',
       }));
 
-      await supabase.from('services').upsert(rows, { onConflict: 'id' });
+      const { error: sErr } = await supabase.from('services').upsert(rows, { onConflict: 'id' });
+      if (sErr) {
+        console.error('Error saving services to Supabase:', sErr.message);
+      }
     }
 
     return true;

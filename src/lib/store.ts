@@ -22,7 +22,73 @@ const STORAGE_KEYS = {
   PROVIDER_CONVERSATIONS: 'agendafacil_provider_conversations_v5_clean',
   STORIES: 'agendafacil_stories_v5_clean',
   USER_ROLE: 'agendafacil_user_role_mode',
+  ACTIVE_TENANT_SLUG: 'agendafacil_active_tenant_slug',
+  LOGGED_USER: 'agendafacil_logged_user',
 };
+
+export function getPublicDomain(): string {
+  if (typeof window !== 'undefined') {
+    const host = window.location.host;
+    if (host.includes('localhost') || host.includes('127.0.0.1')) {
+      return 'agendafacil-blond.vercel.app';
+    }
+    return host;
+  }
+  return 'agendafacil-blond.vercel.app';
+}
+
+export function getPublicUrl(path: string = ''): string {
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  if (typeof window !== 'undefined') {
+    const origin = window.location.origin;
+    if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+      return `https://agendafacil-blond.vercel.app${cleanPath}`;
+    }
+    return `${origin}${cleanPath}`;
+  }
+  return `https://agendafacil-blond.vercel.app${cleanPath}`;
+}
+
+export function getActiveTenantSlug(): string | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    return localStorage.getItem(STORAGE_KEYS.ACTIVE_TENANT_SLUG);
+  } catch {
+    return null;
+  }
+}
+
+export function saveActiveTenantSlug(slug: string): void {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(STORAGE_KEYS.ACTIVE_TENANT_SLUG, slug);
+  window.dispatchEvent(new CustomEvent('agendafacil-active-tenant-changed', { detail: slug }));
+}
+
+export interface LoggedUser {
+  email: string;
+  name?: string;
+  role: 'cliente' | 'prestador';
+  slug?: string;
+}
+
+export function getStoredLoggedUser(): LoggedUser | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const val = localStorage.getItem(STORAGE_KEYS.LOGGED_USER);
+    return val ? JSON.parse(val) : null;
+  } catch {
+    return null;
+  }
+}
+
+export function saveStoredLoggedUser(user: LoggedUser | null): void {
+  if (typeof window === 'undefined') return;
+  if (user) {
+    localStorage.setItem(STORAGE_KEYS.LOGGED_USER, JSON.stringify(user));
+  } else {
+    localStorage.removeItem(STORAGE_KEYS.LOGGED_USER);
+  }
+}
 
 export function getStoredUserRole(): 'cliente' | 'prestador' {
   if (typeof window === 'undefined') return 'cliente';
@@ -186,11 +252,22 @@ export async function syncWithSupabase(): Promise<{ synced: boolean; error?: str
     ]);
 
     if (typeof window !== 'undefined') {
-      if (Object.keys(remoteTenants).length > 0) {
-        localStorage.setItem(STORAGE_KEYS.TENANTS, JSON.stringify(remoteTenants));
+      const currentTenants = getStoredTenants();
+      const mergedTenants = { ...currentTenants, ...remoteTenants };
+      if (Object.keys(mergedTenants).length > 0) {
+        localStorage.setItem(STORAGE_KEYS.TENANTS, JSON.stringify(mergedTenants));
       }
+
       if (remoteBookings.length > 0) {
-        localStorage.setItem(STORAGE_KEYS.BOOKINGS, JSON.stringify(remoteBookings));
+        const currentBookings = getStoredBookings();
+        const ids = new Set(currentBookings.map((b) => b.id));
+        const mergedBookings = [...currentBookings];
+        for (const rb of remoteBookings) {
+          if (!ids.has(rb.id)) {
+            mergedBookings.push(rb);
+          }
+        }
+        localStorage.setItem(STORAGE_KEYS.BOOKINGS, JSON.stringify(mergedBookings));
       }
       window.dispatchEvent(new CustomEvent('agendafacil-data-synced'));
     }

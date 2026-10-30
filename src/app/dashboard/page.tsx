@@ -40,6 +40,9 @@ import {
   updateBookingStatus,
   saveTenant,
   syncWithSupabase,
+  getActiveTenantSlug,
+  getPublicDomain,
+  getPublicUrl,
 } from '@/lib/store';
 import { isSupabaseConfigured } from '@/lib/supabase/client';
 import { INITIAL_NOTIFICATIONS } from '@/lib/data';
@@ -157,6 +160,12 @@ function DashboardContent() {
   const currentProvider: Tenant | undefined = useMemo(() => {
     const list = Object.values(tenants);
     if (list.length === 0) return undefined;
+    const activeSlug = getActiveTenantSlug();
+    if (activeSlug && tenants[activeSlug]) {
+      if (selectedProviderSlug === 'todos' || selectedProviderSlug === activeSlug) {
+        return tenants[activeSlug];
+      }
+    }
     if (selectedProviderSlug === 'todos') {
       return list[0];
     }
@@ -282,7 +291,7 @@ function DashboardContent() {
 
   const handleCopyPublicLink = () => {
     if (!currentProvider) return;
-    const url = `${window.location.origin}/${currentProvider.slug}`;
+    const url = getPublicUrl(currentProvider.slug);
     navigator.clipboard.writeText(url);
     setCopiedLink(true);
     setTimeout(() => setCopiedLink(false), 2500);
@@ -445,7 +454,7 @@ function DashboardContent() {
             <div className="flex items-center gap-2 text-slate-300">
               <span className="text-slate-400">Link da sua agenda para enviar aos clientes:</span>
               <strong className="text-blue-400">
-                agendafacil.app/{currentProvider?.slug || 'sua-agenda'}
+                {getPublicDomain()}/{currentProvider?.slug || 'sua-agenda'}
               </strong>
             </div>
             <div className="flex items-center gap-2">
@@ -501,11 +510,10 @@ function DashboardContent() {
                 key={item.id}
                 type="button"
                 onClick={() => setActiveTab(item.id)}
-                className={`px-4 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap flex items-center gap-2 shrink-0 transition ${
-                  isActive
+                className={`px-4 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap flex items-center gap-2 shrink-0 transition ${isActive
                     ? 'bg-slate-900 text-white shadow-xs'
                     : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
-                }`}
+                  }`}
               >
                 <Icon className="w-3.5 h-3.5" />
                 <span>{item.label}</span>
@@ -608,11 +616,10 @@ function DashboardContent() {
                       key={f.id}
                       type="button"
                       onClick={() => setWhenFilter(f.id as any)}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-extrabold transition ${
-                        whenFilter === f.id
+                      className={`px-3 py-1.5 rounded-xl text-xs font-extrabold transition ${whenFilter === f.id
                           ? 'bg-blue-600 text-white'
                           : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                      }`}
+                        }`}
                     >
                       {f.label}
                     </button>
@@ -656,13 +663,12 @@ function DashboardContent() {
                     return (
                       <div
                         key={booking.id}
-                        className={`p-4 sm:p-5 rounded-2xl border transition flex flex-col lg:flex-row lg:items-center justify-between gap-4 ${
-                          booking.status === 'cancelado'
+                        className={`p-4 sm:p-5 rounded-2xl border transition flex flex-col lg:flex-row lg:items-center justify-between gap-4 ${booking.status === 'cancelado'
                             ? 'bg-slate-50 border-slate-200 opacity-60'
                             : booking.status === 'pendente'
-                            ? 'bg-amber-50/40 border-amber-300'
-                            : 'bg-white border-slate-200 hover:border-blue-300'
-                        }`}
+                              ? 'bg-amber-50/40 border-amber-300'
+                              : 'bg-white border-slate-200 hover:border-blue-300'
+                          }`}
                       >
                         {/* LEFT: QUANDO SERÁ O SERVIÇO + QUEM AGENDOU */}
                         <div className="flex flex-col sm:flex-row sm:items-center gap-4 flex-1 min-w-0">
@@ -689,15 +695,14 @@ function DashboardContent() {
                                 {booking.clientName}
                               </h3>
                               <span
-                                className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${
-                                  booking.status === 'confirmado'
+                                className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${booking.status === 'confirmado'
                                     ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                                     : booking.status === 'pendente'
-                                    ? 'bg-amber-100 text-amber-800 border border-amber-300'
-                                    : booking.status === 'concluido'
-                                    ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                                    : 'bg-rose-50 text-rose-700 border border-rose-200'
-                                }`}
+                                      ? 'bg-amber-100 text-amber-800 border border-amber-300'
+                                      : booking.status === 'concluido'
+                                        ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                                        : 'bg-rose-50 text-rose-700 border border-rose-200'
+                                  }`}
                               >
                                 {booking.status === 'pendente'
                                   ? 'Aguardando Confirmação'
@@ -836,11 +841,10 @@ function DashboardContent() {
                   return (
                     <div
                       key={slotTime}
-                      className={`p-4 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
-                        found
+                      className={`p-4 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${found
                           ? 'bg-blue-50/50 border-blue-200'
                           : 'bg-slate-50/70 border-slate-200'
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center gap-4">
                         <span className="px-3.5 py-2 rounded-xl bg-slate-900 text-white text-sm font-black w-20 text-center shrink-0">
@@ -1232,11 +1236,10 @@ function DashboardContent() {
                         Banco de Dados Supabase (PostgreSQL)
                       </h3>
                       <span
-                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider ${
-                          isSupabaseConfigured()
+                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider ${isSupabaseConfigured()
                             ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
                             : 'bg-amber-100 text-amber-800 border border-amber-300'
-                        }`}
+                          }`}
                       >
                         {isSupabaseConfigured()
                           ? 'Conectado em Tempo Real'
@@ -1262,11 +1265,10 @@ function DashboardContent() {
 
               {supabaseSyncResult && (
                 <div
-                  className={`p-3 rounded-xl text-xs font-bold ${
-                    supabaseSyncResult.includes('sucesso')
+                  className={`p-3 rounded-xl text-xs font-bold ${supabaseSyncResult.includes('sucesso')
                       ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
                       : 'bg-amber-50 text-amber-800 border border-amber-200'
-                  }`}
+                    }`}
                 >
                   {supabaseSyncResult}
                 </div>

@@ -30,7 +30,14 @@ import {
   ExternalLink,
   ClipboardList,
 } from 'lucide-react';
-import { getStoredUserRole, saveStoredUserRole } from '@/lib/store';
+import {
+  getStoredUserRole,
+  saveStoredUserRole,
+  getActiveTenantSlug,
+  getStoredTenants,
+  getPublicDomain,
+  getPublicUrl,
+} from '@/lib/store';
 
 export type DashboardTabId =
   | 'inicio'
@@ -65,6 +72,34 @@ export default function AppSidebar({
   const [copiedLink, setCopiedLink] = useState(false);
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [roleMode, setRoleMode] = useState<'cliente' | 'prestador'>('cliente');
+  const [activeSlug, setActiveSlug] = useState<string>('sua-agenda');
+  const [domain, setDomain] = useState<string>('agendafacil-blond.vercel.app');
+
+  const updateProviderInfo = () => {
+    setDomain(getPublicDomain());
+    const storedSlug = getActiveTenantSlug();
+    if (storedSlug) {
+      setActiveSlug(storedSlug);
+      return;
+    }
+    const allTenants = getStoredTenants();
+    const firstSlug = Object.keys(allTenants)[0];
+    if (firstSlug) {
+      setActiveSlug(firstSlug);
+    } else {
+      setActiveSlug('sua-agenda');
+    }
+  };
+
+  useEffect(() => {
+    updateProviderInfo();
+    window.addEventListener('agendafacil-active-tenant-changed', updateProviderInfo);
+    window.addEventListener('agendafacil-data-synced', updateProviderInfo);
+    return () => {
+      window.removeEventListener('agendafacil-active-tenant-changed', updateProviderInfo);
+      window.removeEventListener('agendafacil-data-synced', updateProviderInfo);
+    };
+  }, []);
 
   const isDashboardPage = pathname === '/dashboard';
 
@@ -180,12 +215,14 @@ export default function AppSidebar({
     },
   ];
 
-  const handleCopyDemoLink = () => {
-    if (typeof window === 'undefined') return;
-    const url = `${window.location.origin}/dashboard`;
-    navigator.clipboard.writeText(url);
-    setCopiedLink(true);
-    setTimeout(() => setCopiedLink(false), 2500);
+  const handleCopyProviderLink = () => {
+    const slugToUse = activeSlug === 'sua-agenda' ? '' : activeSlug;
+    const url = getPublicUrl(slugToUse);
+    if (typeof window !== 'undefined' && navigator?.clipboard) {
+      navigator.clipboard.writeText(url);
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2500);
+    }
   };
 
   const handleNavigateProviderTab = (tab: DashboardTabId) => {
@@ -363,21 +400,32 @@ export default function AppSidebar({
               <p className="text-[10px] font-extrabold uppercase tracking-wider text-blue-400">
                 Sua Página Pública
               </p>
-              <p className="text-xs font-bold truncate">
-                agendafacil.app/sua-agenda
+              <p className="text-xs font-bold truncate text-slate-100" title={`${domain}/${activeSlug}`}>
+                {domain}/{activeSlug}
               </p>
               <div className="flex items-center gap-1.5 pt-1">
-                <NextLink
-                  href="/dashboard"
-                  className="flex-1 text-center py-1.5 px-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-[11px] font-extrabold transition"
-                >
-                  Painel de Gestão
-                </NextLink>
+                {pathname === '/dashboard' ? (
+                  <NextLink
+                    href={`/${activeSlug === 'sua-agenda' ? '' : activeSlug}`}
+                    target="_blank"
+                    className="flex-1 text-center py-1.5 px-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-[11px] font-extrabold transition flex items-center justify-center gap-1"
+                  >
+                    <span>Ver Minha Página</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </NextLink>
+                ) : (
+                  <NextLink
+                    href="/dashboard"
+                    className="flex-1 text-center py-1.5 px-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-[11px] font-extrabold transition"
+                  >
+                    Painel de Gestão
+                  </NextLink>
+                )}
                 <button
                   type="button"
-                  onClick={handleCopyDemoLink}
+                  onClick={handleCopyProviderLink}
                   className="p-1.5 rounded-xl bg-slate-800 border border-slate-700 text-slate-200 hover:bg-slate-700 transition"
-                  title="Copiar Link"
+                  title="Copiar Link da Página Pública"
                 >
                   {copiedLink ? (
                     <Check className="w-3.5 h-3.5 text-emerald-400" />
