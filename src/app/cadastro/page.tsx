@@ -197,7 +197,7 @@ function CadastroPageContent() {
   const [proEndTime, setProEndTime] = useState('19:00');
   const [proSlotMinutes, setProSlotMinutes] = useState(60);
   const [proSelectedDays, setProSelectedDays] = useState<number[]>([1, 2, 3, 4, 5, 6]);
-  const [proPlan, setProPlan] = useState<'free' | 'pro'>('pro');
+  const [proPlan, setProPlan] = useState<'free' | 'pro'>('free');
   const [proPixKeyType, setProPixKeyType] = useState<
     'cpf' | 'cnpj' | 'email' | 'telefone' | 'aleatoria'
   >('telefone');
@@ -519,8 +519,8 @@ function CadastroPageContent() {
                   <h2 className="text-base font-extrabold text-slate-900">
                     Sou Prestador de Serviços / Profissional
                   </h2>
-                  <span className="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-slate-900 text-white shrink-0">
-                    Painel + Link Próprio
+                  <span className="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-600 text-white shrink-0">
+                    100% Grátis
                   </span>
                 </div>
                 <p className="text-xs text-slate-600 mt-1 leading-relaxed">
@@ -1067,56 +1067,20 @@ function CadastroPageContent() {
                       </button>
                     </div>
 
-                    {/* Plan Selector */}
-                    <div className="space-y-2.5">
-                      <label className="block text-xs font-extrabold text-slate-800">
-                        Escolha seu Plano:
-                      </label>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <button
-                          type="button"
-                          onClick={() => setProPlan('free')}
-                          className={`p-4 rounded-2xl border-2 text-left transition ${
-                            proPlan === 'free'
-                              ? 'bg-blue-50 border-blue-600'
-                              : 'bg-white border-slate-200'
-                          }`}
-                        >
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs font-extrabold text-slate-900">
-                              Plano Gratuito
-                            </span>
-                            <span className="text-sm font-black text-emerald-600">
-                              R$ 0 / mês
-                            </span>
-                          </div>
-                          <p className="text-[11px] text-slate-500 mt-1">
-                            Link exclusivo + Agenda online + Painel de gestão.
-                          </p>
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => setProPlan('pro')}
-                          className={`p-4 rounded-2xl border-2 text-left transition ${
-                            proPlan === 'pro'
-                              ? 'bg-blue-50 border-blue-600'
-                              : 'bg-white border-slate-200'
-                          }`}
-                        >
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs font-extrabold text-slate-900">
-                              Plano Pro + WhatsApp
-                            </span>
-                            <span className="text-sm font-black text-blue-600">
-                              R$ 19,90 / mês
-                            </span>
-                          </div>
-                          <p className="text-[11px] text-slate-500 mt-1">
-                            Lembretes automáticos no WhatsApp + Destaque no diretório.
-                          </p>
-                        </button>
+                    {/* Sem cobrança - 100% Gratuito */}
+                    <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-950 flex items-center justify-between gap-3">
+                      <div className="space-y-0.5">
+                        <p className="font-extrabold text-sm flex items-center gap-1.5 text-emerald-900">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                          <span>Cadastro 100% Gratuito</span>
+                        </p>
+                        <p className="text-emerald-700 text-[11px]">
+                          Página pública de agendamento, catálogo de serviços e painel de gestão inclusos sem taxa de adesão.
+                        </p>
                       </div>
+                      <span className="text-xs font-black px-2.5 py-1 rounded-full bg-emerald-600 text-white shrink-0">
+                        R$ 0,00
+                      </span>
                     </div>
 
                     <div className="flex gap-3 pt-2">
@@ -1444,14 +1408,12 @@ function CadastroPageContent() {
                     ))}
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-700 space-y-1">
-                    <p className="font-extrabold text-slate-900 flex items-center gap-1.5">
-                      <ShieldCheck className="w-4 h-4 text-blue-600" />
-                      {proPlan === 'pro'
-                        ? 'Plano Pro + WhatsApp (R$ 19,90/mês)'
-                        : 'Plano Gratuito (R$ 0/mês)'}
+                  <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-950 space-y-1">
+                    <p className="font-extrabold text-emerald-900 flex items-center gap-1.5">
+                      <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                      Conta de Prestador Gratuita (R$ 0)
                     </p>
-                    <p className="text-[11px] text-slate-500">
+                    <p className="text-[11px] text-emerald-700">
                       Sua página ficará disponível imediatamente após concluir o cadastro.
                     </p>
                   </div>
