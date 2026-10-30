@@ -83,14 +83,14 @@ export default function Navbar() {
         {/* Right Action Buttons: Sou Cliente | Sou Prestador */}
         <div className="hidden md:flex items-center gap-2.5">
           <NextLink
-            href="/explorar"
+            href="/login?role=cliente"
             className="inline-flex items-center gap-1.5 text-xs font-extrabold text-violet-700 bg-violet-50 hover:bg-violet-100 border border-violet-200 px-3.5 py-2 rounded-xl transition"
           >
             <User className="w-3.5 h-3.5 text-violet-600" />
             <span>Sou Cliente</span>
           </NextLink>
           <NextLink
-            href="/dashboard"
+            href="/login?role=prestador"
             className="inline-flex items-center gap-1.5 text-xs font-extrabold text-white bg-slate-900 hover:bg-slate-800 px-4 py-2 rounded-xl transition shadow-xs border border-slate-800 hover:border-slate-700"
           >
             <LayoutDashboard className="w-3.5 h-3.5 text-cyan-400" />
@@ -119,18 +119,18 @@ export default function Navbar() {
             Início
           </NextLink>
           <NextLink
-            href="/explorar"
+            href="/login?role=cliente"
             onClick={() => setMobileMenuOpen(false)}
             className="block px-3 py-2.5 text-sm font-bold text-blue-700 bg-blue-50 rounded-xl"
           >
-            Explorar Prestadores (Sou Cliente)
+            Entrar como Cliente
           </NextLink>
           <NextLink
-            href="/dashboard"
+            href="/login?role=prestador"
             onClick={() => setMobileMenuOpen(false)}
             className="block px-3 py-2.5 text-sm font-bold text-white bg-slate-900 rounded-xl"
           >
-            Painel do Prestador (Sou Profissional)
+            Entrar como Prestador
           </NextLink>
           <NextLink
             href="/chat"

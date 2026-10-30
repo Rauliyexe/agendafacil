@@ -51,7 +51,7 @@ export default function LandingPage() {
             {/* TWO PRIMARY PATHS: CLIENTE VS PRESTADOR */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl mx-auto pt-4 text-left">
               <NextLink
-                href="/explorar"
+                href="/login?role=cliente"
                 className="p-5 rounded-2xl bg-white hover:border-violet-500 border-2 border-violet-600 shadow-md transition group flex flex-col justify-between gap-3"
               >
                 <div className="flex items-center justify-between">
@@ -63,13 +63,13 @@ export default function LandingPage() {
                 <div>
                   <p className="text-base font-extrabold text-slate-900">Sou Cliente</p>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    Ver profissionais, preços fixos e agendar horário
+                    Entrar para ver profissionais, preços fixos e agendar
                   </p>
                 </div>
               </NextLink>
 
               <NextLink
-                href="/dashboard"
+                href="/login?role=prestador"
                 className="p-5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white shadow-md transition group flex flex-col justify-between gap-3 border border-slate-800 hover:border-slate-700"
               >
                 <div className="flex items-center justify-between">
@@ -81,7 +81,7 @@ export default function LandingPage() {
                 <div>
                   <p className="text-base font-extrabold text-white">Sou Prestador</p>
                   <p className="text-xs text-slate-300 mt-0.5">
-                    Ver quem agendou, controlar horários e Pix
+                    Entrar no painel de gestão, horários e Pix
                   </p>
                 </div>
               </NextLink>
@@ -239,10 +239,10 @@ export default function LandingPage() {
               </div>
             </div>
             <NextLink
-              href="/explorar"
+              href="/login?role=cliente"
               className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs transition shrink-0 text-center shadow-xs"
             >
-              Explorar e Agendar
+              Entrar e Agendar
             </NextLink>
           </div>
 
@@ -298,7 +298,7 @@ export default function LandingPage() {
 
                 <div className="mt-8 pt-5 border-t border-slate-100">
                   <NextLink
-                    href={plan.price === 0 ? '/dashboard' : `/planos?plano=${plan.id}`}
+                    href={plan.price === 0 ? '/login?role=prestador' : `/planos?plano=${plan.id}`}
                     className={`w-full py-2.5 px-4 rounded-xl font-extrabold text-center block text-xs transition ${
                       plan.recommended
                         ? 'bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-700 hover:to-blue-700 text-white shadow-xs'
@@ -334,14 +334,14 @@ export default function LandingPage() {
           </div>
 
           <div className="flex items-center gap-4 font-semibold">
-            <NextLink href="/explorar" className="hover:text-violet-600 transition">
+            <NextLink href="/login?role=cliente" className="hover:text-violet-600 transition">
               Clientes
             </NextLink>
-            <NextLink href="/dashboard" className="hover:text-violet-600 transition">
+            <NextLink href="/login?role=prestador" className="hover:text-violet-600 transition">
               Prestadores
             </NextLink>
-            <NextLink href="/chat" className="hover:text-violet-600 transition">
-              Chat
+            <NextLink href="/login" className="hover:text-violet-600 transition">
+              Entrar
             </NextLink>
             <NextLink href="/planos" className="hover:text-violet-600 transition">
               Planos
