@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import QRCode from 'qrcode';
 import {
   Copy,
   Check,
@@ -11,7 +12,7 @@ import {
   CheckCircle2,
   Lock,
 } from 'lucide-react';
-import { generatePixBRCode, generateQrMatrix } from '@/lib/pix';
+import { generatePixBRCode } from '@/lib/pix';
 
 export function PixQrCodeSvg({
   brCode,
@@ -20,34 +21,37 @@ export function PixQrCodeSvg({
   brCode: string;
   size?: number;
 }) {
-  const matrix = useMemo(() => generateQrMatrix(brCode), [brCode]);
-  const n = matrix.length;
+  const [dataUrl, setDataUrl] = useState<string>('');
+
+  useEffect(() => {
+    if (!brCode) return;
+    QRCode.toDataURL(brCode, {
+      width: size * 2,
+      margin: 1,
+      color: {
+        dark: '#0B132B',
+        light: '#FFFFFF',
+      },
+      errorCorrectionLevel: 'M',
+    })
+      .then((url) => setDataUrl(url))
+      .catch((err) => console.error('Error generating Pix QRCode:', err));
+  }, [brCode, size]);
 
   return (
     <div
-      className="bg-white p-3.5 rounded-2xl border-2 border-slate-900 inline-block shadow-2xs"
+      className="bg-white p-3 rounded-2xl border-2 border-slate-900 inline-flex items-center justify-center shadow-2xs overflow-hidden"
       style={{ width: size, height: size }}
     >
-      <svg
-        viewBox={`0 0 ${n} ${n}`}
-        className="w-full h-full"
-        shapeRendering="crispEdges"
-      >
-        {matrix.map((row, rIdx) =>
-          row.map((cell, cIdx) =>
-            cell ? (
-              <rect
-                key={`${rIdx}-${cIdx}`}
-                x={cIdx}
-                y={rIdx}
-                width={1}
-                height={1}
-                fill="#0F172A"
-              />
-            ) : null
-          )
-        )}
-      </svg>
+      {dataUrl ? (
+        <img
+          src={dataUrl}
+          alt="QR Code Pix Oficial"
+          className="w-full h-full object-contain"
+        />
+      ) : (
+        <div className="w-full h-full bg-slate-100 animate-pulse rounded-xl" />
+      )}
     </div>
   );
 }
