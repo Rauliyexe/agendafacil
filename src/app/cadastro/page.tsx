@@ -286,10 +286,15 @@ function CadastroPageContent() {
     const supabase = getSupabase();
     if (supabase && clientEmail && clientPassword) {
       try {
+        const redirectUrl = typeof window !== 'undefined'
+          ? `${window.location.origin}/login?role=cliente`
+          : 'https://agendafacil-blond.vercel.app/login?role=cliente';
+
         const { data: authData } = await supabase.auth.signUp({
           email: clientEmail,
           password: clientPassword,
           options: {
+            emailRedirectTo: redirectUrl,
             data: {
               full_name: clientName || 'Cliente',
               phone: clientPhone,
@@ -376,10 +381,15 @@ function CadastroPageContent() {
     const supabase = getSupabase();
     if (supabase && proEmail && proPassword) {
       try {
+        const redirectUrl = typeof window !== 'undefined'
+          ? `${window.location.origin}/login?role=prestador`
+          : 'https://agendafacil-blond.vercel.app/login?role=prestador';
+
         const { data: authData } = await supabase.auth.signUp({
           email: proEmail,
           password: proPassword,
           options: {
+            emailRedirectTo: redirectUrl,
             data: {
               full_name: proName || 'Prestador',
               phone: proPhone,
