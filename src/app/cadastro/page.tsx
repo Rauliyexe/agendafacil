@@ -22,6 +22,8 @@ import {
   Trophy,
   BadgeCheck,
   Check,
+  Camera,
+  Upload,
 } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
 import {
@@ -202,6 +204,26 @@ function CadastroPageContent() {
     'cpf' | 'cnpj' | 'email' | 'telefone' | 'aleatoria'
   >('telefone');
   const [proPixKey, setProPixKey] = useState('');
+  const [proAvatar, setProAvatar] = useState(
+    'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&auto=format&fit=crop&q=80'
+  );
+
+  const handleProAvatarFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 3 * 1024 * 1024) {
+      alert('Por favor escolha uma imagem de até 3MB.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const result = event.target?.result as string;
+      if (result) {
+        setProAvatar(result);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
 
   const [proServices, setProServices] = useState<
     Array<{
@@ -349,6 +371,7 @@ function CadastroPageContent() {
       rating: 5.0,
       reviews: 0,
       avatar:
+        proAvatar.trim() ||
         'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&auto=format&fit=crop&q=80',
       address: proAddress || 'Atendimento no local e em domicílio',
       experience: proExperience,
@@ -662,6 +685,65 @@ function CadastroPageContent() {
                             </button>
                           );
                         })}
+                      </div>
+                    </div>
+
+                    {/* Foto de Perfil ou Logotipo */}
+                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row items-center gap-4">
+                      <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-blue-500 bg-white shrink-0 shadow-sm">
+                        <Image
+                          src={proAvatar}
+                          alt="Foto de perfil"
+                          fill
+                          className="object-cover"
+                          unoptimized={proAvatar.startsWith('data:')}
+                        />
+                      </div>
+                      <div className="flex-1 space-y-1 text-center sm:text-left">
+                        <label className="block text-xs font-bold text-slate-800">
+                          Foto de Perfil ou Logotipo
+                        </label>
+                        <p className="text-[11px] text-slate-500">
+                          Sua foto aparece na sua agenda pública e nas notificações enviadas aos clientes.
+                        </p>
+                        <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1">
+                          <label className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer transition">
+                            <Upload className="w-3.5 h-3.5" />
+                            <span>Carregar do Dispositivo</span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={handleProAvatarFileChange}
+                              className="hidden"
+                            />
+                          </label>
+                          <div className="flex items-center gap-1.5">
+                            {[
+                              'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&auto=format&fit=crop&q=80',
+                              'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&auto=format&fit=crop&q=80',
+                              'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&auto=format&fit=crop&q=80',
+                              'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=800&auto=format&fit=crop&q=80',
+                            ].map((preset, idx) => (
+                              <button
+                                key={idx}
+                                type="button"
+                                onClick={() => setProAvatar(preset)}
+                                className={`relative w-7 h-7 rounded-full overflow-hidden border-2 transition ${
+                                  proAvatar === preset
+                                    ? 'border-blue-600 ring-2 ring-blue-400 scale-105'
+                                    : 'border-slate-200 hover:border-slate-400'
+                                }`}
+                              >
+                                <Image
+                                  src={preset}
+                                  alt={`Preset ${idx + 1}`}
+                                  fill
+                                  className="object-cover"
+                                />
+                              </button>
+                            ))}
+                          </div>
+                        </div>
                       </div>
                     </div>
 

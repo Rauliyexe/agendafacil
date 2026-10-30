@@ -25,6 +25,8 @@ import {
   QrCode,
   CreditCard,
   RefreshCw,
+  Camera,
+  Upload,
 } from 'lucide-react';
 import {
   getStoredTenants,
@@ -104,6 +106,12 @@ function DashboardContent() {
 
   // Active Booking for QR Code Modal
   const [pixModalBooking, setPixModalBooking] = useState<Booking | null>(null);
+
+  // Profile Avatar Edit Modal
+  const [showAvatarModal, setShowAvatarModal] = useState(false);
+  const [avatarUrlInput, setAvatarUrlInput] = useState('');
+  const [avatarPreview, setAvatarPreview] = useState('');
+  const [avatarSaving, setAvatarSaving] = useState(false);
 
   useEffect(() => {
     const tabParam = searchParams.get('tab') as DashboardTabId | null;
@@ -207,6 +215,48 @@ function DashboardContent() {
     await saveTenantToSupabase(updated);
     setPixSavedMsg(true);
     setTimeout(() => setPixSavedMsg(false), 2500);
+  };
+
+  useEffect(() => {
+    if (currentProvider?.avatar) {
+      setAvatarUrlInput(currentProvider.avatar);
+      setAvatarPreview(currentProvider.avatar);
+    }
+  }, [currentProvider]);
+
+  const handleAvatarFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 3 * 1024 * 1024) {
+      alert('Por favor escolha uma imagem de até 3MB.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const result = event.target?.result as string;
+      if (result) {
+        setAvatarPreview(result);
+        setAvatarUrlInput(result);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleSaveAvatar = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!currentProvider || !avatarPreview.trim()) return;
+
+    setAvatarSaving(true);
+    const updated: Tenant = {
+      ...currentProvider,
+      avatar: avatarPreview.trim(),
+    };
+
+    saveTenant(updated);
+    setTenants((prev) => ({ ...prev, [updated.slug]: updated }));
+    await saveTenantToSupabase(updated);
+    setAvatarSaving(false);
+    setShowAvatarModal(false);
   };
 
   const livePreviewBrCode = useMemo(
@@ -402,13 +452,40 @@ function DashboardContent() {
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div className="flex items-start sm:items-center gap-4">
               {currentProvider && (
-                <div className="relative w-14 h-14 rounded-2xl overflow-hidden border border-slate-700 shrink-0 bg-slate-800">
-                  <Image
-                    src={currentProvider.avatar}
-                    alt={currentProvider.name}
-                    fill
-                    className="object-cover"
-                  />
+                <div className="relative group shrink-0">
+                  <div className="relative w-14 h-14 rounded-2xl overflow-hidden border border-slate-700 bg-slate-800 shadow-inner">
+                    <Image
+                      src={currentProvider.avatar}
+                      alt={currentProvider.name}
+                      fill
+                      className="object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAvatarPreview(currentProvider.avatar);
+                        setAvatarUrlInput(currentProvider.avatar);
+                        setShowAvatarModal(true);
+                      }}
+                      className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-opacity cursor-pointer text-white"
+                      title="Alterar foto de perfil"
+                    >
+                      <Camera className="w-5 h-5 text-white" />
+                      <span className="text-[9px] font-bold mt-0.5">Editar</span>
+                    </button>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAvatarPreview(currentProvider.avatar);
+                      setAvatarUrlInput(currentProvider.avatar);
+                      setShowAvatarModal(true);
+                    }}
+                    className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 flex items-center justify-center shadow-md border-2 border-[#0B132B] transition cursor-pointer"
+                    title="Alterar foto de perfil"
+                  >
+                    <Camera className="w-3.5 h-3.5 font-bold" />
+                  </button>
                 </div>
               )}
               <div>
@@ -1060,10 +1137,50 @@ function DashboardContent() {
         )}
 
         {/* ===================================================================
-            ABA 6: CHAVE PIX & RECEBIMENTOS
+            ABA 6: CHAVE PIX & RECEBIMENTOS & PERFIL
            =================================================================== */}
         {(activeTab === 'notificacoes' || activeTab === 'configuracoes') && currentProvider && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          <div className="space-y-6">
+            {/* Card de Foto de Perfil */}
+            <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-7 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+              <div className="flex items-center gap-4">
+                <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden border-2 border-slate-200 bg-slate-100 shrink-0 shadow-xs">
+                  <Image
+                    src={currentProvider.avatar}
+                    alt={currentProvider.name}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div>
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[10px] font-extrabold uppercase tracking-wider">
+                    <Camera className="w-3 h-3" />
+                    Foto de Perfil
+                  </span>
+                  <h3 className="text-base sm:text-lg font-extrabold text-slate-900 mt-1">
+                    {currentProvider.name}
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Sua foto oficial exibida para os clientes na página pública de agendamento.
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setAvatarPreview(currentProvider.avatar);
+                  setAvatarUrlInput(currentProvider.avatar);
+                  setShowAvatarModal(true);
+                }}
+                className="px-5 py-3 rounded-xl bg-[#0B132B] hover:bg-slate-800 text-white font-extrabold text-xs flex items-center justify-center gap-2 transition shrink-0 shadow-xs cursor-pointer"
+              >
+                <Camera className="w-4 h-4 text-cyan-400" />
+                <span>Alterar Foto de Perfil</span>
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             {/* Left 7 Cols: Configurar Chave Pix */}
             <div className="lg:col-span-7 bg-white rounded-3xl border border-slate-200 p-6 sm:p-7 shadow-2xs space-y-5">
               <div>
@@ -1241,6 +1358,7 @@ function DashboardContent() {
               </div>
             </div>
           </div>
+          </div>
         )}
       </main>
 
@@ -1357,6 +1475,163 @@ function DashboardContent() {
                 Confirmar Agendamento
               </button>
             </form>
+          </div>
+        </div>
+      )}
+      {/* MODAL PARA O PRESTADOR ALTERAR A FOTO DE PERFIL */}
+      {showAvatarModal && (
+        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-md rounded-3xl p-6 border border-slate-200 shadow-2xl space-y-5 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div>
+                <h3 className="text-base font-extrabold text-slate-900">
+                  Alterar Foto de Perfil
+                </h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Atualize sua foto da agenda e do perfil profissional
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowAvatarModal(false)}
+                className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Circular Preview */}
+            <div className="flex flex-col items-center text-center space-y-2">
+              <div className="relative w-28 h-28 rounded-full border-4 border-blue-100 bg-slate-100 overflow-hidden shadow-md">
+                {avatarPreview ? (
+                  <Image
+                    src={avatarPreview}
+                    alt="Prévia da foto"
+                    fill
+                    className="object-cover"
+                    unoptimized={avatarPreview.startsWith('data:')}
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-slate-400">
+                    <Camera className="w-10 h-10" />
+                  </div>
+                )}
+              </div>
+              <span className="text-[11px] text-slate-500 font-semibold">Prévia da nova foto</span>
+            </div>
+
+            {/* Opções de Upload */}
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                  1. Carregar do seu computador ou celular
+                </label>
+                <label className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl border-2 border-dashed border-slate-300 hover:border-blue-500 bg-slate-50 hover:bg-blue-50/50 cursor-pointer transition text-xs font-bold text-slate-700">
+                  <Upload className="w-4 h-4 text-blue-600" />
+                  <span>Escolher arquivo de imagem</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarFileChange}
+                    className="hidden"
+                  />
+                </label>
+                <p className="text-[10px] text-slate-400 mt-1 text-center">
+                  PNG, JPG ou WEBP de até 3MB
+                </p>
+              </div>
+
+              <div className="relative flex items-center justify-center">
+                <div className="border-t border-slate-200 w-full" />
+                <span className="bg-white px-2 text-[10px] uppercase font-bold text-slate-400 absolute">
+                  ou
+                </span>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                  2. Colar link (URL) da imagem
+                </label>
+                <input
+                  type="url"
+                  value={avatarUrlInput}
+                  onChange={(e) => {
+                    setAvatarUrlInput(e.target.value);
+                    if (e.target.value.trim()) {
+                      setAvatarPreview(e.target.value.trim());
+                    }
+                  }}
+                  placeholder="https://exemplo.com/sua-foto.jpg"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs outline-none focus:border-blue-600 font-mono"
+                />
+              </div>
+
+              {/* Sugestões rápidas de fotos profissionais */}
+              <div>
+                <span className="block text-[11px] font-bold text-slate-600 mb-2">
+                  Ou selecione uma foto de modelo:
+                </span>
+                <div className="flex items-center justify-between gap-2">
+                  {[
+                    'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&auto=format&fit=crop&q=80',
+                    'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&auto=format&fit=crop&q=80',
+                    'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&auto=format&fit=crop&q=80',
+                    'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=800&auto=format&fit=crop&q=80',
+                    'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=800&auto=format&fit=crop&q=80',
+                  ].map((presetUrl, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => {
+                        setAvatarPreview(presetUrl);
+                        setAvatarUrlInput(presetUrl);
+                      }}
+                      className={`relative w-12 h-12 rounded-full overflow-hidden border-2 transition hover:scale-105 cursor-pointer ${
+                        avatarPreview === presetUrl
+                          ? 'border-blue-600 ring-2 ring-blue-400'
+                          : 'border-slate-200'
+                      }`}
+                    >
+                      <Image
+                        src={presetUrl}
+                        alt={`Preset ${idx + 1}`}
+                        fill
+                        className="object-cover"
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex items-center gap-2 pt-2 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => setShowAvatarModal(false)}
+                className="flex-1 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold transition"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveAvatar}
+                disabled={avatarSaving || !avatarPreview.trim()}
+                className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-xs font-extrabold flex items-center justify-center gap-1.5 transition shadow-xs cursor-pointer"
+              >
+                {avatarSaving ? (
+                  <>
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    <span>Salvando...</span>
+                  </>
+                ) : (
+                  <>
+                    <Check className="w-3.5 h-3.5" />
+                    <span>Salvar Foto</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       )}
